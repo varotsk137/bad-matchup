@@ -1,0 +1,365 @@
+export const LANGS = ['th', 'en']
+
+const dict = {
+  appName: { th: 'จับคู่ตีแบด', en: 'Bad Matchup' },
+  appTagline: {
+    th: 'จัดคิวลงคอร์ทให้อัตโนมัติ',
+    en: 'Automatic court scheduling',
+  },
+
+  // tabs
+  tabPlay: { th: 'แข่งขัน', en: 'Play' },
+  tabPlayers: { th: 'ผู้เล่น', en: 'Players' },
+  tabCourts: { th: 'คอร์ท', en: 'Courts' },
+  tabStats: { th: 'สถิติ', en: 'Stats' },
+  tabSettings: { th: 'ตั้งค่า', en: 'Settings' },
+
+  // generic
+  add: { th: 'เพิ่ม', en: 'Add' },
+  save: { th: 'บันทึก', en: 'Save' },
+  cancel: { th: 'ยกเลิก', en: 'Cancel' },
+  delete: { th: 'ลบ', en: 'Delete' },
+  edit: { th: 'แก้ไข', en: 'Edit' },
+  done: { th: 'เสร็จ', en: 'Done' },
+  close: { th: 'ปิด', en: 'Close' },
+  all: { th: 'ทั้งหมด', en: 'All' },
+  none: { th: 'ไม่มี', en: 'None' },
+  name: { th: 'ชื่อ', en: 'Name' },
+  reset: { th: 'รีเซ็ต', en: 'Reset' },
+  confirm: { th: 'ยืนยัน', en: 'Confirm' },
+
+  // players
+  players: { th: 'ผู้เล่น', en: 'Players' },
+  addPlayer: { th: 'เพิ่มผู้เล่น', en: 'Add player' },
+  playerNamePh: {
+    th: 'พิมพ์ชื่อ แล้วกด Enter',
+    en: 'Type a name, press Enter',
+  },
+  bulkAdd: { th: 'เพิ่มทีละหลายคน', en: 'Bulk add' },
+  bulkAddHint: {
+    th: 'พิมพ์ชื่อบรรทัดละคน (หรือคั่นด้วยจุลภาค)',
+    en: 'One name per line (or comma separated)',
+  },
+  level: { th: 'ระดับฝีมือ', en: 'Skill level' },
+  gender: { th: 'เพศ', en: 'Gender' },
+  male: { th: 'ชาย', en: 'Male' },
+  female: { th: 'หญิง', en: 'Female' },
+  unspecified: { th: 'ไม่ระบุ', en: 'N/A' },
+  present: { th: 'มาแล้ว', en: 'Here' },
+  absent: { th: 'ยังไม่มา', en: 'Away' },
+  resting: { th: 'ขอพัก', en: 'Resting' },
+  playing: { th: 'พร้อมเล่น', en: 'Ready' },
+  available: { th: 'พร้อมเล่น', en: 'Available' },
+  noPlayers: { th: 'ยังไม่มีผู้เล่น', en: 'No players yet' },
+  noPlayersHint: {
+    th: 'เพิ่มชื่อเพื่อนที่มาตีวันนี้ก่อนเริ่มจับคู่',
+    en: 'Add everyone who turned up today to get started',
+  },
+  deletePlayerConfirm: {
+    th: 'ลบ {name}? รอบที่ลงไปแล้วจะยังเก็บชื่อไว้',
+    en: 'Delete {name}? Rounds already played keep their name.',
+  },
+  removePlayer: { th: 'ลบผู้เล่น', en: 'Delete player' },
+  clearPlayers: { th: 'ล้างผู้เล่น', en: 'Clear players' },
+  clearPlayersConfirm: {
+    th: 'ลบผู้เล่นทั้งหมด {n} คน พร้อมตารางที่จัดไว้? กู้คืนไม่ได้',
+    en: 'Delete all {n} players and the schedule with them? This cannot be undone.',
+  },
+  rename: { th: 'เปลี่ยนชื่อ', en: 'Rename' },
+  rosters: { th: 'ก๊วนที่บันทึกไว้', en: 'Saved groups' },
+  rosterOpen: { th: 'ก๊วนที่บันทึก', en: 'Saved groups' },
+  rosterSaveCurrent: { th: 'บันทึกรายชื่อชุดนี้', en: 'Save this line-up' },
+  rosterNamePh: { th: 'เช่น ก๊วนวันอังคาร', en: 'e.g. Tuesday regulars' },
+  rosterSaveHint: {
+    th: 'จะเก็บชื่อ ระดับมือ และเพศ ของ {n} คนที่มีอยู่ตอนนี้',
+    en: 'Stores the name, level and gender of the {n} players you have now',
+  },
+  rosterSaveEmpty: { th: 'ยังไม่มีผู้เล่นให้บันทึก', en: 'No players to save yet' },
+  rosterSaved: { th: 'บันทึกก๊วนแล้ว', en: 'Group saved' },
+  rosterNone: { th: 'ยังไม่มีก๊วนที่บันทึกไว้', en: 'No saved groups yet' },
+  rosterNoneHint: {
+    th: 'บันทึกไว้ครั้งเดียว ครั้งหน้าก็กดเรียกกลับมาได้เลย',
+    en: 'Save once and pull the same line-up back next week',
+  },
+  rosterLoad: { th: 'ใช้ก๊วนนี้', en: 'Use this' },
+  rosterAppend: { th: 'เพิ่มเข้าไป', en: 'Add to current' },
+  rosterLoaded: { th: 'เรียกก๊วนกลับมาแล้ว', en: 'Group loaded' },
+  rosterAppended: { th: 'เพิ่มคนที่ยังไม่มีเข้าไปแล้ว', en: 'Added the missing names' },
+  rosterLoadConfirm: {
+    th: 'แทนที่รายชื่อปัจจุบันด้วย "{name}"? ตารางที่จัดไว้จะถูกล้างด้วย',
+    en: 'Replace the current line-up with "{name}"? The schedule is cleared too.',
+  },
+  rosterDeleteConfirm: {
+    th: 'ลบก๊วน "{name}" ที่บันทึกไว้?',
+    en: 'Delete the saved group "{name}"?',
+  },
+  markAllPresent: { th: 'ให้ทุกคนมาแล้ว', en: 'Mark all here' },
+  sortBy: { th: 'เรียงตาม', en: 'Sort by' },
+  sortName: { th: 'ชื่อ', en: 'Name' },
+  sortLevel: { th: 'ฝีมือ', en: 'Level' },
+  sortGames: { th: 'จำนวนเกม', en: 'Games' },
+  sortAdded: { th: 'ลำดับที่เพิ่ม', en: 'Added' },
+
+  // courts
+  courts: { th: 'คอร์ท', en: 'Courts' },
+  addCourt: { th: 'เพิ่มคอร์ท', en: 'Add court' },
+  courtName: { th: 'ชื่อคอร์ท', en: 'Court name' },
+  courtLabel: { th: 'คอร์ท', en: 'Court' },
+  singles: { th: 'ตีเดี่ยว', en: 'Singles' },
+  doubles: { th: 'ตีคู่', en: 'Doubles' },
+  courtOn: { th: 'เปิดใช้', en: 'Open' },
+  courtOff: { th: 'ปิด', en: 'Closed' },
+  capacity: { th: 'รองรับ', en: 'Capacity' },
+  playersUnit: { th: 'คน', en: 'players' },
+  perRound: { th: 'ต่อรอบ', en: 'per round' },
+  noCourts: { th: 'ยังไม่มีคอร์ท', en: 'No courts yet' },
+
+  // play
+  round: { th: 'รอบที่', en: 'Round' },
+  mode: { th: 'รูปแบบการจับคู่', en: 'Matching mode' },
+  modeBalanced: { th: 'ยุติธรรม', en: 'Balanced' },
+  modeBalancedDesc: {
+    th: 'ถ่วงน้ำหนักฝีมือ จำนวนเกม ความหลากหลายของคู่ และเพศ',
+    en: 'Weighs skill, games played, partner variety and gender',
+  },
+  modeRotation: { th: 'หมุนเวียน', en: 'Rotation' },
+  modeRotationDesc: {
+    th: 'เรียงคิวตายตัว ใครรอนานสุด/เล่นน้อยสุดได้ลงก่อน',
+    en: 'Strict queue — longest wait and fewest games go first',
+  },
+  modeRandom: { th: 'สุ่ม', en: 'Random' },
+  modeRandomDesc: {
+    th: 'สุ่มล้วน ไม่คิดอะไรทั้งนั้น',
+    en: 'Pure random, no balancing',
+  },
+  modeManual: { th: 'เลือกเอง', en: 'Manual' },
+  modeManualDesc: {
+    th: 'แตะช่องว่างเพื่อเลือกคนลงคอร์ทเอง',
+    en: 'Tap an empty slot to place players yourself',
+  },
+  newManualRound: { th: 'สร้างรอบว่าง', en: 'New empty round' },
+  autoFill: { th: 'เติมช่องที่เหลือ', en: 'Auto-fill rest' },
+  bench: { th: 'พักรอบนี้', en: 'Sitting out' },
+  awayList: { th: 'ยังไม่มา', en: 'Away' },
+  vs: { th: 'พบ', en: 'vs' },
+  finishGame: { th: 'จบเกม', en: 'Finish' },
+  reopen: { th: 'แก้ไขผล', en: 'Reopen' },
+  score: { th: 'สกอร์', en: 'Score' },
+  scoreOptional: { th: 'ใส่สกอร์ก็ได้ ไม่ใส่ก็ได้', en: 'Score is optional' },
+  deleteRound: { th: 'ลบรอบนี้', en: 'Delete round' },
+  deleteRoundConfirm: {
+    th: 'ลบรอบนี้? สถิติจะถูกคำนวณใหม่',
+    en: 'Delete this round? Stats will be recalculated.',
+  },
+  emptySlot: { th: 'ว่าง', en: 'Empty' },
+  tapToSwap: {
+    th: 'แตะชื่อ 2 คนเพื่อสลับตัว',
+    en: 'Tap two names to swap them',
+  },
+  swapHint: { th: 'เลือกอีกคนเพื่อสลับ', en: 'Pick someone to swap with' },
+  noRounds: { th: 'ยังไม่ได้เริ่มแข่ง', en: 'No rounds yet' },
+  noRoundsHint: {
+    th: 'กดปุ่มด้านล่างเพื่อให้ระบบจัดคนลงคอร์ทให้',
+    en: 'Hit the button below and the app will fill the courts',
+  },
+  errNoCourts: {
+    th: 'ยังไม่ได้เปิดคอร์ท ไปเพิ่มที่แท็บคอร์ทก่อน',
+    en: 'No open courts — add one first',
+  },
+  errNotEnough: {
+    th: 'ต้องมีผู้เล่นพร้อมเล่นอย่างน้อย 2 คน',
+    en: 'Need at least 2 available players',
+  },
+  queueNext: { th: 'คิวถัดไป', en: 'Up next' },
+  quality: { th: 'คุณภาพรอบนี้', en: 'Round quality' },
+  qRepeatPartner: { th: 'คู่ซ้ำ', en: 'repeat partners' },
+  qRepeatOpp: { th: 'คู่แข่งซ้ำ', en: 'repeat opponents' },
+  qGap: { th: 'ต่างฝีมือสูงสุด', en: 'max level gap' },
+  clearRounds: { th: 'ล้างตารางทั้งหมด', en: 'Clear all rounds' },
+  viewCards: { th: 'การ์ด', en: 'Cards' },
+  viewTable: { th: 'ตารางรวม', en: 'Schedule' },
+  tableHint: {
+    th: 'เลื่อนซ้าย-ขวาเพื่อดูคอร์ทอื่น',
+    en: 'Swipe sideways for the other courts',
+  },
+  roundsLabel: { th: 'รอบ', en: 'Rounds' },
+  addRounds: { th: 'เพิ่มรอบ', en: 'Add round' },
+  addRoundsN: { th: 'เพิ่ม {n} รอบ', en: 'Add {n} rounds' },
+  regenerate: { th: 'จัดใหม่', en: 'Reshuffle' },
+  regenerateConfirm: {
+    th: 'ล้างตารางเดิม {old} รอบ แล้วจัดใหม่ {n} รอบ? สกอร์ที่บันทึกไว้จะหายไป',
+    en: 'Clear the current {old} rounds and build {n} fresh ones? Recorded scores are lost.',
+  },
+  startRounds: { th: 'เริ่มจัด {n} รอบ', en: 'Start {n} rounds' },
+  customCount: { th: 'กำหนดเอง', en: 'Custom' },
+  howManyRounds: { th: 'จะเล่นกี่รอบ?', en: 'How many rounds?' },
+  customRounds: { th: 'กำหนดเอง (1-100)', en: 'Custom (1-100)' },
+  generating: { th: 'กำลังจัด…', en: 'Working…' },
+  share: { th: 'แชร์', en: 'Share' },
+  shareTitle: { th: 'แชร์ตารางแข่ง', en: 'Share the schedule' },
+  shareMode: { th: 'ให้คนรับทำอะไรได้บ้าง', en: 'What the recipient can do' },
+  shareModeView: { th: 'ดูอย่างเดียว', en: 'View only' },
+  shareModeEdit: { th: 'รับไปแก้ต่อ', en: 'Take a copy' },
+  shareModeViewHint: {
+    th: 'เปิดดูตารางได้ เซฟรูปได้ แต่แก้อะไรไม่ได้',
+    en: 'They can read the schedule and save the image, but not change anything.',
+  },
+  shareModeEditHint: {
+    th: 'ผู้รับกดรับตารางไปไว้ในเครื่องตัวเองแล้วแก้ต่อได้ — แต่สิ่งที่เขาแก้จะไม่ส่งกลับมาหาคุณ ถ้าอยากให้เห็นตรงกันสองทางต้องมีเซิร์ฟเวอร์',
+    en: 'They can adopt the schedule onto their own device and edit it — but their changes never come back to you. Two-way sync would need a server.',
+  },
+  copyLink: { th: 'คัดลอกลิงก์', en: 'Copy link' },
+  copied: { th: 'คัดลอกแล้ว', en: 'Copied' },
+  copyFailed: { th: 'คัดลอกไม่สำเร็จ', en: 'Could not copy' },
+  shareVia: { th: 'แชร์…', en: 'Share…' },
+  charsUnit: { th: 'ตัวอักษร', en: 'characters' },
+  shareLinkLong: {
+    th: 'ลิงก์ค่อนข้างยาว บางแอปอาจตัด ลองแชร์เป็นรูปแทน',
+    en: 'Quite a long link — some apps truncate. The image export may travel better.',
+  },
+  shareLinkNote: {
+    th: 'ลิงก์พกตารางไปทั้งก้อนในตัว ไม่ได้เก็บอะไรไว้บนเซิร์ฟเวอร์ ใช้งานได้แม้คุณปิดแอป — แต่ใครที่มีลิงก์ก็เห็นรายชื่อทั้งหมด',
+    en: 'The link carries the whole schedule inside it. Nothing is stored on a server and it keeps working after you close the app — but anyone holding the link can read every name.',
+  },
+  shareEmpty: { th: 'ยังไม่มีตารางให้แชร์', en: 'No schedule to share yet' },
+  sharedView: { th: 'ตารางที่แชร์มา', en: 'Shared schedule' },
+  sharedViewHint: { th: 'ดูอย่างเดียว', en: 'Read only' },
+  sharedEditHint: {
+    th: 'รับไปแก้ต่อในเครื่องนี้ได้',
+    en: 'You can take a copy onto this device',
+  },
+  adopt: { th: 'รับมาแก้ต่อ', en: 'Take a copy' },
+  saveAsMine: { th: 'บันทึกเป็นของฉัน', en: 'Save as mine' },
+  adoptConfirm: {
+    th: 'ทับผู้เล่นและตารางเดิมในเครื่องนี้ด้วยตารางที่แชร์มา? ของเดิมจะหาย',
+    en: 'Replace the players and schedule on this device with the shared one? The current data is lost.',
+  },
+  exitShare: { th: 'กลับไปข้อมูลของฉัน', en: 'Back to my data' },
+  shareBroken: {
+    th: 'ลิงก์เสียหรือไม่ครบ อาจถูกแอปแชทตัดตอนส่ง',
+    en: 'That link is broken or incomplete — a chat app may have truncated it.',
+  },
+  archived: { th: 'รอบที่จบแล้ว', en: 'Completed' },
+  matchesDone: { th: 'จบแล้ว {a}/{b}', en: '{a}/{b} done' },
+  exportImage: { th: 'บันทึกเป็นรูป', en: 'Save as image' },
+  shareImage: { th: 'แชร์รูป', en: 'Share image' },
+  exporting: { th: 'กำลังสร้างรูป…', en: 'Rendering…' },
+  exportDone: { th: 'บันทึกรูปแล้ว', en: 'Image saved' },
+  exportFailed: { th: 'สร้างรูปไม่สำเร็จ', en: 'Could not create the image' },
+  imageTitle: { th: 'ตารางแข่งแบดมินตัน', en: 'Badminton schedule' },
+  showLevels: { th: 'แสดงมือ', en: 'Levels' },
+  clearRoundsConfirm: {
+    th: 'ล้างทุกรอบที่จัดไว้? ผู้เล่นและคอร์ทจะยังอยู่',
+    en: 'Clear every round? Players and courts stay.',
+  },
+
+  // stats
+  games: { th: 'เกม', en: 'Games' },
+  wins: { th: 'ชนะ', en: 'W' },
+  losses: { th: 'แพ้', en: 'L' },
+  winRate: { th: 'อัตราชนะ', en: 'Win %' },
+  pointDiff: { th: 'แต้มได้-เสีย', en: 'Point diff' },
+  restedFor: { th: 'พักมา', en: 'Rested' },
+  roundsUnit: { th: 'รอบ', en: 'rounds' },
+  uniquePartners: { th: 'คู่ที่ต่างกัน', en: 'Unique partners' },
+  noStats: {
+    th: 'ยังไม่มีสถิติ เริ่มแข่งก่อน',
+    en: 'No stats yet — play a round',
+  },
+  statsSummary: { th: 'ภาพรวม', en: 'Overview' },
+  totalRounds: { th: 'รอบทั้งหมด', en: 'Rounds' },
+  totalMatches: { th: 'แมตช์ทั้งหมด', en: 'Matches' },
+  fairness: { th: 'ความสม่ำเสมอของจำนวนเกม', en: 'Game count spread' },
+  fairnessHint: {
+    th: 'ยิ่งช่วงห่างน้อย ยิ่งแบ่งกันเล่นได้ทั่วถึง',
+    en: 'A smaller spread means everyone got a fair share',
+  },
+  partnerMatrix: { th: 'เคยจับคู่กับ', en: 'Partnered with' },
+
+  // settings
+  language: { th: 'ภาษา', en: 'Language' },
+  theme: { th: 'ธีม', en: 'Theme' },
+  themeLight: { th: 'สว่าง', en: 'Light' },
+  themeDark: { th: 'มืด', en: 'Dark' },
+  weightsTitle: { th: 'น้ำหนักการจับคู่', en: 'Matching weights' },
+  weightsHint: {
+    th: 'ปรับว่าอยากให้ระบบให้ความสำคัญกับเรื่องไหนมากกว่ากัน (ใช้กับโหมดยุติธรรม)',
+    en: 'Tune what the balanced mode cares about most',
+  },
+  wSelection: { th: 'การเลือกคนลงคอร์ท', en: 'Choosing who plays' },
+  wArrangement: { th: 'การจัดทีม', en: 'Arranging the teams' },
+  wFewGames: {
+    th: 'ให้คนที่เล่นน้อยได้ลงก่อน',
+    en: 'Prefer players with fewer games',
+  },
+  wWaiting: {
+    th: 'ให้คนที่รอนานได้ลงก่อน',
+    en: 'Prefer players waiting longest',
+  },
+  wStamina: {
+    th: 'กันไม่ให้เล่นติดกันหลายรอบ',
+    en: 'Avoid back-to-back rounds',
+  },
+  wLevelBalance: {
+    th: 'สองฝั่งฝีมือใกล้เคียงกัน',
+    en: 'Even skill on both sides',
+  },
+  wLevelSpread: {
+    th: 'ไม่ให้ฝีมือต่างกันมากในคอร์ทเดียว',
+    en: 'Avoid big skill gaps in a court',
+  },
+  wPartnerVariety: { th: 'เปลี่ยนคู่ให้หลากหลาย', en: 'Vary partners' },
+  wOpponentVariety: { th: 'เปลี่ยนคู่แข่งให้หลากหลาย', en: 'Vary opponents' },
+  wGender: { th: 'จัดตามเพศ', en: 'Gender preference' },
+  staminaTitle: { th: 'สตามินา', en: 'Stamina' },
+  maxConsecutive: { th: 'เล่นติดกันได้ไม่เกิน', en: 'Max rounds in a row' },
+  enforceStamina: {
+    th: 'บังคับให้พักเมื่อครบ',
+    en: 'Force a rest when reached',
+  },
+  enforceStaminaHint: {
+    th: 'ถ้าคนไม่พอจะข้ามกฎนี้ให้อัตโนมัติ',
+    en: 'Skipped automatically when there are too few players',
+  },
+  genderMode: { th: 'โหมดเพศ', en: 'Gender mode' },
+  genderOff: { th: 'ไม่สนใจ', en: 'Ignore' },
+  genderMixed: { th: 'คู่ผสม', en: 'Mixed' },
+  genderSame: { th: 'ชายคู่ / หญิงคู่', en: 'Same gender' },
+  allowDowngrade: { th: 'คนไม่พอ ให้ตีเดี่ยวแทน', en: 'Fall back to singles' },
+  allowDowngradeHint: {
+    th: 'ถ้าเหลือคนไม่พอตีคู่ จะเปลี่ยนคอร์ทนั้นเป็นตีเดี่ยว',
+    en: 'Runs a doubles court as singles when only two are left',
+  },
+  effort: { th: 'ความละเอียดในการคำนวณ', en: 'Search effort' },
+  effortFast: { th: 'เร็ว', en: 'Fast' },
+  effortNormal: { th: 'ปกติ', en: 'Normal' },
+  effortThorough: { th: 'ละเอียด', en: 'Thorough' },
+  dataTitle: { th: 'ข้อมูล', en: 'Data' },
+  dataHint: {
+    th: 'ข้อมูลทั้งหมดเก็บในเครื่องคุณเอง (localStorage) ไม่ได้ส่งขึ้นเซิร์ฟเวอร์',
+    en: 'Everything is stored in this browser only — nothing leaves your device',
+  },
+  exportData: { th: 'ดาวน์โหลดไฟล์สำรอง', en: 'Export backup' },
+  importData: { th: 'นำเข้าไฟล์สำรอง', en: 'Import backup' },
+  resetAll: { th: 'ล้างข้อมูลทั้งหมด', en: 'Erase everything' },
+  resetAllConfirm: {
+    th: 'ล้างผู้เล่น คอร์ท และทุกรอบทิ้งทั้งหมด? กู้คืนไม่ได้',
+    en: 'Erase players, courts and every round? This cannot be undone.',
+  },
+  importFailed: { th: 'ไฟล์ไม่ถูกต้อง', en: 'Invalid file' },
+  importDone: { th: 'นำเข้าเรียบร้อย', en: 'Imported' },
+  restoreDefaults: { th: 'คืนค่าเริ่มต้น', en: 'Restore defaults' },
+  about: { th: 'เกี่ยวกับ', en: 'About' },
+}
+
+export function makeT(lang) {
+  const l = LANGS.includes(lang) ? lang : 'th'
+  return (key, vars) => {
+    const entry = dict[key]
+    let text = entry ? (entry[l] ?? entry.th) : key
+    if (vars) {
+      for (const [k, v] of Object.entries(vars)) text = text.replaceAll(`{${k}}`, v)
+    }
+    return text
+  }
+}

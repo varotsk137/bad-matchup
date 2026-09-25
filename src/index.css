@@ -1,0 +1,144 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Palette.
+ *
+ * The neutral ramp deliberately overrides Tailwind's `slate` rather than
+ * introducing a parallel token set: every component already reaches for
+ * slate-*, so re-pointing the scale re-skins the whole app in one place.
+ *
+ *   light — warm ivory paper, nothing is pure #fff, so it stays easy on the
+ *           eyes under the fluorescent lights of a badminton hall
+ *   dark  — deep navy page with deep green cards, so the two surfaces read as
+ *           distinct layers instead of one flat black
+ */
+@theme {
+  --font-sans:
+    'Noto Sans Thai', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    sans-serif;
+
+  /* neutrals — warm at the light end, navy/green at the dark end.
+     Nothing in light mode goes near #fff: the page is a deep sand and cards
+     sit one soft step above it, so a phone held under hall lighting is not
+     a slab of white. */
+  --color-slate-50: oklch(0.952 0.014 92); /* card surface (cream, never #fff) */
+  --color-slate-100: oklch(0.915 0.019 91); /* page background (ขาวงาช้างเข้ม) */
+  --color-slate-200: oklch(0.858 0.021 91); /* hairlines */
+  --color-slate-300: oklch(0.782 0.020 92);
+  --color-slate-400: oklch(0.668 0.017 110);
+  --color-slate-500: oklch(0.552 0.018 140);
+  --color-slate-600: oklch(0.45 0.02 155);
+  --color-slate-700: oklch(0.354 0.023 168);
+  --color-slate-800: oklch(0.278 0.03 175); /* dark: raised surface, green */
+  --color-slate-900: oklch(0.223 0.034 172); /* dark: card, deep green */
+  --color-slate-950: oklch(0.163 0.035 252); /* dark: page, deep navy */
+
+  /* main — green */
+  --color-brand-50: oklch(0.975 0.018 158);
+  --color-brand-100: oklch(0.935 0.048 158); /* secondary light green */
+  --color-brand-200: oklch(0.882 0.078 157);
+  --color-brand-300: oklch(0.802 0.108 156);
+  --color-brand-400: oklch(0.716 0.138 155);
+  --color-brand-500: oklch(0.636 0.148 154);
+  --color-brand-600: oklch(0.546 0.136 154); /* primary actions */
+  --color-brand-700: oklch(0.456 0.112 154);
+  --color-brand-800: oklch(0.368 0.088 156);
+  --color-brand-900: oklch(0.302 0.068 160);
+  --color-brand-950: oklch(0.212 0.05 165);
+
+  /* Header and bottom nav. A band that sits *below* the page tone rather than
+     above it — the old near-white chrome was the brightest thing on screen and
+     it framed every view top and bottom. The sage tint ties it to the brand. */
+  --color-chrome: oklch(0.874 0.028 126);
+  --color-chrome-edge: oklch(0.806 0.032 128);
+  --color-chrome-dark: oklch(0.196 0.034 232);
+
+  /* สีตัด — orange, used where green would disappear into itself */
+  --color-accent-50: oklch(0.975 0.018 70);
+  --color-accent-100: oklch(0.941 0.048 70);
+  --color-accent-200: oklch(0.886 0.082 68);
+  --color-accent-300: oklch(0.822 0.118 65);
+  --color-accent-400: oklch(0.762 0.148 60);
+  --color-accent-500: oklch(0.706 0.168 55);
+  --color-accent-600: oklch(0.636 0.166 50);
+  --color-accent-700: oklch(0.526 0.138 48);
+  --color-accent-800: oklch(0.432 0.108 48);
+  --color-accent-900: oklch(0.356 0.084 50);
+  --color-accent-950: oklch(0.242 0.058 50);
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+  .dark {
+    color-scheme: dark;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-slate-100 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100;
+    font-family: var(--font-sans);
+    /* stop iOS rubber-band from revealing the wrong colour behind the app */
+    overscroll-behavior-y: none;
+  }
+
+  /* number inputs: no spinners, they are tiny score boxes */
+  input[type='number']::-webkit-outer-spin-button,
+  input[type='number']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
+
+  button {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+}
+
+@layer utilities {
+  .safe-b {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.animate-pop {
+  animation: pop-in 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+.animate-sheet {
+  animation: sheet-up 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
