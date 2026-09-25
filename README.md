@@ -1,5 +1,7 @@
 # 🏸 Bad Matchup · จับคู่ตีแบด
 
+**เปิดใช้งานได้เลยที่ → https://varotsk137.github.io/bad-matchup/**
+
 แอปจัดคิวลงคอร์ทแบดมินตัน สำหรับก๊วนที่นัดตีกันแล้วต้องคอยจดว่าใครลงรอบไหน
 ทำงานในเบราว์เซอร์ล้วน **ไม่มี backend ไม่มี database** — ข้อมูลทั้งหมดเก็บใน `localStorage` ของเครื่องตัวเอง
 
@@ -75,10 +77,26 @@ npm run build
 | --- | --- |
 | **Vercel** | import repo → framework preset `Vite` → deploy (ค่า default ถูกหมด) |
 | **Netlify** | build command `npm run build`, publish directory `dist` |
-| **GitHub Pages** | `npm run build` แล้ว push โฟลเดอร์ `dist/` ขึ้น branch `gh-pages` |
+| **GitHub Pages** | ตั้งไว้แล้ว — push ขึ้น `main` แล้ว `.github/workflows/deploy.yml` build และ deploy ให้เอง |
 | **Cloudflare Pages** | build command `npm run build`, output directory `dist` |
 
 ไม่ต้องตั้ง environment variable หรือ rewrite rule ใด ๆ เพราะเป็นหน้าเดียวไม่มี routing
+
+### GitHub Pages
+
+repo นี้ deploy อัตโนมัติอยู่แล้ว ทุกครั้งที่ push ขึ้น `main`
+
+```bash
+git push
+```
+
+Pages ตั้ง source เป็น **GitHub Actions** ไว้ (ไม่ใช่ branch `gh-pages`) ถ้าจะ fork ไปใช้เอง
+ต้องไปเปิดที่ Settings → Pages → Source: GitHub Actions ก่อนหนึ่งครั้ง — `GITHUB_TOKEN`
+เปิดให้เองไม่ได้ (ได้ `Resource not accessible by integration`)
+
+เว็บอยู่ใต้ sub-path `/bad-matchup/` ซึ่งปกติเป็นจุดที่ asset พัง แต่ `vite.config.js`
+ตั้ง `base: './'` ไว้ asset เลยออกมาเป็น `./assets/...` ใช้ได้ทุก path และลิงก์แชร์
+ก็พก sub-path ติดไปด้วยถูกต้อง
 
 ---
 
