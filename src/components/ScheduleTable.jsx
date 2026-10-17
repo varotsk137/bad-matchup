@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { renderSchedulePng } from '../lib/exportImage'
 import ImageSheet from './ImageSheet'
 import { levelMeta } from './PlayerBits'
@@ -9,8 +9,17 @@ import { Card, cx } from './ui'
  * Deliberately dense — this is the "what's the plan" view, the card list is
  * the "what's happening right now" view.
  */
-export default function ScheduleTable({ rounds, courts, playersById, t, setToast }) {
+export default function ScheduleTable({
+  rounds,
+  courts,
+  playersById,
+  t,
+  setToast,
+  staminaLimit = 2,
+}) {
   const [showLevels, setShowLevels] = useState(false)
+  // a checking aid, so it stays off the everyday view and out of the image
+  const [showStamina, setShowStamina] = useState(false)
   const [busy, setBusy] = useState(false)
   const [png, setPng] = useState(null)
 
@@ -31,6 +40,29 @@ export default function ScheduleTable({ rounds, courts, playersById, t, setToast
     }
   }
 
+  // per round, per player: how many rounds in a row they have played (or sat
+  // out) up to and including that round — the same counter the stamina rule uses
+  const stamina = useMemo(() => {
+    const play = new Map()
+    const rest = new Map()
+    return rounds.map((round) => {
+      const on = new Set(round.matches.flatMap((m) => [...m.teamA, ...m.teamB]).filter(Boolean))
+      const ids = new Set([...on, ...round.benched, ...play.keys(), ...rest.keys()])
+      const row = new Map()
+      for (const id of ids) {
+        if (on.has(id)) {
+          play.set(id, (play.get(id) || 0) + 1)
+          rest.set(id, 0)
+        } else {
+          rest.set(id, (rest.get(id) || 0) + 1)
+          play.set(id, 0)
+        }
+        row.set(id, { play: play.get(id), rest: rest.get(id) })
+      }
+      return row
+    })
+  }, [rounds])
+
   const benchNames = (round) =>
     round.benched
       .map((id) => playersById.get(id)?.name)
@@ -39,8 +71,36 @@ export default function ScheduleTable({ rounds, courts, playersById, t, setToast
 
   const hasBench = rounds.some((r) => r.benched.length)
 
+  const PlayBadge = ({ n }) => (
+    <span
+      className={cx(
+        'ml-0.5 rounded px-0.5 text-[10px] font-bold tabular-nums',
+        n > staminaLimit
+          ? 'bg-rose-600 text-white'
+          : n === staminaLimit
+            ? 'bg-accent-100 text-accent-800 dark:bg-accent-950 dark:text-accent-300'
+            : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
+      )}
+    >
+      {n}/{staminaLimit}
+    </span>
+  )
+
+  const RestBadge = ({ n }) => (
+    <span
+      className={cx(
+        'ml-0.5 rounded px-0.5 text-[10px] font-bold tabular-nums',
+        n >= 3
+          ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
+          : 'bg-brand-100 text-brand-800 dark:bg-brand-950 dark:text-brand-300'
+      )}
+    >
+      💤{n}
+    </span>
+  )
+
   /** One side of a net on a single line: "สมชาย + หมู" */
-  const Side = ({ ids, tone }) => (
+  const Side = ({ ids, tone, ri }) => (
     <span
       className={cx(
         'block truncate text-[13px] leading-5 font-semibold',
@@ -58,6 +118,7 @@ export default function ScheduleTable({ rounds, courts, playersById, t, setToast
                 {levelMeta(p.level).code}
               </span>
             )}
+            {p && showStamina && <PlayBadge n={stamina[ri].get(id)?.play ?? 1} />}
           </span>
         )
       })}
@@ -105,6 +166,17 @@ export default function ScheduleTable({ rounds, courts, playersById, t, setToast
         >
           {t('showLevels')}
         </button>
+        <button
+          onClick={() => setShowStamina((v) => !v)}
+          className={cx(
+            'rounded-lg px-2.5 py-1 text-xs font-medium transition',
+            showStamina
+              ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
+              : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+          )}
+        >
+          {t('showStamina')}
+        </button>
         <span className="ml-auto text-[11px] text-slate-400 dark:text-slate-500">
           {t('tableHint')}
         </span>
@@ -131,6 +203,11 @@ export default function ScheduleTable({ rounds, courts, playersById, t, setToast
         </button>
       </div>
 
+      {showStamina && (
+        <p className="border-b border-slate-100 px-3 py-1.5 text-[11px] text-slate-500 dark:border-slate-800 dark:text-slate-400">
+          {t('staminaLegend', { a: `1/${staminaLimit}`, b: '💤1' })}
+        </p>
+      )}
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-left">
           <thead>
@@ -184,7 +261,7 @@ export default function ScheduleTable({ rounds, courts, playersById, t, setToast
                   const hasScore = typeof m.scoreA === 'number' && typeof m.scoreB === 'number'
                   return (
                     <td key={c.id} className="px-2 py-1.5 align-middle">
-                      <Side ids={m.teamA} tone="A" />
+                      <Side ids={m.teamA} tone="A" ri={i} />
                       <span className="flex items-center gap-1 text-[10px] leading-3 font-bold text-slate-300 dark:text-slate-600">
                         {t('vs')}
                         {hasScore && (
@@ -196,14 +273,28 @@ export default function ScheduleTable({ rounds, courts, playersById, t, setToast
                           <span className="text-brand-600 dark:text-brand-400">✓</span>
                         )}
                       </span>
-                      <Side ids={m.teamB} tone="B" />
+                      <Side ids={m.teamB} tone="B" ri={i} />
                     </td>
                   )
                 })}
 
                 {hasBench && (
                   <td className="px-2 py-1.5 align-middle text-[11px] leading-4 text-slate-400 dark:text-slate-500">
-                    {benchNames(round) || '—'}
+                    {!round.benched.length
+                      ? '—'
+                      : showStamina
+                        ? round.benched.map((id, j) => {
+                            const p = playersById.get(id)
+                            if (!p) return null
+                            return (
+                              <span key={id} className="whitespace-nowrap">
+                                {j > 0 && ', '}
+                                {p.name}
+                                <RestBadge n={stamina[i].get(id)?.rest ?? 1} />
+                              </span>
+                            )
+                          })
+                        : benchNames(round) || '—'}
                   </td>
                 )}
               </tr>

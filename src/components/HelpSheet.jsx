@@ -1,3 +1,6 @@
+import { useState } from 'react'
+import HelpInsight from './HelpInsight'
+import { REST } from './helpData'
 import { Sheet, cx } from './ui'
 
 /**
@@ -43,12 +46,16 @@ export default function HelpSheet({ open, onClose, t }) {
           <ManualArt t={t} />
         </Section>
 
+        <HelpInsight t={t} />
+
         <div className="rounded-2xl border border-slate-200 p-3 dark:border-slate-800">
           <h4 className="mb-1.5 text-sm font-semibold">💡 {t('helpTipsTitle')}</h4>
           <ul className="list-disc space-y-1 pl-5 text-xs text-slate-600 dark:text-slate-300">
             <li>{t('helpTip1')}</li>
             <li>{t('helpTip2')}</li>
             <li>{t('helpTip3')}</li>
+            <li>{t('helpTip4')}</li>
+            <li>{t('helpTip5')}</li>
           </ul>
         </div>
       </div>
@@ -252,5 +259,192 @@ function ManualArt({ t }) {
       <Arrow />
       <Court a={['A', 'E']} b={['C', 'G']} ringed={['E', 'G']} />
     </div>
+  )
+}
+
+/* ------------------------------------------------- rest-mode explainer */
+
+const EXAMPLE_LIMIT = 2
+const cap = (s) => s[0].toUpperCase() + s.slice(1)
+
+/**
+ * Walks an example schedule once: for every round, each player's streak
+ * (rounds in a row so far, 0 = resting) — the number the colours are about.
+ */
+function withStreaks(rounds) {
+  const streak = {}
+  return rounds.map(([c1, c2, bench]) => {
+    const on = (c1 + c2).replace(/-/g, '')
+    for (const id of 'ABCDEFGHI') streak[id] = on.includes(id) ? (streak[id] || 0) + 1 : 0
+    return { courts: [c1, c2], bench, streak: { ...streak } }
+  })
+}
+
+/** Headline numbers for one mode's example. */
+function summarise(rounds) {
+  const games = {}
+  let longest = 0
+  let over = 0
+  for (const r of rounds)
+    for (const [id, n] of Object.entries(r.streak)) {
+      if (n) games[id] = (games[id] || 0) + 1
+      longest = Math.max(longest, n)
+      if (n > EXAMPLE_LIMIT) over++
+    }
+  const range = (v) =>
+    Math.min(...v) === Math.max(...v) ? `${v[0]}` : `${Math.min(...v)}–${Math.max(...v)}`
+  return {
+    games: range(Object.values(games)),
+    longest,
+    over,
+    resting: range(rounds.map((r) => r.bench.length)),
+  }
+}
+
+function Fact({ label, value, bad }) {
+  return (
+    <div className="rounded-lg bg-slate-100 px-2 py-1.5 text-center dark:bg-slate-950/60">
+      <p
+        className={cx(
+          'text-sm font-bold tabular-nums',
+          bad && 'text-rose-600 dark:text-rose-400'
+        )}
+      >
+        {value}
+      </p>
+      <p className="text-[10px] leading-tight text-slate-500 dark:text-slate-400">{label}</p>
+    </div>
+  )
+}
+
+/** A player letter coloured by how many rounds in a row they have played. */
+function Who({ id, n }) {
+  return (
+    <span
+      className={cx(
+        'inline-grid h-5 w-5 place-items-center rounded text-[11px] font-bold',
+        n > EXAMPLE_LIMIT
+          ? 'bg-rose-600 text-white'
+          : n === EXAMPLE_LIMIT
+            ? 'bg-accent-100 text-accent-800 dark:bg-accent-950 dark:text-accent-300'
+            : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200'
+      )}
+    >
+      {id}
+    </span>
+  )
+}
+
+function CourtCell({ court, streak, t }) {
+  if (!court)
+    return (
+      <span className="block rounded border border-dashed border-slate-300 py-0.5 text-center text-[10px] text-slate-400 dark:border-slate-700">
+        {t('restHelpIdle')}
+      </span>
+    )
+  const [a, b] = court.split('-')
+  return (
+    <span className="flex items-center gap-0.5">
+      {[...a].map((id) => (
+        <Who key={id} id={id} n={streak[id]} />
+      ))}
+      <span className="px-0.5 text-[9px] text-slate-400">vs</span>
+      {[...b].map((id) => (
+        <Who key={id} id={id} n={streak[id]} />
+      ))}
+      {a.length === 1 && (
+        <span className="ml-0.5 text-[9px] text-slate-500 dark:text-slate-400">
+          {t('restHelpSingles')}
+        </span>
+      )}
+    </span>
+  )
+}
+
+/** The "?" next to the rest-mode picker in Settings. */
+export function RestModeHelp({ open, onClose, t }) {
+  const [mode, setMode] = useState('flex')
+  const rounds = withStreaks(REST[mode])
+  const sum = summarise(rounds)
+  return (
+    <Sheet open={open} onClose={onClose} title={t('restMode')}>
+      <div className="space-y-3">
+        <p className="text-sm text-slate-600 dark:text-slate-300">{t('restHelpIntro')}</p>
+        <div className="grid grid-cols-3 gap-1 rounded-xl bg-slate-200/70 p-1 dark:bg-slate-800">
+          {['fill', 'flex', 'strict'].map((m) => (
+            <button
+              key={m}
+              onClick={() => setMode(m)}
+              className={cx(
+                'h-8 rounded-lg text-xs font-semibold transition',
+                mode === m
+                  ? 'bg-slate-50 text-slate-900 shadow-sm dark:bg-slate-950 dark:text-slate-100'
+                  : 'text-slate-500 dark:text-slate-400'
+              )}
+            >
+              {t(`rest${cap(m)}`)}
+            </button>
+          ))}
+        </div>
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          {t(`rest${cap(mode)}Hint`)}
+        </p>
+        <div className="grid grid-cols-4 gap-1.5">
+          <Fact label={t('restFactGames')} value={sum.games} />
+          <Fact
+            label={t('restFactLongest')}
+            value={sum.longest}
+            bad={sum.longest > EXAMPLE_LIMIT + 1}
+          />
+          <Fact label={t('restFactOver')} value={sum.over} bad={sum.over > 0} />
+          <Fact label={t('restFactResting')} value={sum.resting} />
+        </div>
+        <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+          <table className="w-full border-collapse text-left">
+            <thead>
+              <tr className="border-b border-slate-200 text-[10px] text-slate-500 dark:border-slate-800 dark:text-slate-400">
+                <th className="py-1 pr-1 pl-2 font-semibold">#</th>
+                <th className="px-1 py-1 font-semibold">{t('courtLabel')} 1</th>
+                <th className="px-1 py-1 font-semibold">{t('courtLabel')} 2</th>
+                <th className="py-1 pr-2 pl-1 font-semibold">{t('bench')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rounds.map((r, i) => (
+                <tr
+                  key={i}
+                  className={cx(
+                    'border-b border-slate-100 last:border-0 dark:border-slate-800/70',
+                    i % 2 === 1 && 'bg-slate-100/60 dark:bg-slate-800/20'
+                  )}
+                >
+                  <td className="py-1 pr-1 pl-2 text-[10px] font-bold text-slate-400 tabular-nums">
+                    {i + 1}
+                  </td>
+                  {r.courts.map((c, k) => (
+                    <td key={k} className="px-1 py-1">
+                      <CourtCell court={c} streak={r.streak} t={t} />
+                    </td>
+                  ))}
+                  <td className="py-1 pr-2 pl-1">
+                    <span className="flex flex-wrap gap-0.5">
+                      {[...r.bench].map((id) => (
+                        <span
+                          key={id}
+                          className="inline-grid h-5 w-5 place-items-center rounded border border-dashed border-slate-300 text-[11px] text-slate-500 dark:border-slate-600 dark:text-slate-400"
+                        >
+                          {id}
+                        </span>
+                      ))}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="text-xs text-slate-500 dark:text-slate-400">{t('restHelpLegend')}</p>
+      </div>
+    </Sheet>
   )
 }

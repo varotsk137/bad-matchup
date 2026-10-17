@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   isAvailable,
   makeContext,
@@ -8,11 +8,13 @@ import {
 } from '../lib/matchmaker'
 import MatchCard from './MatchCard'
 import ScheduleTable from './ScheduleTable'
+import { analyse } from './FairnessReport'
 import HelpSheet from './HelpSheet'
 import { LevelBadge } from './PlayerBits'
 import { Button, Card, Empty, cx } from './ui'
 
 const MAX_AHEAD = 100
+const SLOW_MS = 5000
 
 export const DEFAULT_COUNTS = { preset: 5, customCount: 3, addCount: 1 }
 
@@ -45,6 +47,9 @@ export default function PlayTab({
   const setCustomCount = (v) => setCounts((c) => ({ ...c, customCount: v }))
   const setAddCount = (v) => setCounts((c) => ({ ...c, addCount: v }))
   const [helpOpen, setHelpOpen] = useState(false)
+  // a build that runs past a few seconds earns a pointer to the knobs that
+  // make it faster
+  const [slow, setSlow] = useState(false)
   // the grid is the view people spend their time in; the cards are for
   // running the round that is happening right now
   const [view, setView] = useState('table')
@@ -57,6 +62,23 @@ export default function PlayTab({
   const [openId, setOpenId] = useState(undefined)
 
   const mode = state.options.mode
+
+  useEffect(() => {
+    if (!busy) {
+      setSlow(false)
+      return
+    }
+    const timer = setTimeout(() => setSlow(true), SLOW_MS)
+    return () => clearTimeout(timer)
+  }, [busy])
+
+  // once every pair has teamed up, say so and point at the full fairness
+  // check — quietly, it is a nice-to-know
+  const covered = useMemo(() => {
+    if (state.rounds.length < 2) return false
+    const r = analyse(state)
+    return r.ids.length >= 4 && r.neverPartnered === 0
+  }, [state])
   const capacity = totalCapacity(state.courts)
   const pool = state.players.filter(isAvailable)
   const hasRounds = state.rounds.length > 0
@@ -113,7 +135,9 @@ export default function PlayTab({
     setBusy(true)
     setProgress(total > 1 ? { done: 0, total } : null)
     try {
-      await work((done, t2) => (t2 > 1 ? setProgress({ done, total: t2 }) : null))
+      await work((done, t2, phase, attempt, attempts) =>
+        t2 > 1 ? setProgress({ done, total: t2, phase, attempt, attempts }) : null
+      )
     } finally {
       setBusy(false)
       setProgress(null)
@@ -171,9 +195,14 @@ export default function PlayTab({
   })
 
   const buttonLabel = busy
-    ? progress
-      ? `${t('generating')} ${progress.done}/${progress.total}`
-      : t('generating')
+    ? (progress?.phase === 'polish'
+        ? t('polishing')
+        : progress
+          ? `${t('generating')} ${progress.done}/${progress.total}`
+          : t('generating')) +
+      (progress?.attempts > 1
+        ? ` · ${t('attemptN', { n: progress.attempt, of: progress.attempts })}`
+        : '')
     : mode === 'manual'
       ? t('newManualRound')
       : hasRounds
@@ -272,13 +301,48 @@ export default function PlayTab({
 
           {progress && (
             <div className="h-1 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
+              {/* the polish has no fixed length (it stops once pairs are even), so
+                  it gets a pulsing full bar instead of a fake percentage */}
               <div
-                className="h-full rounded-full bg-brand-600 transition-[width] duration-150"
+                className={cx(
+                  'h-full rounded-full bg-brand-600 transition-[width] duration-150',
+                  progress.phase === 'polish' && 'animate-pulse'
+                )}
                 style={{ width: `${(progress.done / progress.total) * 100}%` }}
               />
             </div>
           )}
+
+          {busy && slow && (
+            <p className="flex flex-wrap items-center gap-x-1.5 text-xs text-slate-500 dark:text-slate-400">
+              {t('slowHint')}
+              <button
+                onClick={() => goTo('settings')}
+                className="font-semibold text-brand-700 underline-offset-2 hover:underline dark:text-brand-300"
+              >
+                {t('slowHintLink')} →
+              </button>
+            </p>
+          )}
         </Card>
+      )}
+
+      {/* ------------------------------------------------ everyone has met */}
+      {!readOnly && !busy && covered && (
+        <button
+          onClick={() => goTo('stats')}
+          className="flex w-full items-center gap-2 rounded-xl border border-brand-600/30 bg-brand-50/60 px-3 py-2 text-left text-xs dark:border-brand-500/20 dark:bg-brand-950/30"
+        >
+          <span className="text-brand-700 dark:text-brand-300" aria-hidden>
+            ✓
+          </span>
+          <span className="min-w-0 flex-1 text-slate-600 dark:text-slate-300">
+            {t('coveredHint')}
+          </span>
+          <span className="shrink-0 font-semibold text-brand-700 dark:text-brand-300">
+            {t('coveredLink')} →
+          </span>
+        </button>
       )}
 
       {/* ------------------------------------------------ queue (folded away) */}
@@ -433,6 +497,7 @@ export default function PlayTab({
               playersById={playersById}
               t={t}
               setToast={setToast}
+              staminaLimit={state.options.maxConsecutive}
             />
           ) : (
             <>

@@ -1,7 +1,7 @@
 {
   ".claude/launch.json": {
-    "mtime": 1792265933.38316,
-    "seen": 1792266303.0262623,
+    "mtime": 1792273693.2303421,
+    "seen": 1792273699.149585,
     "ast_hash": "30b3da5575cfcca2c14600c4fb988cec",
     "semantic_hash": ""
   },
@@ -30,9 +30,9 @@
     "semantic_hash": ""
   },
   "src/components/HelpSheet.jsx": {
-    "mtime": 1792263485.3171895,
-    "seen": 1792266303.0262754,
-    "ast_hash": "b70adf274c4e4f2a2d37ff7405f68c8b",
+    "mtime": 1792273006.5895166,
+    "seen": 1792273095.4172122,
+    "ast_hash": "7f43684d66a24e17f70da8e96ca20445",
     "semantic_hash": ""
   },
   "src/components/MatchCard.jsx": {
@@ -42,9 +42,9 @@
     "semantic_hash": ""
   },
   "src/components/PlayTab.jsx": {
-    "mtime": 1792265884.6019502,
-    "seen": 1792266303.0262787,
-    "ast_hash": "ef417e64c0160897becf1ca432832e4d",
+    "mtime": 1792273670.0510342,
+    "seen": 1792273699.1496036,
+    "ast_hash": "11bb26bf877d27ff851b830945bd9a14",
     "semantic_hash": ""
   },
   "src/components/PlayerBits.jsx": {
@@ -66,15 +66,15 @@
     "semantic_hash": ""
   },
   "src/components/ScheduleTable.jsx": {
-    "mtime": 1792263879.0276372,
-    "seen": 1792266303.0262837,
-    "ast_hash": "c0d977e4588cf77d3e48d9101e20fc70",
+    "mtime": 1792267629.7645354,
+    "seen": 1792267674.8786507,
+    "ast_hash": "9c9472d707f0305b4485919f9ab97bc4",
     "semantic_hash": ""
   },
   "src/components/SettingsTab.jsx": {
-    "mtime": 1789819821.1201122,
-    "seen": 1792263352.5348256,
-    "ast_hash": "7c7b9e0e50d7501212133fc3b6957392",
+    "mtime": 1792272510.5921414,
+    "seen": 1792272904.8815508,
+    "ast_hash": "df8d7a0f51a1cd66a360e2d27e42ce87",
     "semantic_hash": ""
   },
   "src/components/ShareSheet.jsx": {
@@ -84,9 +84,9 @@
     "semantic_hash": ""
   },
   "src/components/StatsTab.jsx": {
-    "mtime": 1789725990.276365,
-    "seen": 1792263352.534827,
-    "ast_hash": "fff09f5fa64d6349cbcd21e7fe1bf283",
+    "mtime": 1792272982.8687806,
+    "seen": 1792273095.4172232,
+    "ast_hash": "e911b8d16ab850080be7f629560fb899",
     "semantic_hash": ""
   },
   "src/components/ui.jsx": {
@@ -102,15 +102,15 @@
     "semantic_hash": ""
   },
   "src/lib/i18n.js": {
-    "mtime": 1792265505.2707968,
-    "seen": 1792266303.0262914,
-    "ast_hash": "cec575c8b7e4ab0b4ee9d74ca525c3c1",
+    "mtime": 1792273615.859761,
+    "seen": 1792273699.1496158,
+    "ast_hash": "5e6b02a1349d42c4abbbbcbda64a3ad4",
     "semantic_hash": ""
   },
   "src/lib/matchmaker.js": {
-    "mtime": 1792265403.3368285,
-    "seen": 1792266303.0262926,
-    "ast_hash": "e0877ad5d1bfb98afabc44decaf557a8",
+    "mtime": 1792272757.04453,
+    "seen": 1792272904.8815577,
+    "ast_hash": "59c7d0d0754ca03e978b0441cc649d9d",
     "semantic_hash": ""
   },
   "src/lib/share.js": {
@@ -150,9 +150,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792266195.7494445,
-    "seen": 1792266303.0262997,
-    "ast_hash": "683238beab427bdc9407dfef86d7062c",
+    "mtime": 1792273909.802225,
+    "seen": 1792273915.801543,
+    "ast_hash": "d8e7bd03cbf297a15864b5213a671f15",
     "semantic_hash": ""
   },
   "index.html": {
@@ -165,6 +165,24 @@
     "mtime": 1792263878.2640128,
     "seen": 1792266303.0262764,
     "ast_hash": "22829761dd285843cce320b6fd477d9b",
+    "semantic_hash": ""
+  },
+  "src/components/HelpInsight.jsx": {
+    "mtime": 1792271443.1382518,
+    "seen": 1792271478.7061338,
+    "ast_hash": "746812ee1bd05ae463c7aa2f84b1b954",
+    "semantic_hash": ""
+  },
+  "src/components/helpData.js": {
+    "mtime": 1792272136.1660516,
+    "seen": 1792272193.4160588,
+    "ast_hash": "2a3520a61136b00c05a02c1f8827e36d",
+    "semantic_hash": ""
+  },
+  "src/components/FairnessReport.jsx": {
+    "mtime": 1792273615.8582518,
+    "seen": 1792273699.1495981,
+    "ast_hash": "99f78679be07e8e54873960e98bcdd86",
     "semantic_hash": ""
   }
 }

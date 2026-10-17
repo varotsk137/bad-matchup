@@ -1,10 +1,12 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { DEFAULT_OPTIONS, DEFAULT_WEIGHTS } from '../lib/matchmaker'
 import { exportState, importState } from '../lib/storage'
+import { RestModeHelp } from './HelpSheet'
 import { Button, Card, SectionTitle, Segmented, Slider, Toggle, cx } from './ui'
 
 export default function SettingsTab({ state, t, actions, setToast }) {
   const fileRef = useRef(null)
+  const [restHelp, setRestHelp] = useState(false)
 
   const onImport = async (e) => {
     const file = e.target.files?.[0]
@@ -51,38 +53,86 @@ export default function SettingsTab({ state, t, actions, setToast }) {
       <div>
         <SectionTitle>{t('staminaTitle')}</SectionTitle>
         <Card className="divide-y divide-slate-100 px-4 dark:divide-slate-800">
-          <div className="flex items-center justify-between gap-4 py-3">
-            <span className="text-sm font-medium">{t('maxConsecutive')}</span>
-            <div className="flex items-center gap-1">
-              {[1, 2, 3, 4].map((n) => (
-                <button
-                  key={n}
-                  onClick={() => actions.setOption('maxConsecutive', n)}
-                  className={cx(
-                    'h-9 w-9 rounded-lg text-sm font-semibold tabular-nums transition',
-                    o.maxConsecutive === n
-                      ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
-                      : 'bg-slate-200/70 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
-                  )}
-                >
-                  {n}
-                </button>
-              ))}
-            </div>
-          </div>
           <Toggle
-            label={t('enforceStamina')}
-            hint={t('enforceStaminaHint')}
-            checked={o.enforceStamina}
-            onChange={(v) => actions.setOption('enforceStamina', v)}
+            label={t('useStamina')}
+            hint={t('useStaminaHint')}
+            checked={o.useStamina !== false}
+            onChange={(v) => actions.setOption('useStamina', v)}
           />
+          {o.useStamina !== false && (
+            <>
+              <div className="flex items-center justify-between gap-4 py-3">
+                <span className="text-sm font-medium">{t('maxConsecutive')}</span>
+                <div className="flex items-center gap-1">
+                  {[1, 2, 3, 4].map((n) => (
+                    <button
+                      key={n}
+                      onClick={() => actions.setOption('maxConsecutive', n)}
+                      className={cx(
+                        'h-9 w-9 rounded-lg text-sm font-semibold tabular-nums transition',
+                        o.maxConsecutive === n
+                          ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
+                          : 'bg-slate-200/70 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+                      )}
+                    >
+                      {n}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <Toggle
+                label={t('enforceStamina')}
+                hint={t('enforceStaminaHint')}
+                checked={o.enforceStamina}
+                onChange={(v) => actions.setOption('enforceStamina', v)}
+              />
+              {o.enforceStamina && (
+                <div className="py-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm font-medium">{t('restMode')}</span>
+                    <button
+                      onClick={() => setRestHelp(true)}
+                      aria-label={t('help')}
+                      title={t('help')}
+                      className="grid h-7 w-7 place-items-center rounded-lg bg-slate-200/70 text-xs font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+                    >
+                      ?
+                    </button>
+                  </div>
+                  <Segmented
+                    className="mt-2"
+                    size="sm"
+                    value={o.restMode}
+                    onChange={(v) => actions.setOption('restMode', v)}
+                    options={[
+                      { value: 'fill', label: t('restFill') },
+                      { value: 'flex', label: t('restFlex') },
+                      { value: 'strict', label: t('restStrict') },
+                    ]}
+                  />
+                  <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+                    {t(`rest${o.restMode[0].toUpperCase()}${o.restMode.slice(1)}Hint`)}
+                  </p>
+                </div>
+              )}
+            </>
+          )}
+          {/* about courts, not stamina — so they stay when stamina is off */}
           <Toggle
             label={t('allowDowngrade')}
             hint={t('allowDowngradeHint')}
             checked={o.allowDowngrade}
             onChange={(v) => actions.setOption('allowDowngrade', v)}
           />
+          <Toggle
+            label={t('fillIdleCourts')}
+            hint={t('fillIdleCourtsHint')}
+            checked={o.allowDowngrade && o.fillIdleCourts !== false}
+            disabled={!o.allowDowngrade}
+            onChange={(v) => actions.setOption('fillIdleCourts', v)}
+          />
         </Card>
+        <RestModeHelp open={restHelp} onClose={() => setRestHelp(false)} t={t} />
       </div>
 
       {/* --------------------------------------------------- gender + effort */}
@@ -109,6 +159,14 @@ export default function SettingsTab({ state, t, actions, setToast }) {
             { value: 'thorough', label: t('effortThorough') },
           ]}
         />
+        <div className="mt-3 -mx-4 border-t border-slate-100 px-4 dark:border-slate-800">
+          <Toggle
+            label={t('fairestOfThree')}
+            hint={t('fairestOfThreeHint')}
+            checked={o.fairestOfThree !== false}
+            onChange={(v) => actions.setOption('fairestOfThree', v)}
+          />
+        </div>
       </Card>
 
       {/* --------------------------------------------------- weights */}
@@ -201,14 +259,22 @@ export default function SettingsTab({ state, t, actions, setToast }) {
 
 const pickTuning = ({
   maxConsecutive,
+  useStamina,
   enforceStamina,
+  restMode,
   allowDowngrade,
+  fillIdleCourts,
+  fairestOfThree,
   genderMode,
   effort,
 }) => ({
+  useStamina,
   maxConsecutive,
   enforceStamina,
+  restMode,
   allowDowngrade,
+  fillIdleCourts,
+  fairestOfThree,
   genderMode,
   effort,
 })
