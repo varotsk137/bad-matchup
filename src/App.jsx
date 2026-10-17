@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import CourtsTab from './components/CourtsTab'
-import PlayTab from './components/PlayTab'
+import PlayTab, { DEFAULT_COUNTS } from './components/PlayTab'
 import PlayersTab from './components/PlayersTab'
 import SettingsTab from './components/SettingsTab'
 import ShareSheet from './components/ShareSheet'
@@ -144,6 +144,8 @@ export default function App() {
   const [toast, setToastState] = useState(null)
   const toastTimer = useRef(null)
   const [shareOpen, setShareOpen] = useState(false)
+  // lives here, not in PlayTab, so the round count survives a tab switch
+  const roundCounts = useState(DEFAULT_COUNTS)
   // a session that arrived through a link — held apart from the user's own data
   // so opening someone else's schedule can never clobber it
   const [shared, setShared] = useState(null)
@@ -608,6 +610,7 @@ export default function App() {
             onShare={() =>
               state.rounds.length ? setShareOpen(true) : setToast(t('shareEmpty'), 'error')
             }
+            counts={roundCounts}
           />
         )}
         {tab === 'players' && (

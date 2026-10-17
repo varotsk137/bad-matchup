@@ -69,6 +69,13 @@ function shuffle(arr) {
   return arr
 }
 
+/** Shuffles the first `n` items among themselves and leaves the rest alone. */
+function shuffleHead(arr, n) {
+  const head = shuffle(arr.slice(0, n))
+  for (let i = 0; i < head.length; i++) arr[i] = head[i]
+  return arr
+}
+
 export const courtSize = (court) => (court.type === 'singles' ? 2 : 4)
 
 export const isAvailable = (p) => p.active !== false && !p.resting
@@ -379,11 +386,17 @@ const EFFORT = {
  * Randomised restarts + hill-climbing swaps. `fixed` marks slots that must
  * keep their player (used by manual mode's "auto-fill the rest").
  */
-function optimise(freeIds, plan, ctx, w, options, fixed) {
+function optimise(freeIds, plan, ctx, w, options, fixed, selection) {
   const totalSlots = plan.reduce((s, p) => s + p.size, 0)
   const slots = fixed || new Array(totalSlots).fill(null)
   const freePositions = []
   for (let i = 0; i < totalSlots; i++) if (slots[i] == null) freePositions.push(i)
+  // Ids beyond the court slots sit in bench positions past `totalSlots`, so a
+  // swap can trade someone on court for someone on the bench. That lets the
+  // optimiser decide *who* plays together with *how* they are arranged.
+  const courtFree = freePositions.length
+  for (let i = totalSlots; i < totalSlots + freeIds.length - courtFree; i++)
+    freePositions.push(i)
 
   const build = (order) => {
     const arr = slots.slice()
@@ -392,6 +405,9 @@ function optimise(freeIds, plan, ctx, w, options, fixed) {
     })
     return arr
   }
+
+  const total = (arr) =>
+    cost(arr, plan, ctx, w, options) + (selection ? selection(arr.slice(0, totalSlots)) : 0)
 
   if (options.mode === 'random') {
     return { arrangement: build(shuffle(freeIds.slice())), cost: 0 }
@@ -402,9 +418,11 @@ function optimise(freeIds, plan, ctx, w, options, fixed) {
   let best = null
 
   for (let r = 0; r < restarts; r++) {
-    const order = shuffle(freeIds.slice())
+    // freeIds arrives in queue order; starting every other restart from it
+    // keeps the search anchored near the line-up the queue would pick
+    const order = r % 2 ? shuffle(freeIds.slice()) : shuffleHead(freeIds.slice(), courtFree)
     let arr = build(order)
-    let c = cost(arr, plan, ctx, w, options)
+    let c = total(arr)
 
     let stale = 0
     const staleLimit = Math.max(12, freePositions.length * 3)
@@ -414,7 +432,7 @@ function optimise(freeIds, plan, ctx, w, options, fixed) {
       const j = freePositions[randInt(freePositions.length)]
       if (i === j) continue
       ;[arr[i], arr[j]] = [arr[j], arr[i]]
-      const c2 = cost(arr, plan, ctx, w, options)
+      const c2 = total(arr)
       if (c2 < c - 1e-12) {
         c = c2
         stale = 0
@@ -429,6 +447,69 @@ function optimise(freeIds, plan, ctx, w, options, fixed) {
   }
 
   return best || { arrangement: build(freeIds.slice()), cost: 0 }
+}
+
+/* ------------------------------------------------------ who sits out */
+
+/**
+ * Picking the top of the queue and only then arranging those players is how
+ * the old engine worked, and it splits a group into two halves that never
+ * meet: with 9 players on one court everyone alternates play / rest, so the
+ * people who rest on odd rounds only ever partner each other. Letting the
+ * optimiser trade a little queue order for a fresh pairing fixes that.
+ *
+ * Returns the ids the optimiser may put on court (queue order, the queue's own
+ * pick first) and a cost for "how far this line-up strays from the queue".
+ * Who is allowed to stray is bounded so the trade never gets unfair:
+ * nobody gets more than one game ahead of the least-played candidate, and
+ * the stamina limit still holds.
+ */
+function selectionModel(pool, queuePick, need, courts, ctx, w, opts) {
+  const st = (id) => ctx.stats[id] || { games: 0, rest: 0, streak: 0 }
+  const limit = Math.max(1, opts.maxConsecutive)
+  const minGames = Math.min(...pool.map((p) => st(p.id).games))
+  const picked = new Set(queuePick)
+
+  const freshCount = pool.filter((p) => st(p.id).streak < limit).length
+  const candidates = [
+    ...queuePick,
+    ...pool
+      .map((p) => p.id)
+      .filter((id) => {
+        if (picked.has(id)) return false
+        const s = st(id)
+        if (opts.enforceStamina && freshCount >= need && s.streak >= limit) return false
+        return s.games <= minGames + 1
+      }),
+  ]
+
+  // How much a seat on court costs this player's fairness, in the same rough
+  // 0..1-per-court scale as the arrangement cost. Playing while ahead on games
+  // or straight after a game is expensive; benching someone who already sat
+  // out twice is even more so.
+  const fw = w.fewGames / 100
+  const ww = w.waiting / 100
+  const sw = w.stamina / 100
+  const seat = (id) => {
+    const s = st(id)
+    return (
+      fw * 0.45 * (s.games - minGames) +
+      sw * 0.2 * s.streak +
+      // past the limit only when the bench is too small — longest streak sits first
+      sw * 1.5 * Math.max(0, s.streak - limit + 1) -
+      ww * 0.3 * Math.min(s.rest, 3) ** 1.5
+    )
+  }
+  const seatCost = new Map(candidates.map((id) => [id, seat(id)]))
+  let floor = 0
+  for (const id of queuePick) floor += seatCost.get(id)
+
+  const selection = (onCourt) => {
+    let c = 0
+    for (const id of onCourt) if (id != null) c += seatCost.get(id)
+    return (c - floor) / courts
+  }
+  return { candidates, selection }
 }
 
 /* ---------------------------------------------------------- round builders */
@@ -478,11 +559,16 @@ export function generateRound({ players, courts, rounds, weights, options }) {
   if (!plan.length) return { error: 'not_enough_players' }
 
   const need = plan.reduce((s, p) => s + p.size, 0)
-  const onCourt = selected.slice(0, need)
-  const ids = onCourt.map((p) => p.id)
+  const ids = selected.slice(0, need).map((p) => p.id)
 
-  const best = optimise(ids, plan, ctx, w, opts, null)
-  const playing = new Set(ids)
+  let best
+  if (opts.mode === 'balanced' && pool.length > need) {
+    const { candidates, selection } = selectionModel(pool, ids, need, plan.length, ctx, w, opts)
+    best = optimise(candidates, plan, ctx, w, opts, null, selection)
+  } else {
+    best = optimise(ids, plan, ctx, w, opts, null)
+  }
+  const playing = new Set(best.arrangement.slice(0, need))
 
   return {
     round: {
@@ -512,8 +598,13 @@ export function generateRounds({ players, courts, rounds, weights, options, coun
     history = [...history, res.round]
     created.push(res.round)
   }
-  return { created }
+  if (!shouldRefine(options, created)) return { created }
+  return { created: refineSchedule({ players, rounds, created, weights, options }) }
 }
+
+/** The polish only pays off in balanced mode, over more than one round. */
+const shouldRefine = (options, created) =>
+  (options?.mode ?? DEFAULT_OPTIONS.mode) === 'balanced' && created.length > 1
 
 /**
  * Same thing, but hands the main thread back between rounds.
@@ -542,10 +633,24 @@ export async function generateRoundsAsync({
     history = [...history, res.round]
     created.push(res.round)
     onProgress?.(created.length, count)
-    if (i < count - 1) await new Promise((resolve) => setTimeout(resolve, 0))
+    if (i < count - 1) await yieldToBrowser()
   }
-  return { created }
+
+  if (!shouldRefine(options, created)) return { created }
+  // the polish runs in slices too, so cancel still works; cancelling keeps the
+  // rounds already built, just less polished
+  let cancelled = false
+  const polished = await polish({ players, rounds, created, weights, options }, async () => {
+    if (shouldCancel?.()) {
+      cancelled = true
+      return false
+    }
+    await yieldToBrowser()
+  })
+  return cancelled ? { created, cancelled: true } : { created: polished }
 }
+
+const yieldToBrowser = () => new Promise((resolve) => setTimeout(resolve, 0))
 
 /** An all-empty round for manual mode — the user taps players into the slots. */
 export function createEmptyRound({ players, courts }) {
@@ -711,4 +816,362 @@ export function roundQuality(round, players, priorRounds) {
   }
 
   return { repeatPartners, repeatOpponents, maxGap, matches }
+}
+
+/* ------------------------------------------------- whole-schedule polish */
+
+// steps per pass, and how many passes to spend chasing a perfect spread
+const REFINE = {
+  // `ms` caps the extra passes; the first pass always runs to the end
+  fast: { steps: 15000, passes: 1, ms: 0 },
+  normal: { steps: 30000, passes: 5, ms: 2500 },
+  thorough: { steps: 60000, passes: 12, ms: 8000 },
+}
+
+/**
+ * Building rounds one at a time can only look backwards, so the last pair or
+ * two that never teamed up tends to stay that way. Once a whole batch exists
+ * this pass reworks it as one piece — simulated annealing over two moves:
+ *
+ *   - swap two people inside a round (changes partners / opponents)
+ *   - trade a seat across two rounds: x plays round r instead of y, and y
+ *     plays round s instead of x, so nobody's game count moves
+ *
+ * The objective spreads partnerships as evenly as the slots allow (sum of
+ * squared pair counts, which bottoms out exactly when every pair has teamed up
+ * before any pair repeats), keeps sides level, and guards the rest / stamina
+ * rules on each player's play-sit sequence. Rounds before the batch are fixed
+ * history.
+ */
+export function createRefiner({ players, rounds, created, weights, options }) {
+  const opts = { ...DEFAULT_OPTIONS, ...options }
+  const w = { ...DEFAULT_WEIGHTS, ...weights }
+  const limit = Math.max(1, opts.maxConsecutive)
+  const level = {}
+  const gender = {}
+  for (const p of players) {
+    level[p.id] = p.level ?? 3
+    gender[p.id] = p.gender || '-'
+  }
+  // no history: `cost` then scores only level and gender, never variety
+  const flatCtx = {
+    pairCount: new Map(),
+    oppCount: new Map(),
+    lastPair: new Map(),
+    lastOpp: new Map(),
+    level,
+    gender,
+    totalRounds: 0,
+  }
+
+  // mutable working copy: per round, a flat id list court after court + bench
+  const work = created.map((r) => ({
+    sizes: r.matches.map((m) => m.teamA.length + m.teamB.length),
+    ids: r.matches.flatMap((m) => [...m.teamA, ...m.teamB]),
+    bench: [...(r.benched || [])],
+  }))
+  if (!work.length || work.some((r) => r.ids.some((id) => id == null))) return null
+
+  const eachPair = (ids, sizes, fn) => {
+    let o = 0
+    for (const size of sizes) {
+      const half = size / 2
+      const A = ids.slice(o, o + half)
+      const B = ids.slice(o + half, o + size)
+      o += size
+      if (half > 1) {
+        fn('p', pairKey(A[0], A[1]))
+        fn('p', pairKey(B[0], B[1]))
+      }
+      for (const a of A) for (const b of B) fn('o', pairKey(a, b))
+    }
+  }
+
+  const pc = new Map()
+  const oc = new Map()
+  const bump = (kind, k, d) => {
+    const m = kind === 'p' ? pc : oc
+    m.set(k, (m.get(k) || 0) + d)
+  }
+  for (const r of rounds)
+    for (const m of r.matches || []) {
+      const ids = [...(m.teamA || []), ...(m.teamB || [])]
+      if (ids.some((id) => id == null)) continue
+      eachPair(ids, [ids.length], (kind, k) => bump(kind, k, 1))
+    }
+  for (const r of work) eachPair(r.ids, r.sizes, (kind, k) => bump(kind, k, 1))
+
+  const wp = (w.partnerVariety / 100) * 0.25
+  const wo = (w.opponentVariety / 100) * 0.06
+  const pairEnergy = (keys) => {
+    let e = 0
+    for (const [kind, k] of keys) {
+      const c = (kind === 'p' ? pc : oc).get(k) || 0
+      e += (kind === 'p' ? wp : wo) * c * c
+    }
+    return e
+  }
+
+  const plans = new Map()
+  const planFor = (sizes) => {
+    const key = sizes.join(',')
+    if (!plans.has(key))
+      plans.set(
+        key,
+        sizes.map((size) => ({ size }))
+      )
+    return plans.get(key)
+  }
+  const roundStatic = (r) => cost(r.ids, planFor(r.sizes), flatCtx, w, opts) * r.sizes.length
+
+  // the history before the batch only matters through each trailing run
+  const lead = {}
+  for (const p of players) lead[p.id] = { play: 0, rest: 0 }
+  for (const r of rounds) {
+    const on = new Set(
+      (r.matches || []).flatMap((m) => [...(m.teamA || []), ...(m.teamB || [])])
+    )
+    for (const p of players) {
+      const l = lead[p.id]
+      if (on.has(p.id)) {
+        l.play++
+        l.rest = 0
+      } else {
+        l.play = 0
+        l.rest++
+      }
+    }
+  }
+  const ww = w.waiting / 100
+  const sw = w.stamina / 100
+  const seqCost = (id) => {
+    let play = lead[id]?.play || 0
+    let rest = lead[id]?.rest || 0
+    let c = 0
+    for (const r of work) {
+      if (r.ids.includes(id)) {
+        play++
+        rest = 0
+        // back-to-back is allowed when the numbers force it, never for free
+        if (play >= 2) c += sw * 0.8
+        if (opts.enforceStamina && play > limit) c += 2 * (play - limit)
+      } else if (r.bench.includes(id)) {
+        rest++
+        play = 0
+        if (rest >= 3) c += ww * 1.5 * (rest - 2)
+      } else {
+        play = 0
+        rest = 0
+      }
+    }
+    return c
+  }
+
+  const statics = work.map(roundStatic)
+  const seqs = new Map(players.map((p) => [p.id, seqCost(p.id)]))
+  const roundKeys = (r) => {
+    const keys = []
+    eachPair(r.ids, r.sizes, (kind, k) => keys.push([kind, k]))
+    return keys
+  }
+
+  // puts new content into round `ri` and returns the change in energy
+  const replaceRound = (ri, nextIds, nextBench) => {
+    const r = work[ri]
+    const oldKeys = roundKeys(r)
+    const newKeys = roundKeys({ ids: nextIds, sizes: r.sizes })
+    const touched = [...oldKeys, ...newKeys]
+    const before = pairEnergy(touched)
+    for (const [kind, k] of oldKeys) bump(kind, k, -1)
+    for (const [kind, k] of newKeys) bump(kind, k, 1)
+    const after = pairEnergy(touched)
+    r.ids = nextIds
+    r.bench = nextBench
+    const s = roundStatic(r)
+    const d = after - before + s - statics[ri]
+    statics[ri] = s
+    return d
+  }
+
+  const snapshot = () => work.map((r) => ({ ids: r.ids.slice(), bench: r.bench.slice() }))
+  let energy = 0
+  let best = { energy, snap: snapshot() }
+  const steps = Math.round(
+    (REFINE[opts.effort] || REFINE.normal).steps * Math.max(1, players.length / 9)
+  )
+  const T0 = 0.25
+  const T1 = 0.002
+  let done = 0
+
+  const accept = (d, T) => d <= 0 || Math.random() < Math.exp(-d / T)
+
+  const inBatch = new Set(work.flatMap((r) => r.ids))
+  const ids = players.filter((p) => inBatch.has(p.id)).map((p) => p.id)
+  const hasDoubles = work.some((r) => r.sizes.some((size) => size === 4))
+
+  // aim straight at a pair that has never teamed up: find a round where both
+  // are on court and put one of them in the other's partner's seat
+  const tryMatchmake = (T) => {
+    const missing = []
+    for (let i = 0; i < ids.length; i++)
+      for (let j = i + 1; j < ids.length; j++)
+        if (!pc.get(pairKey(ids[i], ids[j]))) missing.push([ids[i], ids[j]])
+    if (!missing.length) return false
+    const [a, b] = missing[randInt(missing.length)]
+    const rounds = []
+    for (let ri = 0; ri < work.length; ri++)
+      if (work[ri].ids.includes(a) && work[ri].ids.includes(b)) rounds.push(ri)
+    if (!rounds.length) return false
+    const ri = rounds[randInt(rounds.length)]
+    const r = work[ri]
+    // a's partner sits next to a: positions 2k / 2k+1 inside a doubles court
+    let o = 0
+    let mate = -1
+    const ia = r.ids.indexOf(a)
+    for (const size of r.sizes) {
+      if (ia >= o && ia < o + size && size === 4) mate = ia % 2 === 0 ? ia + 1 : ia - 1
+      o += size
+    }
+    if (mate < 0) return false
+    const ib = r.ids.indexOf(b)
+    const prevIds = r.ids
+    const next = prevIds.slice()
+    ;[next[mate], next[ib]] = [next[ib], next[mate]]
+    const d = replaceRound(ri, next, r.bench)
+    if (accept(d, T)) energy += d
+    else replaceRound(ri, prevIds, r.bench)
+    return true
+  }
+
+  const tryMove = (T) => {
+    if (hasDoubles && Math.random() < 0.15 && tryMatchmake(T)) return
+    const ri = randInt(work.length)
+    const r = work[ri]
+    if (Math.random() < 0.5 || !r.bench.length) {
+      // swap two people on court in one round
+      const i = randInt(r.ids.length)
+      const j = randInt(r.ids.length)
+      if (i === j) return
+      const prevIds = r.ids
+      const ids = prevIds.slice()
+      ;[ids[i], ids[j]] = [ids[j], ids[i]]
+      const d = replaceRound(ri, ids, r.bench)
+      if (accept(d, T)) energy += d
+      else replaceRound(ri, prevIds, r.bench)
+      return
+    }
+    // trade seats across two rounds
+    const i = randInt(r.ids.length)
+    const x = r.ids[i]
+    const y = r.bench[randInt(r.bench.length)]
+    const others = []
+    for (let s = 0; s < work.length; s++)
+      if (s !== ri && work[s].bench.includes(x) && work[s].ids.includes(y)) others.push(s)
+    if (!others.length) return
+    const si = others[randInt(others.length)]
+    const s = work[si]
+    const prev = [r.ids, r.bench, s.ids, s.bench]
+    const rIds = r.ids.slice()
+    rIds[i] = y
+    let d = replaceRound(
+      ri,
+      rIds,
+      r.bench.map((id) => (id === y ? x : id))
+    )
+    d += replaceRound(
+      si,
+      s.ids.map((id) => (id === y ? x : id)),
+      s.bench.map((id) => (id === x ? y : id))
+    )
+    const sx = seqCost(x)
+    const sy = seqCost(y)
+    d += sx - seqs.get(x) + sy - seqs.get(y)
+    if (accept(d, T)) {
+      energy += d
+      seqs.set(x, sx)
+      seqs.set(y, sy)
+    } else {
+      replaceRound(si, prev[2], prev[3])
+      replaceRound(ri, prev[0], prev[1])
+    }
+  }
+
+  /** Runs up to `n` more steps; true once the whole budget is spent. */
+  const run = (n) => {
+    const end = Math.min(steps, done + n)
+    for (; done < end; done++) {
+      tryMove(T0 * (T1 / T0) ** (done / steps))
+      if (energy < best.energy - 1e-9) best = { energy, snap: snapshot() }
+    }
+    return done >= steps
+  }
+
+  const result = () =>
+    created.map((round, ri) => {
+      const { ids, bench } = best.snap[ri]
+      let o = 0
+      const matches = round.matches.map((m) => {
+        const size = m.teamA.length + m.teamB.length
+        const seg = ids.slice(o, o + size)
+        o += size
+        return { ...m, teamA: seg.slice(0, size / 2), teamB: seg.slice(size / 2) }
+      })
+      return { ...round, matches, benched: bench }
+    })
+
+  /**
+   * Pairs that never teamed up, minus the ones that cannot fit: with fewer
+   * partner seats than pairs, some pairs have to miss out. 0 means as even as
+   * the numbers allow.
+   */
+  const gap = () => {
+    const inIds = new Set(ids)
+    let seats = 0
+    let missing = 0
+    for (const [k, v] of pc) {
+      const [a, b] = k.split('|')
+      if (inIds.has(a) && inIds.has(b)) seats += v
+    }
+    for (let i = 0; i < ids.length; i++)
+      for (let j = i + 1; j < ids.length; j++) if (!pc.get(pairKey(ids[i], ids[j]))) missing++
+    const pairsTotal = (ids.length * (ids.length - 1)) / 2
+    return missing - Math.max(0, pairsTotal - seats)
+  }
+
+  return { run, result, gap }
+}
+
+/**
+ * Runs refiner passes, each restarting from the best schedule so far, until
+ * the partner spread is as even as the numbers allow or the pass budget runs
+ * out. `step` is awaited between slices; returning false stops early.
+ */
+async function polish(args, step) {
+  const { passes, ms } = REFINE[args.options?.effort] || REFINE.normal
+  const deadline = Date.now() + ms
+  let created = args.created
+  for (let pass = 0; pass < passes && (pass === 0 || Date.now() < deadline); pass++) {
+    const refiner = createRefiner({ ...args, created })
+    if (!refiner) return created
+    while (!refiner.run(1500)) if ((await step()) === false) return refiner.result()
+    created = refiner.result()
+    // a fresh refiner, because the old one's working state drifts past its best
+    if (createRefiner({ ...args, created }).gap() <= 0) return created
+  }
+  return created
+}
+
+/** Synchronous version of polish, for callers that do not need to yield. */
+export function refineSchedule(args) {
+  const { passes, ms } = REFINE[args.options?.effort] || REFINE.normal
+  const deadline = Date.now() + ms
+  let created = args.created
+  for (let pass = 0; pass < passes && (pass === 0 || Date.now() < deadline); pass++) {
+    const refiner = createRefiner({ ...args, created })
+    if (!refiner) return created
+    refiner.run(Infinity)
+    created = refiner.result()
+    if (createRefiner({ ...args, created }).gap() <= 0) return created
+  }
+  return created
 }

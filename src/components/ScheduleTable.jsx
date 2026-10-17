@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { exportSchedulePng } from '../lib/exportImage'
+import { renderSchedulePng } from '../lib/exportImage'
+import ImageSheet from './ImageSheet'
 import { levelMeta } from './PlayerBits'
 import { Card, cx } from './ui'
 
@@ -11,6 +12,7 @@ import { Card, cx } from './ui'
 export default function ScheduleTable({ rounds, courts, playersById, t, setToast }) {
   const [showLevels, setShowLevels] = useState(false)
   const [busy, setBusy] = useState(false)
+  const [png, setPng] = useState(null)
 
   const columns = []
   const seen = new Set()
@@ -65,7 +67,7 @@ export default function ScheduleTable({ rounds, courts, playersById, t, setToast
   const onExport = async () => {
     setBusy(true)
     try {
-      const where = await exportSchedulePng({
+      const rendered = await renderSchedulePng({
         rounds,
         courts,
         playersById,
@@ -80,7 +82,7 @@ export default function ScheduleTable({ rounds, courts, playersById, t, setToast
           footer: t('appName'),
         },
       })
-      if (where === 'downloaded') setToast?.(t('exportDone'))
+      setPng(rendered)
     } catch {
       setToast?.(t('exportFailed'), 'error')
     } finally {
@@ -90,6 +92,7 @@ export default function ScheduleTable({ rounds, courts, playersById, t, setToast
 
   return (
     <Card className="overflow-hidden">
+      <ImageSheet png={png} onClose={() => setPng(null)} t={t} setToast={setToast} />
       <div className="flex items-center gap-2 border-b border-slate-100 px-3 py-2 dark:border-slate-800">
         <button
           onClick={() => setShowLevels((v) => !v)}

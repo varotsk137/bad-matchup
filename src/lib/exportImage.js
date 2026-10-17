@@ -392,28 +392,20 @@ const filename = () =>
   `bad-matchup-${new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')}.png`
 
 /**
- * Saves the schedule image. On phones that support it, offers the native
- * share sheet first (so it can go straight into the group chat) and falls
- * back to a plain download.
- * @returns {Promise<'shared'|'downloaded'>}
+ * Renders the schedule to a PNG. Saving and sharing are separate steps on
+ * purpose: going straight to the share sheet left phones with no way to keep
+ * the picture — Android's sheet only lists apps, and iOS drops "Save Image"
+ * when a title rides along with the file.
+ * @returns {Promise<{ blob: Blob, name: string }>}
  */
-export async function exportSchedulePng(options) {
+export async function renderSchedulePng(options) {
   if (document.fonts?.ready) await document.fonts.ready
-  const canvas = drawSchedule(options)
-  const blob = await toBlob(canvas)
-  const name = filename()
+  const blob = await toBlob(drawSchedule(options))
+  return { blob, name: filename() }
+}
 
-  const file = new File([blob], name, { type: 'image/png' })
-  if (navigator.canShare?.({ files: [file] })) {
-    try {
-      await navigator.share({ files: [file], title: options.title })
-      return 'shared'
-    } catch (err) {
-      // user dismissed the sheet — nothing more to do
-      if (err?.name === 'AbortError') return 'shared'
-    }
-  }
-
+/** A plain download — lands in Downloads / the Files app. */
+export function downloadPng({ blob, name }) {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
@@ -422,5 +414,23 @@ export async function exportSchedulePng(options) {
   a.click()
   a.remove()
   setTimeout(() => URL.revokeObjectURL(url), 1000)
-  return 'downloaded'
+}
+
+const asFile = ({ blob, name }) => new File([blob], name, { type: 'image/png' })
+
+export const canSharePng = (png) => !!navigator.canShare?.({ files: [asFile(png)] })
+
+/**
+ * Native share sheet with the file and nothing else, so iOS keeps
+ * "Save Image" in the list.
+ * @returns {Promise<boolean>} false when the user dismissed the sheet
+ */
+export async function sharePng(png) {
+  try {
+    await navigator.share({ files: [asFile(png)] })
+    return true
+  } catch (err) {
+    if (err?.name === 'AbortError') return false
+    throw err
+  }
 }

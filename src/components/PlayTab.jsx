@@ -8,10 +8,13 @@ import {
 } from '../lib/matchmaker'
 import MatchCard from './MatchCard'
 import ScheduleTable from './ScheduleTable'
+import HelpSheet from './HelpSheet'
 import { LevelBadge } from './PlayerBits'
 import { Button, Card, Empty, cx } from './ui'
 
 const MAX_AHEAD = 100
+
+export const DEFAULT_COUNTS = { preset: 5, customCount: 3, addCount: 1 }
 
 const MODES = [
   ['balanced', 'modeBalanced'],
@@ -29,13 +32,19 @@ export default function PlayTab({
   setToast,
   readOnly = false,
   onShare,
+  counts: liftedCounts,
 }) {
   const [sel, setSel] = useState(null)
   // before the first schedule exists you pick a session length; afterwards you
-  // top it up a round or two at a time, so the two live in separate state
-  const [preset, setPreset] = useState(5)
-  const [customCount, setCustomCount] = useState(3)
-  const [addCount, setAddCount] = useState(1)
+  // top it up a round or two at a time, so the two live in separate state.
+  // The parent owns it when it can, so switching tabs keeps the numbers.
+  const localCounts = useState(DEFAULT_COUNTS)
+  const [counts, setCounts] = liftedCounts || localCounts
+  const { preset, customCount, addCount } = counts
+  const setPreset = (v) => setCounts((c) => ({ ...c, preset: v }))
+  const setCustomCount = (v) => setCounts((c) => ({ ...c, customCount: v }))
+  const setAddCount = (v) => setCounts((c) => ({ ...c, addCount: v }))
+  const [helpOpen, setHelpOpen] = useState(false)
   // the grid is the view people spend their time in; the cards are for
   // running the round that is happening right now
   const [view, setView] = useState('table')
@@ -178,22 +187,33 @@ export default function PlayTab({
       {/* ------------------------------------------------ controls */}
       {!readOnly && (
         <Card className="space-y-2.5 p-3">
-          <div className="grid grid-cols-4 gap-1">
-            {MODES.map(([value, key]) => (
-              <button
-                key={value}
-                onClick={() => actions.setOption('mode', value)}
-                className={cx(
-                  'h-9 rounded-lg text-xs font-semibold transition active:scale-95',
-                  mode === value
-                    ? 'bg-brand-600 text-white shadow-sm'
-                    : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
-                )}
-              >
-                {t(key)}
-              </button>
-            ))}
+          <div className="flex gap-1">
+            <div className="grid flex-1 grid-cols-4 gap-1">
+              {MODES.map(([value, key]) => (
+                <button
+                  key={value}
+                  onClick={() => actions.setOption('mode', value)}
+                  className={cx(
+                    'h-9 rounded-lg text-xs font-semibold transition active:scale-95',
+                    mode === value
+                      ? 'bg-brand-600 text-white shadow-sm'
+                      : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+                  )}
+                >
+                  {t(key)}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => setHelpOpen(true)}
+              aria-label={t('help')}
+              title={t('help')}
+              className="h-9 w-9 shrink-0 rounded-lg bg-slate-100 text-sm font-bold text-slate-600 transition active:scale-95 dark:bg-slate-800 dark:text-slate-300"
+            >
+              ?
+            </button>
           </div>
+          <HelpSheet open={helpOpen} onClose={() => setHelpOpen(false)} t={t} />
 
           {mode !== 'manual' && !hasRounds && (
             <>
@@ -470,13 +490,30 @@ function Chevron({ open }) {
   )
 }
 
-/** −/+ with a typable box, so 1 round is one tap and 37 rounds is possible. */
+/**
+ * −/+ with a typable box, so 1 round is one tap and 37 rounds is possible.
+ *
+ * The box keeps its own draft text: clamping on every keystroke made it
+ * impossible to clear (backspace snapped back to 1) and impossible to type
+ * 20 (1 → 12 → 100). The parent only hears about whole, in-range numbers, and
+ * whatever is left in the box gets tidied up on blur.
+ */
 function Stepper({ value, onChange, max, label }) {
+  const [draft, setDraft] = useState(null)
   const clamp = (n) => Math.min(max, Math.max(1, n))
+  const step = (d) => {
+    setDraft(null)
+    onChange(clamp(value + d))
+  }
+  const commit = () => {
+    const n = parseInt(draft, 10)
+    if (draft != null && Number.isFinite(n)) onChange(clamp(n))
+    setDraft(null)
+  }
   return (
     <div className="flex h-11 shrink-0 items-center rounded-xl border border-slate-300 dark:border-slate-700">
       <button
-        onClick={() => onChange(clamp(value - 1))}
+        onClick={() => step(-1)}
         disabled={value <= 1}
         aria-label="-1"
         className="grid h-full w-9 place-items-center text-lg font-bold text-slate-500 disabled:opacity-30"
@@ -484,22 +521,25 @@ function Stepper({ value, onChange, max, label }) {
         −
       </button>
       <input
-        type="number"
+        type="text"
         inputMode="numeric"
-        min={1}
-        max={max}
-        value={value}
+        pattern="[0-9]*"
+        maxLength={String(max).length}
+        value={draft ?? String(value)}
         aria-label={label}
+        onFocus={(e) => e.target.select()}
         onChange={(e) => {
-          const raw = e.target.value
-          if (raw === '') return
-          onChange(clamp(Number(raw) || 1))
+          const raw = e.target.value.replace(/\D/g, '')
+          setDraft(raw)
+          const n = parseInt(raw, 10)
+          if (n >= 1 && n <= max) onChange(n)
         }}
-        onBlur={(e) => onChange(clamp(Number(e.target.value) || 1))}
-        className="h-full w-10 border-0 bg-transparent text-center text-sm font-bold tabular-nums focus:outline-none"
+        onBlur={commit}
+        onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+        className="h-full w-11 border-0 bg-transparent text-center text-sm font-bold tabular-nums focus:outline-none"
       />
       <button
-        onClick={() => onChange(clamp(value + 1))}
+        onClick={() => step(1)}
         disabled={value >= max}
         aria-label="+1"
         className="grid h-full w-9 place-items-center text-lg font-bold text-slate-500 disabled:opacity-30"

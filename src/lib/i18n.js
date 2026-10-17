@@ -244,6 +244,12 @@ const dict = {
   exportImage: { th: 'บันทึกเป็นรูป', en: 'Save as image' },
   shareImage: { th: 'แชร์รูป', en: 'Share image' },
   exporting: { th: 'กำลังสร้างรูป…', en: 'Rendering…' },
+  imageReady: { th: 'รูปตารางแข่ง', en: 'Schedule image' },
+  saveToDevice: { th: 'บันทึกลงเครื่อง', en: 'Save to device' },
+  longPressHint: {
+    th: 'บนมือถือ กดค้างที่รูปแล้วเลือก "บันทึกรูปภาพ" เพื่อเก็บลงอัลบั้ม หรือกดปุ่มด้านล่าง',
+    en: 'On a phone, long-press the image and choose "Save image" to put it in your photos, or use the buttons below',
+  },
   exportDone: { th: 'บันทึกรูปแล้ว', en: 'Image saved' },
   exportFailed: { th: 'สร้างรูปไม่สำเร็จ', en: 'Could not create the image' },
   imageTitle: { th: 'ตารางแข่งแบดมินตัน', en: 'Badminton schedule' },
@@ -350,6 +356,73 @@ const dict = {
   importDone: { th: 'นำเข้าเรียบร้อย', en: 'Imported' },
   restoreDefaults: { th: 'คืนค่าเริ่มต้น', en: 'Restore defaults' },
   about: { th: 'เกี่ยวกับ', en: 'About' },
+  // help / manual
+  help: { th: 'วิธีใช้', en: 'Help' },
+  helpTitle: { th: 'วิธีจับคู่แต่ละแบบ', en: 'How each mode works' },
+  helpIntro: {
+    th: 'เลือกโหมดได้จากแถบด้านบนของหน้าแข่งขัน ตัวอักษรในวงกลมแต่ละสีคือผู้เล่นหนึ่งคน',
+    en: 'Pick a mode at the top of the Play tab. Each coloured letter below is one player.',
+  },
+  helpBalanced1: {
+    th: 'ทุกคนได้ลงจำนวนเกมเท่า ๆ กัน (ห่างกันไม่เกิน 1 เกม) และไม่ลงติดกันเกินค่าสตามินา',
+    en: 'Everyone gets the same number of games (within one) and no one plays past the stamina limit',
+  },
+  helpBalanced2: {
+    th: 'พยายามให้ทุกคนได้คู่กับทุกคนครบ ไม่ซ้ำคู่เดิม และสลับคนพักไม่ให้ใครพักติดกันนาน',
+    en: 'Tries to pair everyone with everyone, avoid repeat partners and rotate who sits out',
+  },
+  helpBalanced3: {
+    th: 'ฝีมือสองฝั่งเน็ตรวมกันใกล้เคียงกัน ปรับน้ำหนักแต่ละเรื่องได้ในหน้าตั้งค่า',
+    en: 'Both sides of the net add up to a similar level. Tune every factor in Settings',
+  },
+  helpBalancedArt: {
+    th: 'A (วงขอบดำ) ได้คู่ใหม่ทุกรอบ และคนพัก 🪑 เปลี่ยนไปเรื่อย ๆ',
+    en: 'A (outlined) gets a new partner every round, and the bench 🪑 keeps changing',
+  },
+  helpBalancedLevel: {
+    th: '👑 + 🐣 สู้ ⭐ + ⭐ ฝีมือรวมสองฝั่งพอ ๆ กัน',
+    en: '👑 + 🐣 vs ⭐ + ⭐ — the two sides add up evenly',
+  },
+  helpRotation1: {
+    th: 'เข้าคิวตายตัว ใครรอนานสุดหรือเล่นน้อยสุดได้ลงก่อน เล่นจบแล้วไปต่อท้ายคิว',
+    en: 'A fixed queue: longest wait / fewest games goes on first, then back to the end of the line',
+  },
+  helpRotation2: {
+    th: 'คาดเดาได้ง่าย แต่ไม่ได้สนใจว่าใครคู่กับใคร',
+    en: 'Easy to predict, but it does not care who partners whom',
+  },
+  helpQueue: { th: 'คิว', en: 'Queue' },
+  helpNext: { th: 'รอบถัดไป', en: 'Next' },
+  helpBackOfQueue: { th: 'ต่อท้ายคิว', en: 'Back of queue' },
+  helpRandom1: {
+    th: 'สุ่มทั้งคนลงและการจับคู่ทุกรอบ',
+    en: 'Who plays and who partners whom are both drawn at random',
+  },
+  helpRandom2: {
+    th: 'สนุกแบบไม่ต้องคิด แต่บางคนอาจได้ลงมากหรือน้อยกว่าคนอื่น',
+    en: 'Fun and chaotic — some people may end up playing more than others',
+  },
+  helpManual1: {
+    th: 'แตะช่องว่างเพื่อเลือกคนลงคอร์ทเอง แตะชื่อสองคนเพื่อสลับกัน',
+    en: 'Tap an empty slot to place a player; tap two names to swap them',
+  },
+  helpManual2: {
+    th: 'กด "เติมช่องที่เหลือ" ให้ระบบเติมคนที่เหลือแบบยุติธรรมให้',
+    en: 'Hit "Auto-fill rest" and the app fills the remaining slots fairly',
+  },
+  helpTipsTitle: { th: 'เคล็ดลับ', en: 'Tips' },
+  helpTip1: {
+    th: 'เลือกจำนวนรอบ 1 / 5 / 10 หรือกด "กำหนดเอง" แล้วพิมพ์ตัวเลข (สูงสุด 100)',
+    en: 'Pick 1 / 5 / 10 rounds, or tap "Custom" and type a number (up to 100)',
+  },
+  helpTip2: {
+    th: 'แตะชื่อผู้เล่นสองคนในการ์ดเพื่อสลับตัว รวมถึงสลับกับคนที่พักอยู่',
+    en: 'Tap two names on a card to swap them, bench included',
+  },
+  helpTip3: {
+    th: 'จัดทีละหลายรอบจะได้ผลดีที่สุด เพราะระบบเกลี่ยทั้งตารางพร้อมกัน เช่น 9 คน 20 รอบ ทุกคนได้คู่กันครบ',
+    en: 'Build several rounds at once — the whole schedule is evened out together, e.g. 9 players over 20 rounds: every pair teams up',
+  },
 }
 
 export function makeT(lang) {
