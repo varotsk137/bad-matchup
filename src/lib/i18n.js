@@ -494,6 +494,18 @@ const dict = {
   },
   importFailed: { th: 'ไฟล์ไม่ถูกต้อง', en: 'Invalid file' },
   importDone: { th: 'นำเข้าเรียบร้อย', en: 'Imported' },
+  presetsTitle: { th: 'ชุดการตั้งค่า', en: 'Saved setups' },
+  presetsHint: {
+    th: 'เก็บการตั้งค่าทั้งหมดในหน้านี้และคอร์ทไว้เป็นชุด เช่น "ก๊วนวันอังคาร" ใช้ชุดแล้วผู้เล่นและตารางยังอยู่เหมือนเดิม',
+    en: 'Keep everything on this page plus the courts as a named setup, e.g. "Tuesday group". Using one keeps players and the schedule.',
+  },
+  presetNamePh: { th: 'ตั้งชื่อชุด เช่น ก๊วนวันอังคาร', en: 'Name it, e.g. Tuesday group' },
+  presetSummary: { th: '{courts} คอร์ท · {mode}', en: '{courts} courts · {mode}' },
+  presetUse: { th: 'ใช้ชุดนี้', en: 'Use' },
+  presetSaved: { th: 'บันทึก "{name}" แล้ว', en: 'Saved "{name}"' },
+  presetApplied: { th: 'ใช้ชุด "{name}" แล้ว', en: 'Using "{name}"' },
+  presetDeleteConfirm: { th: 'ลบชุด "{name}"?', en: 'Delete "{name}"?' },
+  staminaOffShort: { th: 'ปิดสตามินา', en: 'stamina off' },
   restoreDefaults: { th: 'คืนค่าเริ่มต้น', en: 'Restore defaults' },
   about: { th: 'เกี่ยวกับ', en: 'About' },
   // help / manual

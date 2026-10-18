@@ -3,6 +3,7 @@ import { version } from '../../package.json'
 import { DEFAULT_OPTIONS, DEFAULT_WEIGHTS } from '../lib/matchmaker'
 import { exportState, importState } from '../lib/storage'
 import { RestModeHelp } from './HelpSheet'
+import PresetCard from './PresetCard'
 import { Button, Card, SectionTitle, Segmented, Slider, Toggle, cx } from './ui'
 
 export default function SettingsTab({ state, t, actions, setToast }) {
@@ -49,6 +50,8 @@ export default function SettingsTab({ state, t, actions, setToast }) {
           ]}
         />
       </Card>
+
+      <PresetCard state={state} t={t} actions={actions} setToast={setToast} />
 
       {/* --------------------------------------------------- stamina */}
       <div>

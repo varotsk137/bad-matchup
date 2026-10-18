@@ -16,6 +16,8 @@ import {
   makeContext,
   swapSlots,
   uid,
+  DEFAULT_OPTIONS,
+  DEFAULT_WEIGHTS,
 } from './lib/matchmaker'
 import { clearShareHash, decodeShare, readShareHash } from './lib/share'
 import { clearState, defaultState, loadState, saveState } from './lib/storage'
@@ -273,6 +275,44 @@ export default function App() {
               : s.players.filter((p) => p.id !== id),
           }
         }),
+      /* ---- saved settings ---- */
+      savePreset: (name) =>
+        setState((s) => ({
+          ...s,
+          presets: [
+            {
+              id: uid(),
+              name,
+              savedAt: Date.now(),
+              options: { ...s.options },
+              weights: { ...s.weights },
+              courts: s.courts.map((c) => ({ name: c.name, type: c.type, enabled: c.enabled })),
+            },
+            ...(s.presets || []),
+          ],
+        })),
+
+      /**
+       * Settings and courts from the preset; players and the schedule stay.
+       * A court whose name is already here keeps its id, so rounds that were
+       * built for it still line up with it.
+       */
+      applyPreset: (id) =>
+        setState((s) => {
+          const preset = (s.presets || []).find((p) => p.id === id)
+          if (!preset) return s
+          const byName = new Map(s.courts.map((c) => [c.name, c]))
+          return {
+            ...s,
+            options: { ...DEFAULT_OPTIONS, ...preset.options },
+            weights: { ...DEFAULT_WEIGHTS, ...preset.weights },
+            courts: preset.courts.map((c) => ({ ...c, id: byName.get(c.name)?.id ?? uid() })),
+          }
+        }),
+
+      deletePreset: (id) =>
+        setState((s) => ({ ...s, presets: (s.presets || []).filter((p) => p.id !== id) })),
+
       /* ---- saved rosters ---- */
       saveRoster: (name) =>
         setState((s) => ({

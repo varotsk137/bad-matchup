@@ -28,6 +28,8 @@ export function defaultState() {
     rounds: [],
     // named player lists, so a regular group is one tap away next week
     rosters: [],
+    // named settings + courts, e.g. "Tuesday, 2 courts, flexible rests"
+    presets: [],
     weights: { ...DEFAULT_WEIGHTS },
     options: { ...DEFAULT_OPTIONS },
   }
@@ -50,6 +52,7 @@ export function loadState() {
       courts: Array.isArray(saved.courts) && saved.courts.length ? saved.courts : base.courts,
       rounds: Array.isArray(saved.rounds) ? saved.rounds : [],
       rosters: Array.isArray(saved.rosters) ? saved.rosters : [],
+      presets: Array.isArray(saved.presets) ? saved.presets : [],
     }
   } catch {
     return base
