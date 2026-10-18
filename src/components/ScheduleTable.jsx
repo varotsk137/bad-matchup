@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { renderSchedulePng } from '../lib/exportImage'
 import ImageSheet from './ImageSheet'
 import { levelMeta } from './PlayerBits'
@@ -220,6 +220,7 @@ export default function ScheduleTable({
               {columns.map((c) => (
                 <th
                   key={c.id}
+                  colSpan={onToggleDone ? 2 : 1}
                   className="min-w-36 px-2 py-1.5 text-[10px] font-semibold tracking-wide text-slate-400 uppercase"
                 >
                   {t('courtLabel')} {c.name}
@@ -274,39 +275,50 @@ export default function ScheduleTable({
                     const m = round.matches.find((x) => x.courtId === c.id)
                     if (!m)
                       return (
-                        <td key={c.id} className="px-2 py-1.5 text-xs text-slate-300">
+                        <td
+                          key={c.id}
+                          colSpan={onToggleDone ? 2 : 1}
+                          className="px-2 py-1.5 text-xs text-slate-300"
+                        >
                           —
                         </td>
                       )
                     const hasScore =
                       typeof m.scoreA === 'number' && typeof m.scoreB === 'number'
                     return (
-                      <td key={c.id} className="px-2 py-1.5 align-middle">
-                        <Side ids={m.teamA} tone="A" ri={i} />
-                        <span
+                      <Fragment key={c.id}>
+                        <td
                           className={cx(
-                            'flex items-center gap-1.5 text-[10px] leading-3 font-bold text-slate-300 dark:text-slate-600',
-                            onToggleDone && 'my-1'
+                            'py-1.5 pl-2 align-middle',
+                            onToggleDone ? 'pr-1' : 'pr-2'
                           )}
                         >
-                          {t('vs')}
-                          {hasScore && (
-                            <span className="text-slate-500 tabular-nums dark:text-slate-400">
-                              {m.scoreA}–{m.scoreB}
+                          <div className="min-w-0">
+                            <Side ids={m.teamA} tone="A" ri={i} />
+                            <span className="flex items-center gap-1 text-[10px] leading-3 font-bold text-slate-300 dark:text-slate-600">
+                              {t('vs')}
+                              {hasScore && (
+                                <span className="text-slate-500 tabular-nums dark:text-slate-400">
+                                  {m.scoreA}–{m.scoreB}
+                                </span>
+                              )}
+                              {m.done && !onToggleDone && (
+                                <span className="text-brand-600 dark:text-brand-400">✓</span>
+                              )}
                             </span>
-                          )}
-                          {m.done && !onToggleDone && (
-                            <span className="text-brand-600 dark:text-brand-400">✓</span>
-                          )}
-                          {/* right between the two teams, so it reads as "this match": a
-                              labelled pill, not a bare circle at the far edge of the cell */}
-                          {onToggleDone && (
+                            <Side ids={m.teamB} tone="B" ri={i} />
+                          </div>
+                        </td>
+                        {/* its own narrow column, so the pills line up row after row and
+                            sit right after the longest names on that court */}
+                        {onToggleDone && (
+                          <td className="w-px py-1.5 pr-2 align-middle">
                             <button
                               onClick={() => onToggleDone(round, m.id)}
                               aria-pressed={!!m.done}
                               title={t(m.done ? 'reopen' : 'finishGame')}
                               className={cx(
-                                'inline-flex h-6 items-center gap-1 rounded-full border px-2 text-[11px] font-semibold transition active:scale-95',
+                                'inline-flex h-7 shrink-0 items-center gap-1 rounded-full border px-2 text-[11px] font-semibold whitespace-nowrap transition active:scale-95',
                                 m.done
                                   ? 'border-brand-600 bg-brand-600 text-white'
                                   : 'border-slate-300 text-slate-600 hover:border-brand-500 hover:text-brand-700 dark:border-slate-600 dark:text-slate-300'
@@ -315,10 +327,9 @@ export default function ScheduleTable({
                               <span aria-hidden>{m.done ? '✓' : '○'}</span>
                               {t(m.done ? 'matchFinished' : 'finishGame')}
                             </button>
-                          )}
-                        </span>
-                        <Side ids={m.teamB} tone="B" ri={i} />
-                      </td>
+                          </td>
+                        )}
+                      </Fragment>
                     )
                   })}
 
