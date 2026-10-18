@@ -323,26 +323,30 @@ export default function PlayTab({
                   {t('reshuffleRemainingHint')}
                 </span>
               </Button>
-              <div className="space-y-2 rounded-xl border border-rose-300 p-3 dark:border-rose-900">
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-sm">{t('startOverHowMany')}</span>
-                  <Stepper
-                    value={startOverCount}
-                    onChange={setStartOverCount}
-                    max={MAX_AHEAD}
-                    label={t('roundsLabel')}
-                  />
-                </div>
-                <button
-                  onClick={startOver}
-                  className="w-full rounded-lg px-1 py-1 text-left text-rose-700 transition hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-950/40"
-                >
-                  <span className="block text-sm font-semibold">
-                    {t('startOver', { n: startOverCount })}
-                  </span>
-                  <span className="block text-xs opacity-80">{t('startOverHint')}</span>
-                </button>
+              <div className="flex items-center gap-3 py-1 text-xs text-slate-400" aria-hidden>
+                <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+                {t('or')}
+                <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
               </div>
+              <div className="flex items-center justify-between gap-3 rounded-xl bg-slate-100 px-3 py-2 dark:bg-slate-800/60">
+                <span className="text-sm">{t('startOverHowMany')}</span>
+                <Stepper
+                  value={startOverCount}
+                  onChange={setStartOverCount}
+                  max={MAX_AHEAD}
+                  label={t('roundsLabel')}
+                />
+              </div>
+              <Button
+                variant="accent"
+                className="h-auto w-full flex-col items-start gap-0.5 py-3 text-left"
+                onClick={startOver}
+              >
+                <span className="text-sm font-semibold">
+                  {t('startOver', { n: startOverCount })}
+                </span>
+                <span className="text-xs font-normal opacity-90">{t('startOverHint')}</span>
+              </Button>
             </div>
           </Sheet>
 

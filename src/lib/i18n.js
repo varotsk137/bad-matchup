@@ -209,6 +209,7 @@ const dict = {
     en: 'Uses who is here now — for when someone arrives or leaves. Games already played still count.',
   },
   startOver: { th: 'เริ่มใหม่ทั้งหมด {n} รอบ', en: 'Start over with {n} rounds' },
+  or: { th: 'หรือ', en: 'or' },
   startOverHowMany: { th: 'เริ่มใหม่ทั้งหมดกี่รอบ', en: 'Start over with' },
   startOverHint: {
     th: 'ล้างทุกรอบรวมถึงผลที่บันทึกไว้',
