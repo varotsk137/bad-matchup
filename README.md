@@ -1,69 +1,93 @@
-# 🏸 Bad Matchup · จับคู่ตีแบด
+# 🏸 Bad Matchup
 
-**เปิดใช้งานได้เลยที่ → https://varotsk137.github.io/bad-matchup/**
+**Fair, automatic court scheduling for badminton sessions.**
+Thai name: *จับคู่ตีแบด* · Live app: **https://varotsk137.github.io/bad-matchup/**
 
-แอปจัดคิวลงคอร์ทแบดมินตัน สำหรับก๊วนที่นัดตีกันแล้วต้องคอยจดว่าใครลงรอบไหน
-ทำงานในเบราว์เซอร์ล้วน **ไม่มี backend ไม่มี database** — ข้อมูลทั้งหมดเก็บใน `localStorage` ของเครื่องตัวเอง
+Bad Matchup decides who plays, with whom, on which court, round after round, for casual
+groups who would otherwise keep a rotation on paper. It runs entirely in the browser: no
+backend, no database, no accounts. All data stays in the device's `localStorage`.
 
-A badminton session scheduler. Runs entirely in the browser, no backend, no database —
-everything lives in `localStorage` on the device.
-
----
-
-## ฟีเจอร์ / Features
-
-- **เพิ่มผู้เล่น** ทีละคนหรือทีละหลายคน พร้อมเพศ และระดับฝีมือ 5 ขั้น
-  (🐣 NB หน้าบ้าน · 🌱 BG · ⭐ N · 🔥 S · 👑 P) — คนที่เพิ่งเพิ่มจะเป็น **NB** ไว้ก่อน
-  แต่ละขั้นมีสีและอีโมจิของตัวเอง เลยแยกออกได้ทันทีโดยไม่ต้องอ่าน
-- **เพิ่มคอร์ท** เลือกได้ว่าคอร์ทไหนตีเดี่ยวหรือตีคู่ ปิด-เปิดคอร์ทกลางคันได้
-  **ไม่ปล่อยคอร์ทว่าง** (เปิดไว้เป็นค่าเริ่มต้น) ถ้าจะมีคอร์ทว่าง จะแยกเป็นตีเดี่ยว 2 คอร์ทแทน และระบบเกลี่ยคนตีเดี่ยวไม่ให้ตีเดี่ยวติดกัน
-- **3 โหมดจับคู่** (v2 ตัดโหมดหมุนเวียนออก ใครเคยตั้งไว้จะเปลี่ยนเป็นยุติธรรมให้เอง)
-  - **ยุติธรรม (Balanced)** — ถ่วงน้ำหนักหลายมิติพร้อมกัน ปรับได้ทุกตัวในหน้าตั้งค่า
-    เลือกคนลงคอร์ทไปพร้อมกับจัดคู่ ทุกคนจึงได้คู่กันทั่วถึง ไม่แบ่งเป็นสองกลุ่มที่สลับกันลงจนไม่เคยเจอกัน
-  - **สุ่ม (Random)** — สุ่มล้วน
-  - **เลือกเอง (Manual)** — แตะช่องว่างเพื่อจัดคนลงคอร์ทเอง แล้วกด "เติมช่องที่เหลือ" ให้ระบบเติมส่วนที่เหลือ
-- **สตามินา** กันไม่ให้ใครเล่นติดกันเกินที่กำหนด (ถ้าคนไม่พอจะผ่อนกฎให้อัตโนมัติ)
-  ปิดสตามินาทั้งหมดได้ (เปิดไว้เป็นค่าเริ่มต้น) · ถ้าคนไม่พอให้พักทัน เลือกได้ 3 แบบ (กด ? ดูตัวอย่าง): **เล่นเต็มคอร์ท** · **ยืดหยุ่น** (ค่าเริ่มต้น · เกินได้ 1 รอบ) · **พักตรงเวลา** (สลับจำนวนคอร์ทให้ไม่มีใครเกิน)
-- **แนะนำจำนวนรอบ** บอกว่ากี่รอบทุกคนถึงได้คู่กันครบ และจองคอร์ทกี่ชั่วโมงเล่นได้ประมาณกี่รอบ (ปรับเวลาต่อเกมได้) กด "ใช้" ใส่ตัวเลขให้เลย
-- **เลือกความยาวเซสชันก่อนเริ่ม** 1 / 5 / 10 รอบ หรือกำหนดเองได้ถึง 100 รอบ (ลบแล้วพิมพ์ตัวเลขใหม่ได้เลย)
-- **ปุ่ม ? ท้ายแถวปุ่มเลือกโหมด** เปิดคู่มือที่มีภาพอธิบายว่าการจับคู่แต่ละแบบทำงานยังไง
-- **ติ๊กจบเกมในตารางรวมได้เลย** ไม่ต้องใส่สกอร์ รอบที่จบแล้วจะจางลง และรอบที่กำลังเล่นมีแถบ "กำลังเล่น"
-- **คนมาสาย / กลับก่อนไม่ถูกเร่ง** ระบบเทียบจำนวนเกมกับรอบที่แต่ละคนอยู่จริง คนที่มาทีหลังจึงลงตามปกติ ไม่ต้องลงถี่ ๆ ไล่ให้ทัน
-- **กดเพิ่มทีละรอบก็ได้คู่ครบ** ระบบวางแผนทั้งเซสชันไว้ล่วงหน้าแล้วเปิดทีละรอบ (ครั้งแรกรอนิดหนึ่ง ครั้งต่อไปขึ้นทันที) ถ้ามีการสลับตัว คนมา/กลับ หรือเปลี่ยนการตั้งค่า จะวางแผนใหม่ให้เอง
-- **เตือนเมื่อรายชื่อเปลี่ยน** ถ้ามีคนกลับหรือมาใหม่หลังจัดตาราง จะขึ้นแถบบอกชื่อ พร้อมปุ่ม "จัดรอบที่เหลือใหม่" กดครั้งเดียว
-- **จัดใหม่เฉพาะรอบที่ยังไม่เล่น** เมื่อมีคนมาเพิ่มหรือกลับก่อน รอบที่เล่นไปแล้วเก็บไว้ และระบบนับเกมที่เล่นไปแล้วด้วย
-- **เริ่มแล้วปุ่มเปลี่ยนเป็น "เพิ่มรอบ"** ต่อท้ายทีละกี่รอบก็ได้ ส่วน **"จัดใหม่"** ล้างตารางเดิม
-  แล้วจัดใหม่ตามจำนวนในช่องตัวเลข (ถามยืนยันถ้ามีสกอร์ค้างอยู่ หรือจำนวนรอบจะเปลี่ยนไป)
-- **การ์ดเรียงรอบ 1 → n** รอบแรกที่ยังไม่จบจะกางอยู่เสมอ พอติ๊กครบทุกคอร์ทในรอบนั้น
-  การ์ดจะหล่นลงไปอยู่ใน **"รอบที่จบแล้ว"** ด้านล่าง แล้วรอบถัดไปกางขึ้นมาแทนให้เอง
-  (รอบที่เก็บไว้แล้วยังกดแก้สกอร์ได้ตลอด)
-- **จัดซ้ำ 3 ครั้ง เลือกแบบที่แฟร์ที่สุด** (เปิดไว้เป็นค่าเริ่มต้น) จัดทั้งชุด 3 แบบแล้วเก็บแบบที่คู่และฝั่งตรงข้ามทั่วถึงที่สุด
-  ใช้เวลานานขึ้นประมาณ 3 เท่า ตารางใหญ่มากจะลดจำนวนครั้งเองไม่ให้รอเกิน ~10 วินาที
-- **แถบความคืบหน้า + ปุ่มยกเลิก** ระหว่างจัดตารางยาว ๆ หน้าจอไม่ค้าง
-- **เปิดมาเจอตารางรวมก่อน** สลับไปดูแบบการ์ดด้วยปุ่มใหญ่เต็มความกว้าง
-- **ตารางการแข่งขัน** ดูได้ทั้งแบบการ์ด (รอบล่าสุดกางอยู่ รอบเก่าพับเก็บ) และแบบตารางรวม เรียงรอบ 1 → n
-  ในตารางรวมกดปุ่ม **สตามินา** เพื่อดูว่าแต่ละคนลงติดกัน / พักติดกันมากี่รอบ (ไม่ติดไปในรูปที่บันทึก)
-- **Export เป็นรูป PNG** กดปุ่มในตารางรวม ได้ตารางเปล่า ๆ ไว้ส่งเข้าไลน์ก๊วน (มีแค่ชื่อ คอร์ท และคนพัก ไม่มีมือ สตามินา สกอร์ หรือเครื่องหมายจบเกม)
-- **แชร์เป็นลิงก์** ส่งตารางให้เพื่อนเปิดดูได้ โดยไม่ต้องมีเซิร์ฟเวอร์ เลือกได้ว่าให้ **ดูอย่างเดียว**
-  หรือ **รับไปแก้ต่อ** ในเครื่องตัวเอง
-- **สลับตัวได้** แตะชื่อ 2 คนเพื่อสลับกัน รวมถึงสลับกับคนที่นั่งพักอยู่
-- **ใส่สกอร์ก็ได้ ไม่ใส่ก็ได้** กด "จบเกม" เฉย ๆ ก็พอ ถ้าใส่สกอร์จะมีสถิติแพ้-ชนะให้
-- **จัดการผู้เล่นเร็ว** ปุ่มถังขยะอยู่ที่แถวเลย (คนที่ยังไม่เคยลงสนามลบได้ทันทีไม่ต้องยืนยัน)
-  และมีปุ่ม **ล้างผู้เล่น** สำหรับเริ่มก๊วนใหม่
-- **บันทึกก๊วนไว้ใช้ซ้ำ** ตั้งชื่อรายชื่อชุดหนึ่งไว้ (เช่น "ก๊วนวันอังคาร") ครั้งหน้ากดเรียกกลับมาได้
-  ทั้งแบบ **ใช้ก๊วนนี้** (แทนที่ทั้งชุด) และ **เพิ่มเข้าไป** (เติมเฉพาะคนที่ยังไม่มี)
-- **ชุดการตั้งค่า** บันทึกการตั้งค่าทั้งหมดและคอร์ทเป็นชุด (เช่น "ก๊วนวันอังคาร") ครั้งหน้ากดใช้ได้ทันที ผู้เล่นและตารางยังอยู่
-- **สถิติ** จำนวนเกม อัตราชนะ แต้มได้-เสีย และจำนวนคู่ที่ต่างกันของแต่ละคน
-  แตะชื่อเพื่อดูว่าตีคู่ / ตีเดี่ยวไปกี่เกม และเคยจับคู่ / อยู่ฝั่งตรงข้ามกับแต่ละคนกี่รอบ
-  มีส่วน **การเกลี่ย** บอกว่าตารางแฟร์แค่ไหนเทียบกับที่ทำได้จริง (เขียว / ส้ม / แดง) พร้อมตารางใครเจอใครกี่ครั้ง
-- **ช่องคีย์สกอร์แยกสีตามฝั่ง** 🟦 ฝั่ง A / 🟥 ฝั่ง B จะได้ไม่คีย์สลับข้าง
-- **ไทย / English** สลับได้ตลอดเวลา · ธีมสว่าง/มืด กดสลับปุ่มเดียว
-  (เปิดครั้งแรกจะเลือกตามระบบให้ หลังจากนั้นยึดตามที่เลือกไว้)
-- **สำรองข้อมูล** ดาวน์โหลด / นำเข้าไฟล์ JSON
+The interface is available in Thai and English.
 
 ---
 
-## รันในเครื่อง / Run locally
+## Highlights
+
+- **Everyone partners everyone.** With 9 players on one court, 20 rounds pair every couple at
+  least once, and the app tells you how many rounds that takes before you start.
+- **Stamina-aware.** No one plays more rounds in a row than you allow, and when there are too
+  few players to rest everyone on time you choose the trade-off.
+- **Built for the court, not the desk.** Tick matches off as they finish, add a round at a time,
+  and when someone leaves or arrives the app flags it and rebuilds only what is still to come.
+- **Fair to part-timers.** Late arrivals and early leavers are judged against the rounds they
+  were actually there for, so nobody is rushed on court to "catch up".
+- **Shows its work.** A fairness check in Stats compares every number with what was actually
+  achievable, and an in-app guide explains how the engine reasons.
+
+## Features
+
+### Players and courts
+- Add players one at a time or in bulk, with gender and a five-step level ladder
+  (🐣 NB · 🌱 BG · ⭐ N · 🔥 S · 👑 P). New players start at NB.
+- Doubles and singles courts. Courts can be switched on and off mid-session.
+- Saved **rosters** (for example "Tuesday group") can replace the current list or be merged into it.
+- Saved **setups** store every setting plus the courts, so a regular session is one tap away.
+
+### Scheduling
+- **Modes:** *Balanced* (the default and the focus of the engine), *Random*, and *Manual*. In
+  Manual you tap players into slots and let the app fill in the rest.
+- **Round suggestions.** Before a session, the app suggests how many rounds give every pair a
+  chance to partner, and how many fit your court booking. Hours booked and minutes per game are
+  both adjustable.
+- **Stamina** limits consecutive rounds (1–4). When rests cannot all fit, pick one of:
+  - *Fill courts:* every court runs every round.
+  - *Flexible* (default): full courts while everyone is fresh, then fewer courts or singles as
+    people tire. At most one round past the limit.
+  - *Rest on time:* no one ever exceeds the limit, and the number of courts varies to fit as
+    much play as rests allow.
+  - Stamina can also be switched off entirely.
+- **No idle courts** (optional, on by default): a court that would sit empty becomes two singles
+  courts. Singles are spread evenly and never given to the same person twice in a row.
+- **Build three times, keep the fairest** (on by default): each batch is built three times and
+  the best result is kept. A time budget keeps very large schedules under about ten seconds.
+- **One round at a time.** Adding a single round draws from a plan for the rest of the session,
+  so tapping "add round" twenty times is as fair as building twenty rounds at once. The plan is
+  rebuilt automatically when anything it depends on changes.
+
+### During the session
+- Tick a match done straight from the schedule table, with no score required. Finished rounds
+  fade, and the current round is highlighted.
+- **Reshuffle** either redoes the rounds still to come (keeping everything already played and
+  counting it), with a chosen number of rounds, or starts over.
+- When someone leaves or arrives after the schedule was built, a banner names them and offers a
+  one-tap rebuild of the remaining rounds.
+- Swap any two players, including someone on the bench, by tapping their names.
+- Scores are optional. When entered they feed win/loss statistics.
+- A **Stamina** view in the schedule table shows each player's streak and rest count.
+
+### Statistics
+- Games, wins, win rate, point difference and distinct partners per player.
+- Tap a player to see doubles and singles games and how often they partnered and faced each
+  other player.
+- **How even is it?** grades partner coverage, opponent spread, games, streaks, rests and
+  singles against what the schedule could reach, and includes a who-met-whom grid. Part-time
+  players are compared with their fair share.
+
+### Sharing
+- **Share links** carry the whole schedule inside the URL fragment, in *view only* or
+  *copy and edit* mode. No server is involved.
+- **Save as image** renders a clean PNG of the plan (rounds, courts, names and who sits out) for
+  the group chat. Levels, stamina, scores and ticks stay on the organiser's screen. On phones the
+  image can be saved with a long press, downloaded, or sent through the share sheet.
+
+### Everything else
+- Thai and English, light and dark themes. The first visit follows the system; afterwards the
+  user's choice sticks.
+- JSON backup export and import.
+
+---
+
+## Getting started
 
 ```bash
 npm install
@@ -73,199 +97,168 @@ npm install
 npm run dev
 ```
 
-เปิด http://localhost:5173 — เซิร์ฟเวอร์เปิด `--host` ไว้ ทดสอบจากมือถือในวง LAN เดียวกันได้เลย
+Open http://localhost:5173. The dev server listens on all interfaces, so phones on the same
+network can connect too.
 
----
-
-## ทดสอบ / Tests
+## Tests
 
 ```bash
 npm test
 ```
 
-- `matchmaker.rules.test.js` กฎที่ต้องเป็นจริงทุกตาราง เช่น ไม่มีใครอยู่ 2 คอร์ทในรอบเดียว และแบบพักตรงเวลาไม่มีใครลงเกินกำหนด
-- `matchmaker.quality.test.js` คุณภาพขั้นต่ำที่วัดไว้ตอนจูน เช่น 9 คน 20 รอบต้องได้คู่ครบทุกคู่
+The engine is covered by a Vitest suite with seeded randomness, so every run is repeatable:
 
-GitHub Actions รันชุดทดสอบทุกครั้งที่ push และก่อน deploy ถ้าไม่ผ่านจะไม่ขึ้นเว็บ
+| File | What it guards |
+| --- | --- |
+| `matchmaker.rules.test.js` | Rules every schedule must follow: well-formed rounds, the stamina limit of each rest mode, court use, editing tools, late arrivals, round suggestions |
+| `matchmaker.quality.test.js` | Quality levels measured during tuning, e.g. 9 players over 20 rounds must pair every couple |
+| `plan.test.js` | The one-round-at-a-time plan survives ticks and scores, and is discarded on real changes |
+| `roster.test.js` | Detection of players who left or arrived after the schedule was built |
+| `stats.test.js` | Fair-share statistics for part-time players |
 
----
+GitHub Actions runs the suite on every branch push and again before each deploy. A failing test
+blocks the release.
 
-## Deploy
+## Deployment
 
-Build เป็น static ล้วน วางที่ไหนก็ได้
+The build is fully static:
 
 ```bash
 npm run build
 ```
 
-ได้ไฟล์ออกมาที่ `dist/` — `vite.config.js` ตั้ง `base: './'` ไว้แล้ว เลยใช้ได้ทั้ง root domain
-และ sub-path (เช่น GitHub Pages) โดยไม่ต้องแก้อะไร
+Output goes to `dist/`. `vite.config.js` sets `base: './'`, so the same build works at a domain
+root or under a sub-path such as GitHub Pages.
 
-| Host | วิธีทำ |
+| Host | Setup |
 | --- | --- |
-| **Vercel** | import repo → framework preset `Vite` → deploy (ค่า default ถูกหมด) |
-| **Netlify** | build command `npm run build`, publish directory `dist` |
-| **GitHub Pages** | ตั้งไว้แล้ว — push ขึ้น `main` แล้ว `.github/workflows/deploy.yml` build และ deploy ให้เอง |
-| **Cloudflare Pages** | build command `npm run build`, output directory `dist` |
+| GitHub Pages | Already configured: pushing to `main` tests, builds and deploys via `.github/workflows/deploy.yml` |
+| Vercel | Import the repository and pick the *Vite* preset |
+| Netlify | Build command `npm run build`, publish directory `dist` |
+| Cloudflare Pages | Build command `npm run build`, output directory `dist` |
 
-ไม่ต้องตั้ง environment variable หรือ rewrite rule ใด ๆ เพราะเป็นหน้าเดียวไม่มี routing
+No environment variables or rewrite rules are needed; it is a single page without routing.
 
-### GitHub Pages
+For a fork on GitHub Pages, set **Settings → Pages → Source** to *GitHub Actions* once.
+The workflow's `GITHUB_TOKEN` cannot enable Pages by itself.
 
-repo นี้ deploy อัตโนมัติอยู่แล้ว ทุกครั้งที่ push ขึ้น `main`
+### Versions
 
-```bash
-git push
-```
-
-Pages ตั้ง source เป็น **GitHub Actions** ไว้ (ไม่ใช่ branch `gh-pages`) ถ้าจะ fork ไปใช้เอง
-ต้องไปเปิดที่ Settings → Pages → Source: GitHub Actions ก่อนหนึ่งครั้ง — `GITHUB_TOKEN`
-เปิดให้เองไม่ได้ (ได้ `Resource not accessible by integration`)
-
-เว็บอยู่ใต้ sub-path `/bad-matchup/` ซึ่งปกติเป็นจุดที่ asset พัง แต่ `vite.config.js`
-ตั้ง `base: './'` ไว้ asset เลยออกมาเป็น `./assets/...` ใช้ได้ทุก path และลิงก์แชร์
-ก็พก sub-path ติดไปด้วยถูกต้อง
+Releases are tagged (`v1.0.0`, …). `main` is what the live site runs; new work happens on a
+version branch (currently `v2`) and reaches the site when it is merged into `main`. The running
+version is shown at the bottom of the Settings page.
 
 ---
 
-## ธีม / Theme
+## How the matching works
 
-กำหนดไว้ที่เดียวใน `src/index.css` โดย**เขียนทับสเกล `slate` ของ Tailwind** แทนที่จะสร้าง
-token ชุดใหม่ขนานกัน เพราะทุกคอมโพเนนต์เรียก `slate-*` อยู่แล้ว เปลี่ยนที่เดียวจึงเปลี่ยนทั้งแอป
+All of the engine lives in `src/lib/matchmaker.js` as pure functions. Every statistic is derived
+from the round history, so editing or deleting a round corrects everything downstream.
 
-สามชั้น ไล่จากเข้มไปสว่างในโหมดสว่าง และกลับกันในโหมดมืด
+1. **How many courts to run.** When not everyone can rest on time, the rest mode decides. In
+   *Flexible* and *Rest on time* the engine looks three rounds ahead, so a greedy round of full
+   courts does not leave the next round short of fresh players.
+2. **Who plays.** Each player present is scored on fewer games than their fair share, time spent
+   waiting, and their current streak. The fair share is seats ÷ players present, summed over
+   the rounds they attended. The engine may bend this queue slightly when doing so creates a new
+   pairing, within strict limits: nobody gets more than a game ahead, and the stamina rule holds.
+3. **Who partners whom.** Randomised restarts and hill-climbing minimise a cost made of level
+   balance, level spread on a court, repeated partners, repeated opponents, gender preferences
+   and singles fairness.
+4. **The whole-schedule polish.** Once a batch exists, simulated annealing reworks it as one
+   piece. It swaps people within rounds and trades seats across rounds without changing anyone's
+   game count. A first pass spreads partnerships as evenly as the seats allow. A second pass
+   spreads opponents with every other rule locked, moving whole teams so partnerships stay intact.
+5. **Fairest of three.** Optionally, steps 1–4 run three times and the fairest result is kept.
+   The comparison goes by over-limit seats, then games against fair share, then partner coverage,
+   then opponent spread.
 
-| | Light | Dark |
-| --- | --- | --- |
-| Header / แถบ nav | เซจอ่อน `L 0.874` — **เข้มกว่า**พื้นหลัง เพราะเดิมมันเป็นแถบสว่างที่สุดบนจอ ขนาบหน้าจอทั้งบนล่าง | `L 0.196` คั่นระหว่างพื้นกับการ์ด |
-| พื้นหลัง | ขาวงาช้างเข้ม `L 0.915` | น้ำเงินเข้ม `L 0.163` |
-| การ์ด | ครีม `L 0.952` ลอยขึ้นมาแค่ขั้นเดียว ไม่มีอะไรเข้าใกล้ `#fff` เลย | เขียวเข้ม `L 0.223` |
-| Main | เขียว | เขียว |
-| Secondary | เขียวอ่อน | เขียวเข้มโปร่ง |
-| สีตัด | ส้ม | ส้ม |
+The weights behind steps 2 and 3 are adjustable in **Settings**. The in-app guide ("?" next to
+the mode buttons) walks through each step with real engine output.
 
-ธีมไม่มีโหมด "ตามระบบ" ให้เลือก — เปิดแอปครั้งแรกจะอ่าน `prefers-color-scheme` มาตั้งเป็นค่าเริ่มต้น
-แล้วจากนั้นก็ยึดตามที่ผู้ใช้เลือกไว้ พลิกมือถือเข้า night mode จึงไม่ไปทับสิ่งที่ตั้งใจเลือก
+### Measured results (default settings)
 
-สีส้มใช้เฉพาะที่ที่สีเขียวจะจมหายไปกับตัวเอง — ปุ่ม "จัดใหม่", ชิปเลือกจำนวนรอบ,
-เลขรอบในรูปที่ export, และวงแหวนตอนเลือกคนสลับตัว
-
-## แชร์เป็นลิงก์ / Share links
-
-กดปุ่ม **แชร์** เหนือตาราง จะได้ลิงก์ที่**พกตารางทั้งก้อนไว้ในตัว** ไม่มีเซิร์ฟเวอร์ ไม่มีฐานข้อมูล
-ไม่มีบัญชี ตรงตามข้อกำหนดเดิมของแอปเป๊ะ ๆ
-
-ทุกอย่างอยู่หลัง `#` ซึ่งเบราว์เซอร์**ไม่ส่งไปหาเซิร์ฟเวอร์**เลย static host จึงใช้ได้
-และชื่อผู้เล่นไม่เคยไปโผล่ใน log ของใคร
-
-ข้อมูลถูกบีบก่อนด้วยการแปลง id เป็น index แล้ว deflate (`CompressionStream` มีในเบราว์เซอร์อยู่แล้ว
-ไม่ต้องลงไลบรารี) ขนาดที่วัดได้จริง:
-
-| เซสชัน | ความยาวลิงก์ |
+| Scenario | Result |
 | --- | --- |
-| 8 คน / 2 คอร์ท / 10 รอบ | ~340 ตัวอักษร |
-| 12 คน / 3 คอร์ท / 15 รอบ | ~610 |
-| 20 คน / 4 คอร์ท / 25 รอบ | ~1,190 |
-| 24 คน / 5 คอร์ท / 100 รอบ | ~4,110 |
-
-**สองโหมด**
-
-- **ดูอย่างเดียว** — ผู้รับเปิดดูตาราง สลับการ์ด/ตารางรวม เซฟรูปได้ แต่แก้อะไรไม่ได้
-- **รับไปแก้ต่อ** — ผู้รับกด "รับมาแก้ต่อ" เพื่อก๊อปตารางลงเครื่องตัวเองแล้วแก้ได้เต็มที่
-
-> ⚠️ โหมด "รับไปแก้ต่อ" **ไม่ได้ sync กลับ** สิ่งที่ผู้รับแก้จะอยู่แค่ในเครื่องเขา
-> ถ้าอยากให้หลายเครื่องเห็นตรงกันสองทางจริง ๆ ต้องมี backend (แนะนำ Supabase —
-> ได้ realtime มาเลยไม่ต้อง poll; อย่าใช้ Cloudflare KV เพราะ eventually consistent
-> ได้ถึง ~60 วินาที คนคีย์สกอร์แล้วอีกคนไม่เห็นจะสับสน)
-
-ตารางที่แชร์มาจะถูกเก็บแยกจากข้อมูลของผู้รับเสมอ — เปิดลิงก์ของคนอื่นไม่มีทางทับข้อมูลตัวเอง
-นอกจากจะกดปุ่มรับเอง (ซึ่งจะถามยืนยันก่อน)
-
-## Export รูป / Image export
-
-ปุ่ม **บันทึกเป็นรูป** ในแท็บตารางรวมจะวาดตารางลง `<canvas>` ตรง ๆ ด้วย `fillText`
-(`src/lib/exportImage.js`) ไม่ได้ใช้ html2canvas หรือแปลงผ่าน SVG เพราะสองวิธีนั้น
-อย่างแรกลากไลบรารีมาเพิ่มร่วม 200 KB ส่วนอย่างหลังทำฟอนต์ไทยหายตอน rasterise
-canvas ใช้ฟอนต์ที่หน้าเว็บโหลดไว้แล้ว ชื่อไทยเลยออกมาถูกต้อง
-
-- ความละเอียด 2–3× ตาม `devicePixelRatio` ชัดพอสำหรับซูมอ่านบนมือถือ
-- สีพื้นหลังตามธีมที่เปิดอยู่ — ธีมสว่างได้กระดาษครีม ธีมมืดได้พื้นน้ำเงินเข้มสลับแถบเขียว
-  เหมือนที่เห็นบนจอตอนกดปุ่ม
-- ความกว้างคอลัมน์วัดจากชื่อจริง มีความกว้างขั้นต่ำกันไม่ให้บีบ และตัด `…` ถ้าชื่อยาวเกิน
-  จะได้ไม่ล้นไปทับคอลัมน์ข้าง ๆ
-- มีสวิตช์ **แสดงมือ** ถ้าอยากให้ติดระดับฝีมือไปในรูปด้วย
-- บนมือถือที่รองรับ Web Share API จะเปิด share sheet ให้เลย ถ้าไม่รองรับก็ดาวน์โหลดเป็นไฟล์
-
-## การจับคู่ทำงานยังไง / How the matching works
-
-ทุกอย่างคำนวณใหม่จากประวัติรอบที่ผ่านมาเสมอ (`src/lib/matchmaker.js`) — ลบหรือแก้รอบไหน
-สถิติกับการจับคู่รอบถัดไปก็ปรับตามให้เอง
-
-**ขั้นที่ 1 — เลือกว่าใครได้ลงรอบนี้** ให้คะแนนผู้เล่นที่ว่างทุกคนแล้วเอาคนคะแนนสูงสุดเท่าที่คอร์ทรับไหว
-
-| น้ำหนัก | ผลที่ได้ |
-| --- | --- |
-| `fewGames` | คนที่เล่นไปน้อยกว่าได้ลงก่อน |
-| `waiting` | คนที่นั่งรอนานกว่าได้ลงก่อน |
-| `stamina` | คนที่เพิ่งเล่นติดกันหลายรอบถูกดันลงท้ายคิว |
-
-นอกจากนี้ยังมีกฎแข็ง: ใครเล่นครบ `maxConsecutive` รอบติดกันจะถูกดันไปท้ายคิว
-**เว้นแต่คนไม่พอจะเติมคอร์ท** — กรณีนั้นจะผ่อนกฎให้เท่าที่จำเป็นเท่านั้น
-
-**ขั้นที่ 2 — จัดคนที่เลือกมาลงคอร์ทและแบ่งฝั่ง** ใช้ randomised restarts + hill-climbing
-หาการจัดที่ค่า cost ต่ำสุด ขั้นนี้กินเวลาราว 99% ของทั้งหมด (100 รอบ สำหรับ 24 คน 5 คอร์ท
-ใช้เวลาประมาณ 8 วินาที) เลยคืน main thread ให้เบราว์เซอร์หลังจบแต่ละรอบ
-หน้าจอจะได้ไม่ค้างและกดยกเลิกได้
-
-| น้ำหนัก | ผลที่ได้ |
-| --- | --- |
-| `levelBalance` | ผลรวมฝีมือสองฝั่งใกล้เคียงกัน |
-| `levelSpread` | ไม่เอามือใหม่ไปอยู่คอร์ทเดียวกับมือเก่ง |
-| `partnerVariety` | ไม่จับคู่กับคนเดิมซ้ำ ๆ (ยิ่งเพิ่งคู่กันรอบที่แล้วยิ่งโดนหนัก) |
-| `opponentVariety` | ไม่เจอคู่แข่งหน้าเดิมซ้ำ ๆ |
-| `gender` | คู่ผสม หรือ ชายคู่/หญิงคู่ ตามที่เลือกไว้ |
-
-ปรับน้ำหนักทั้ง 8 ตัวได้ในแท็บ **ตั้งค่า** — ค่าที่ให้มาเป็น default เน้น "กระจายคู่ให้ทั่วถึงที่สุด"
-ตามด้วยความสมดุลของฝีมือ
-
-### ผลที่วัดได้ (จำลอง 8 ครั้งต่อสถานการณ์)
-
-| สถานการณ์ | ช่วงห่างจำนวนเกม | คู่ที่ไม่ซ้ำ | จับคู่ซ้ำสูงสุด |
-| --- | --- | --- | --- |
-| 11 คน / 2 คอร์ท / 14 รอบ | 1 | 93% ของคู่ที่เป็นไปได้ | 2 ครั้ง |
-| 16 คน / 4 คอร์ท / 16 รอบ | 0 | 99% | 2 ครั้ง |
-| 20 คน / 3 คอร์ท / 20 รอบ | 0–1 | 62% (เพดานทางคณิตศาสตร์คือ 63%) | 2 ครั้ง |
+| 9 players, 1 court, 20 rounds | Every pair partners at least once; games within one of each other; no rest longer than two rounds |
+| 8 players, 1 court, 14 rounds | Every pair partners exactly once |
+| 9 players, 1 court, 18 rounds (the suggested length) | Every pair partners |
+| 9 players, 2 courts, 20 rounds, *Rest on time* | No one plays more than two rounds in a row; singles spread 4–5 each, never twice running |
+| A player arriving at round 11 of 20 | Plays at the same rate as everyone else (the v1 engine rushed them on court for 7 of 10 rounds) |
+| 20 rounds added one tap at a time | As fair as building them at once |
 
 ---
 
-## โครงสร้างโค้ด / Project layout
+## Implementation notes
+
+### Share links
+The schedule is packed into the URL fragment (`#…`), which browsers never send to a server.
+Static hosting therefore works, and player names never reach anyone's logs. IDs are replaced by
+indices and the payload is deflated with the built-in `CompressionStream`, so no library is
+needed.
+
+| Session | Link length |
+| --- | --- |
+| 8 players / 2 courts / 10 rounds | ~340 characters |
+| 12 players / 3 courts / 15 rounds | ~610 |
+| 20 players / 4 courts / 25 rounds | ~1,190 |
+| 24 players / 5 courts / 100 rounds | ~4,110 |
+
+*Copy and edit* copies the schedule into the recipient's own storage. It does **not** sync back.
+True multi-device sync would need a backend; Supabase Realtime would be the natural fit. A shared
+schedule is always kept apart from the recipient's own data until they explicitly take it over.
+
+### Image export
+`src/lib/exportImage.js` draws the schedule onto a `<canvas>` with `fillText`, not html2canvas
+(about 200 KB) or SVG rasterisation (which drops Thai fonts). The canvas reuses the fonts the
+page has already loaded. Output is rendered at 2–3× device pixel ratio, follows the active
+theme, sizes columns to the real names and truncates with an ellipsis rather than overflowing.
+
+### Theme
+Defined once in `src/index.css` by **overriding Tailwind's `slate` scale**, so every component
+that already uses `slate-*` picks it up. Light mode layers a sage header over an ivory page with
+cream cards (nothing approaches pure white). Dark mode uses navy, deep green and a raised green.
+Green is the primary colour and orange the accent, used only where green would blend into
+itself.
+
+---
+
+## Project layout
 
 ```
 src/
   lib/
-    matchmaker.js      อัลกอริทึมทั้งหมด (pure functions ไม่แตะ React เลย)
-    exportImage.js     วาดตารางลง canvas แล้วเซฟ/แชร์เป็น PNG
-    share.js           pack/deflate ตารางลง URL fragment และอ่านกลับ
-    storage.js         localStorage + export/import
-    i18n.js            คำแปลไทย/อังกฤษ
+    matchmaker.js      the engine — selection, pairing, polish, rest modes, suggestions (pure)
+    plan.js            the hidden plan behind one-round-at-a-time additions
+    roster.js          detects players who left or arrived after scheduling
+    exportImage.js     canvas rendering of the schedule image
+    share.js           packing schedules into share links
+    storage.js         localStorage, backup import/export, settings migration
+    i18n.js            Thai and English strings
+    testkit.js         shared helpers for the test suite
   components/
-    PlayTab.jsx        หน้าหลัก: เลือกโหมด สร้างรอบ แสดงตาราง
-    MatchCard.jsx      การ์ดหนึ่งคอร์ท: ทีม A / สกอร์ / ทีม B
-    ScheduleTable.jsx  ตารางรวมทุกรอบ + ปุ่ม export รูป
-    ShareSheet.jsx     สร้างลิงก์แชร์ เลือกโหมด view/edit
-    RosterSheet.jsx    บันทึก/เรียก/เปลี่ยนชื่อ/ลบ ก๊วนที่ตั้งชื่อไว้
-    PlayersTab.jsx     จัดการผู้เล่น
-    CourtsTab.jsx      จัดการคอร์ท
-    StatsTab.jsx       สถิติ
-    SettingsTab.jsx    น้ำหนัก สตามินา ภาษา ธีม ข้อมูล
-    ui.jsx             ปุ่ม การ์ด สไลเดอร์ bottom sheet ฯลฯ
-  App.jsx              state ทั้งหมด + แท็บ + การบันทึกลง localStorage
+    PlayTab.jsx        modes, round controls, schedule, reshuffle, roster-change banner
+    ScheduleTable.jsx  the schedule grid with match ticks and the stamina view
+    MatchCard.jsx      one court: teams and scores
+    RoundAdvisor.jsx   round suggestions before a session
+    StatsTab.jsx       per-player statistics and detail sheets
+    FairnessReport.jsx the "How even is it?" check and who-met-whom grid
+    SettingsTab.jsx    weights, stamina and rest modes, courts behaviour, data
+    PresetCard.jsx     saved setups
+    HelpSheet.jsx      the in-app guide and rest-mode explainer
+    HelpInsight.jsx    "Inside balanced mode" walkthrough
+    helpData.js        real engine output used by the guide
+    ImageSheet.jsx     image preview with save and share
+    ShareSheet.jsx     share-link creation
+    RosterSheet.jsx    saved rosters
+    PlayersTab.jsx, CourtsTab.jsx, PlayerBits.jsx, ui.jsx
+  App.jsx              application state, actions and tabs
 ```
 
-## ข้อมูล / Data
+## Data and privacy
 
-เก็บที่ `localStorage` คีย์ `bad-matchup:v1` เท่านั้น ไม่มีการส่งออกนอกเครื่อง
-ก๊วนที่บันทึกไว้อยู่ใน state ก้อนเดียวกัน (`state.rosters`) เลยติดไปกับไฟล์สำรองด้วยอัตโนมัติ
-ถ้าจะย้ายเครื่องให้ใช้ **ตั้งค่า → ดาวน์โหลดไฟล์สำรอง** แล้วนำเข้าที่เครื่องใหม่
+Everything is stored under the `localStorage` key `bad-matchup:v1` and never leaves the device.
+Rosters, setups and settings live in the same state, so a backup file carries all of them.
+To move to another device, use **Settings → Export backup** and import the file there.
 
-> ⚠️ ล้างข้อมูลเบราว์เซอร์ = ข้อมูลหาย เพราะฉะนั้นถ้าเป็นก๊วนประจำ แนะนำให้ export เก็บไว้
+> ⚠️ Clearing the browser's site data deletes the schedule. Regular groups should keep a backup.
