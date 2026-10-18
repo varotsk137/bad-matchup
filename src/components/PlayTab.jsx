@@ -163,7 +163,9 @@ export default function PlayTab({
     } else rebuildAll(addCount)
   }
 
-  const reshuffleRemaining = async (n = redoCount) => {
+  const reshuffleRemaining = async (count) => {
+    // only ever a number of rounds — never a click event passed straight through
+    const n = Number.isInteger(count) && count > 0 ? count : redoCount
     setReshuffleOpen(false)
     setOpenId(undefined)
     await solve((onProgress) => actions.regenerateRemaining(onProgress, n), n)
@@ -310,7 +312,7 @@ export default function PlayTab({
               <Button
                 variant="primary"
                 className="h-auto w-full flex-col items-start gap-0.5 py-3 text-left"
-                onClick={reshuffleRemaining}
+                onClick={() => reshuffleRemaining(redoCount)}
               >
                 <span className="text-sm font-semibold">
                   {t('reshuffleRemaining', { n: redoCount })}
