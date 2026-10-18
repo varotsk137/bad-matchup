@@ -51,6 +51,7 @@ export default function PlayTab({
   const [helpOpen, setHelpOpen] = useState(false)
   const [reshuffleOpen, setReshuffleOpen] = useState(false)
   const [redoCount, setRedoCount] = useState(1)
+  const [startOverCount, setStartOverCount] = useState(1)
   // a build that runs past a few seconds earns a pointer to the knobs that
   // make it faster
   const [slow, setSlow] = useState(false)
@@ -159,6 +160,7 @@ export default function PlayTab({
   const reshuffle = () => {
     if (played > 0) {
       setRedoCount(Math.max(1, remaining))
+      setStartOverCount(Math.max(1, state.rounds.length))
       setReshuffleOpen(true)
     } else rebuildAll(addCount)
   }
@@ -184,10 +186,10 @@ export default function PlayTab({
   }
 
   const startOver = async () => {
+    const n = startOverCount
     setReshuffleOpen(false)
-    if (!confirm(t('startOverConfirm', { n: state.rounds.length }))) return
+    if (!confirm(t('startOverConfirm', { n }))) return
     setOpenId(undefined)
-    const n = state.rounds.length
     await solve((onProgress) => actions.regenerate(n, onProgress), n)
   }
 
@@ -321,15 +323,26 @@ export default function PlayTab({
                   {t('reshuffleRemainingHint')}
                 </span>
               </Button>
-              <button
-                onClick={startOver}
-                className="w-full rounded-xl border border-rose-300 px-4 py-3 text-left text-rose-700 transition hover:bg-rose-50 dark:border-rose-900 dark:text-rose-300 dark:hover:bg-rose-950/40"
-              >
-                <span className="block text-sm font-semibold">
-                  {t('startOver', { n: state.rounds.length })}
-                </span>
-                <span className="block text-xs opacity-80">{t('startOverHint')}</span>
-              </button>
+              <div className="space-y-2 rounded-xl border border-rose-300 p-3 dark:border-rose-900">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-sm">{t('startOverHowMany')}</span>
+                  <Stepper
+                    value={startOverCount}
+                    onChange={setStartOverCount}
+                    max={MAX_AHEAD}
+                    label={t('roundsLabel')}
+                  />
+                </div>
+                <button
+                  onClick={startOver}
+                  className="w-full rounded-lg px-1 py-1 text-left text-rose-700 transition hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-950/40"
+                >
+                  <span className="block text-sm font-semibold">
+                    {t('startOver', { n: startOverCount })}
+                  </span>
+                  <span className="block text-xs opacity-80">{t('startOverHint')}</span>
+                </button>
+              </div>
             </div>
           </Sheet>
 
