@@ -139,6 +139,7 @@ const dict = {
   vs: { th: 'พบ', en: 'vs' },
   finishGame: { th: 'จบเกม', en: 'Finish' },
   reopen: { th: 'แก้ไขผล', en: 'Reopen' },
+  matchFinished: { th: 'จบแล้ว', en: 'Done' },
   score: { th: 'สกอร์', en: 'Score' },
   scoreOptional: { th: 'ใส่สกอร์ก็ได้ ไม่ใส่ก็ได้', en: 'Score is optional' },
   deleteRound: { th: 'ลบรอบนี้', en: 'Delete round' },

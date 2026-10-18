@@ -282,39 +282,42 @@ export default function ScheduleTable({
                       typeof m.scoreA === 'number' && typeof m.scoreB === 'number'
                     return (
                       <td key={c.id} className="px-2 py-1.5 align-middle">
-                        <div className="flex items-center gap-2">
-                          <div className="min-w-0 flex-1">
-                            <Side ids={m.teamA} tone="A" ri={i} />
-                            <span className="flex items-center gap-1 text-[10px] leading-3 font-bold text-slate-300 dark:text-slate-600">
-                              {t('vs')}
-                              {hasScore && (
-                                <span className="text-slate-500 tabular-nums dark:text-slate-400">
-                                  {m.scoreA}–{m.scoreB}
-                                </span>
-                              )}
-                              {m.done && !onToggleDone && (
-                                <span className="text-brand-600 dark:text-brand-400">✓</span>
-                              )}
+                        <Side ids={m.teamA} tone="A" ri={i} />
+                        <span
+                          className={cx(
+                            'flex items-center gap-1.5 text-[10px] leading-3 font-bold text-slate-300 dark:text-slate-600',
+                            onToggleDone && 'my-1'
+                          )}
+                        >
+                          {t('vs')}
+                          {hasScore && (
+                            <span className="text-slate-500 tabular-nums dark:text-slate-400">
+                              {m.scoreA}–{m.scoreB}
                             </span>
-                            <Side ids={m.teamB} tone="B" ri={i} />
-                          </div>
+                          )}
+                          {m.done && !onToggleDone && (
+                            <span className="text-brand-600 dark:text-brand-400">✓</span>
+                          )}
+                          {/* right between the two teams, so it reads as "this match": a
+                              labelled pill, not a bare circle at the far edge of the cell */}
                           {onToggleDone && (
                             <button
                               onClick={() => onToggleDone(round, m.id)}
                               aria-pressed={!!m.done}
-                              aria-label={t(m.done ? 'reopen' : 'finishGame')}
                               title={t(m.done ? 'reopen' : 'finishGame')}
                               className={cx(
-                                'grid h-8 w-8 shrink-0 place-items-center rounded-full border-2 text-sm font-bold transition active:scale-90',
+                                'inline-flex h-6 items-center gap-1 rounded-full border px-2 text-[11px] font-semibold transition active:scale-95',
                                 m.done
                                   ? 'border-brand-600 bg-brand-600 text-white'
-                                  : 'border-slate-300 text-transparent hover:border-brand-500 dark:border-slate-600'
+                                  : 'border-slate-300 text-slate-600 hover:border-brand-500 hover:text-brand-700 dark:border-slate-600 dark:text-slate-300'
                               )}
                             >
-                              ✓
+                              <span aria-hidden>{m.done ? '✓' : '○'}</span>
+                              {t(m.done ? 'matchFinished' : 'finishGame')}
                             </button>
                           )}
-                        </div>
+                        </span>
+                        <Side ids={m.teamB} tone="B" ri={i} />
                       </td>
                     )
                   })}
