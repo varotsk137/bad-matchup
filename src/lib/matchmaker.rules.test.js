@@ -12,6 +12,8 @@ import {
   generateRounds,
   generateRoundsAsync,
   playedRounds,
+  roundsForTime,
+  suggestRounds,
   swapSlots,
 } from './matchmaker'
 import {
@@ -290,5 +292,39 @@ describe('late arrivals', () => {
       expect(games.late).toBeLessThanOrEqual(Math.max(...others))
       expect(games.late).toBeGreaterThanOrEqual(Math.min(...others) - 1)
     }
+  })
+})
+
+describe('round suggestions', () => {
+  const suggest = (n, c, options = {}) =>
+    suggestRounds({ players: players(n), courts: courts(c), options })
+
+  it('rounds for everyone to partner everyone, with even games when cheap', () => {
+    // 36 pairs, 2 partner slots a round → 18, and 18 × 4 seats ÷ 9 = 8 games each
+    expect(suggest(9, 1)).toMatchObject({ coverAll: 18, gamesEach: 8 })
+    expect(suggest(8, 1)).toMatchObject({ coverAll: 14, gamesEach: 7 })
+  })
+
+  it('counts the seats the rest mode will really open', () => {
+    // 9 on two courts but at most 2 in a row: about 6 seats, one doubles court
+    expect(suggest(9, 2, { restMode: 'strict' }).coverAll).toBe(18)
+    // filling every court gives two doubles courts → half the rounds
+    expect(suggest(9, 2, { restMode: 'fill' }).coverAll).toBe(9)
+  })
+
+  it('nothing to suggest for partners on singles-only courts', () => {
+    const r = suggestRounds({ players: players(6), courts: courts(2, 'singles'), options: {} })
+    expect(r.coverAll).toBeNull()
+  })
+
+  it('a court booking turns into rounds', () => {
+    expect(roundsForTime(2, 15)).toBe(8)
+    expect(roundsForTime(1.5, 12)).toBe(7)
+  })
+
+  it('the engine really does cover everyone in the suggested rounds', () => {
+    const { coverAll } = suggest(9, 1)
+    const { ps, rounds } = build(9, 1, coverAll)
+    expect(analyse(ps, rounds).neverPartnered).toBe(0)
   })
 })

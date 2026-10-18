@@ -57,6 +57,8 @@ export const DEFAULT_OPTIONS = {
   useStamina: true, // off: nobody tracks streaks at all — no forced rests, no penalty
   fillIdleCourts: true, // split a doubles court into two singles rather than leave one empty
   fairestOfThree: true, // build a batch three times and keep the fairest
+  bookingHours: 2, // for the round suggestion: how long the courts are booked
+  minutesPerGame: 15, // …and how long a game takes, changeover included
   effort: 'normal', // 'fast' | 'normal' | 'thorough'
 }
 
@@ -1061,6 +1063,48 @@ export function fillRound({ round, players, courts, rounds, weights, options }) 
     },
   }
 }
+
+/* ------------------------------------------------------ how many rounds */
+
+const gcd = (a, b) => (b ? gcd(b, a % b) : a)
+
+/**
+ * Rounds worth suggesting before a session starts. `seats` is what a round
+ * typically puts on court once the rest mode has had its say (the long-run
+ * sustainable number when not everyone can rest), and `teams` the doubles
+ * pairs that make up — singles have no partners, so they add nothing here.
+ *
+ *   coverAll – fewest rounds in which every pair could have partnered once,
+ *              rounded up to an even-games count when that costs little
+ *   gamesEach – roughly how many games everyone gets in that many rounds
+ */
+export function suggestRounds({ players, courts, options }) {
+  const { opts } = resolve(options)
+  const n = players.filter(isAvailable).length
+  const enabled = courts.filter((c) => c.enabled !== false)
+  if (n < 2 || !enabled.length) return null
+
+  let seats = Math.min(totalCapacity(enabled), n)
+  if (opts.enforceStamina && opts.restMode !== 'fill') {
+    const limit = Math.max(1, opts.maxConsecutive)
+    seats = Math.min(seats, Math.max(2, Math.floor((n * limit) / (limit + 1))))
+  }
+  const doublesCourts = enabled.filter((c) => courtSize(c) === 4).length
+  const teams = 2 * Math.min(doublesCourts, Math.floor(seats / 4))
+  if (!teams) return { seats, coverAll: null, gamesEach: null }
+
+  const pairs = (n * (n - 1)) / 2
+  let coverAll = Math.ceil(pairs / teams)
+  // every `step` rounds the games come out exactly even
+  const step = n / gcd(n, seats)
+  const even = Math.ceil(coverAll / step) * step
+  if (even - coverAll <= Math.max(2, coverAll * 0.25)) coverAll = even
+  return { seats, coverAll, gamesEach: Math.round((coverAll * seats) / n) }
+}
+
+/** Rounds that fit a court booking: rounds run side by side on every court. */
+export const roundsForTime = (hours, minutesPerGame) =>
+  Math.max(1, Math.floor((hours * 60) / Math.max(1, minutesPerGame)))
 
 /* ----------------------------------------------------- played vs planned */
 

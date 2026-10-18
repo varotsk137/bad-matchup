@@ -1,7 +1,7 @@
 {
   ".claude/launch.json": {
-    "mtime": 1792304598.9243913,
-    "seen": 1792304645.1285868,
+    "mtime": 1792304763.2743757,
+    "seen": 1792304812.8565745,
     "ast_hash": "30b3da5575cfcca2c14600c4fb988cec",
     "semantic_hash": ""
   },
@@ -42,9 +42,9 @@
     "semantic_hash": ""
   },
   "src/components/PlayTab.jsx": {
-    "mtime": 1792303987.8941803,
-    "seen": 1792304113.211088,
-    "ast_hash": "d94028efd896cf4176c14d7244a78379",
+    "mtime": 1792304720.753503,
+    "seen": 1792304812.8566124,
+    "ast_hash": "c965cc72e1f8efa6d03df941d30b06e8",
     "semantic_hash": ""
   },
   "src/components/PlayerBits.jsx": {
@@ -102,15 +102,15 @@
     "semantic_hash": ""
   },
   "src/lib/i18n.js": {
-    "mtime": 1792304558.3895044,
-    "seen": 1792304645.12865,
-    "ast_hash": "79a8adf2f017ed5b449f63d36c05d94f",
+    "mtime": 1792304751.8803198,
+    "seen": 1792304812.8566391,
+    "ast_hash": "1ec3c00a3963a6a904f8d9922d7f7f1c",
     "semantic_hash": ""
   },
   "src/lib/matchmaker.js": {
-    "mtime": 1792304232.4819674,
-    "seen": 1792304374.2874112,
-    "ast_hash": "7ae44949f241811219194692915efe2c",
+    "mtime": 1792304687.3257923,
+    "seen": 1792304812.856641,
+    "ast_hash": "da3cc57dce1d7fba91018409b83c9cb1",
     "semantic_hash": ""
   },
   "src/lib/share.js": {
@@ -150,9 +150,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792304599.1334238,
-    "seen": 1792304645.1286724,
-    "ast_hash": "99943fbed7559ae0865d0af232de7626",
+    "mtime": 1792304763.503,
+    "seen": 1792304812.8566608,
+    "ast_hash": "d55a175f15c493c35b81c9d3afdd95d8",
     "semantic_hash": ""
   },
   "index.html": {
@@ -192,9 +192,9 @@
     "semantic_hash": ""
   },
   "src/lib/matchmaker.rules.test.js": {
-    "mtime": 1792304276.7522497,
-    "seen": 1792304374.287415,
-    "ast_hash": "ee3d5c418ab8104f98200d7f267d3cc0",
+    "mtime": 1792304689.930959,
+    "seen": 1792304812.8566449,
+    "ast_hash": "65d3d56ba74cec06b7e6a9fb2206c858",
     "semantic_hash": ""
   },
   "src/lib/testkit.js": {
@@ -213,6 +213,12 @@
     "mtime": 1792304560.9657507,
     "seen": 1792304645.1286323,
     "ast_hash": "a75e7e29641c701d41962af00c1dcc0a",
+    "semantic_hash": ""
+  },
+  "src/components/RoundAdvisor.jsx": {
+    "mtime": 1792304749.3928087,
+    "seen": 1792304812.856624,
+    "ast_hash": "c494543958ab7a2ade11bf613628ddf8",
     "semantic_hash": ""
   }
 }

@@ -11,6 +11,7 @@ import MatchCard from './MatchCard'
 import ScheduleTable from './ScheduleTable'
 import { analyse } from './FairnessReport'
 import HelpSheet from './HelpSheet'
+import RoundAdvisor from './RoundAdvisor'
 import { LevelBadge } from './PlayerBits'
 import { Button, Card, Empty, Sheet, cx } from './ui'
 
@@ -333,6 +334,15 @@ export default function PlayTab({
                   label={t('roundsLabel')}
                 />
               )}
+              <RoundAdvisor
+                state={state}
+                t={t}
+                actions={actions}
+                onUse={(n) => {
+                  setPreset('custom')
+                  setCustomCount(n)
+                }}
+              />
             </>
           )}
 

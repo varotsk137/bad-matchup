@@ -221,6 +221,21 @@ const dict = {
   howManyRounds: { th: 'จะเล่นกี่รอบ?', en: 'How many rounds?' },
   customRounds: { th: 'กำหนดเอง (1-100)', en: 'Custom (1-100)' },
   generating: { th: 'กำลังจัด…', en: 'Working…' },
+  adviseCover: {
+    th: '{n} รอบ ทุกคนได้คู่กันครบ (คนละประมาณ {g} เกม)',
+    en: '{n} rounds for everyone to partner everyone (about {g} games each)',
+  },
+  adviseTime: {
+    th: 'จองคอร์ทไว้ ≈ {n} รอบ (คนละประมาณ {g} เกม)',
+    en: 'Your booking fits ≈ {n} rounds (about {g} games each)',
+  },
+  adviseUse: { th: 'ใช้', en: 'Use' },
+  adviseTimeShort: {
+    th: 'ยังไม่พอให้ทุกคนได้คู่กันครบ',
+    en: 'not quite enough for every pair to team up',
+  },
+  hoursN: { th: '{n} ชม.', en: '{n} h' },
+  minutesPerGameN: { th: 'เกมละ {n} นาที', en: '{n} min a game' },
   slowHint: {
     th: 'ใช้เวลานานหน่อย ถ้าอยากให้เร็วขึ้น ลดจำนวนรอบ หรือปรับความละเอียด / ปิด "จัดซ้ำ 3 ครั้ง" ได้',
     en: 'Taking a while — for faster builds, use fewer rounds, a lower search effort or switch off "Build 3 times"',
