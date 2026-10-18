@@ -749,6 +749,7 @@ export default function App() {
             playersById={playersById}
             t={t}
             lang={state.lang}
+            goTo={goTo}
           />
         )}
         {tab === 'settings' && (

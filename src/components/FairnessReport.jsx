@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { rosterChange } from '../lib/roster'
 import { Card, SectionTitle, cx } from './ui'
 
 /**
@@ -6,7 +7,7 @@ import { Card, SectionTitle, cx } from './ui'
  * schedule could possibly reach, because "3 pairs never partnered" is a great
  * result with too few rounds and a poor one with plenty.
  */
-export default function FairnessReport({ state, playersById, t }) {
+export default function FairnessReport({ state, playersById, t, goTo }) {
   const [view, setView] = useState('partners')
   const r = useMemo(() => analyse(state), [state])
   if (r.ids.length < 3) return null
@@ -59,6 +60,9 @@ export default function FairnessReport({ state, playersById, t }) {
       grade: r.singlesMax - r.singlesMin <= 1 ? 0 : r.singlesMax - r.singlesMin === 2 ? 1 : 2,
     })
   const worst = Math.max(...checks.map((c) => c.grade))
+  // a group change the schedule has not caught up with explains any odd
+  // numbers below — say that instead of grading a plan that is out of date
+  const stale = rosterChange(state)
 
   const grid = view === 'partners' ? r.partner : view === 'opponents' ? r.opp : r.together
   const names = r.ids.map((id) => playersById.get(id)?.name || '?')
@@ -67,18 +71,32 @@ export default function FairnessReport({ state, playersById, t }) {
     <div>
       <SectionTitle>{t('fairTitle')}</SectionTitle>
       <Card className="space-y-3 p-3">
-        <p
-          className={cx(
-            'rounded-lg px-3 py-2 text-sm font-semibold',
-            worst === 0
-              ? 'bg-brand-100 text-brand-800 dark:bg-brand-950 dark:text-brand-200'
-              : worst === 1
-                ? 'bg-accent-100 text-accent-800 dark:bg-accent-950 dark:text-accent-200'
-                : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-200'
-          )}
-        >
-          {t(['fairVerdictGood', 'fairVerdictOk', 'fairVerdictBad'][worst])}
-        </p>
+        {stale ? (
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg bg-accent-100 px-3 py-2 dark:bg-accent-950">
+            <span className="min-w-0 flex-1 text-sm text-accent-900 dark:text-accent-100">
+              {t('fairStale', { n: stale.upcoming })}
+            </span>
+            {goTo && (
+              <button
+                onClick={() => goTo('play')}
+                className="shrink-0 text-sm font-semibold text-accent-800 underline-offset-2 hover:underline dark:text-accent-200"
+              >
+                {t('fairStaleLink')} →
+              </button>
+            )}
+          </div>
+        ) : (
+          <p
+            className={cx(
+              'rounded-lg px-3 py-2 text-sm font-semibold',
+              worst === 0
+                ? 'bg-brand-100 text-brand-800 dark:bg-brand-950 dark:text-brand-200'
+                : 'bg-accent-100 text-accent-800 dark:bg-accent-950 dark:text-accent-200'
+            )}
+          >
+            {t(['fairVerdictGood', 'fairVerdictOk', 'fairVerdictBad'][worst])}
+          </p>
+        )}
 
         <ul className="divide-y divide-slate-100 dark:divide-slate-800">
           {checks.map((c) => (

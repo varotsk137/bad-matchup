@@ -181,6 +181,15 @@ const dict = {
   addRounds: { th: 'เพิ่มรอบ', en: 'Add round' },
   addRoundsN: { th: 'เพิ่ม {n} รอบ', en: 'Add {n} rounds' },
   regenerate: { th: 'จัดใหม่', en: 'Reshuffle' },
+  redoAllShort: { th: 'จัดใหม่ทั้งตาราง', en: 'Reshuffle all' },
+  redoRemainingShort: { th: 'จัดรอบที่เหลือใหม่', en: 'Redo the rest' },
+  redoRemainingN: { th: 'จัดรอบที่เหลือใหม่ ({n} รอบ)', en: 'Redo the rest ({n} rounds)' },
+  rosterChangedTitle: {
+    th: 'รายชื่อเปลี่ยนแล้ว — รอบที่ยังไม่เล่นยังใช้รายชื่อเดิม',
+    en: 'The group changed — the rounds to come still use the old list',
+  },
+  rosterGone: { th: 'ไม่อยู่แล้ว: {names}', en: 'gone: {names}' },
+  rosterArrived: { th: 'มาใหม่: {names}', en: 'new: {names}' },
   nowPlaying: { th: 'กำลังเล่น', en: 'now' },
   reshuffleIntro: {
     th: 'เล่นไปแล้ว {played} รอบ รอบที่เล่นแล้ว (หรือมีคู่ที่ติ๊กจบแล้ว) จะเก็บไว้เป็นประวัติ',
@@ -309,13 +318,18 @@ const dict = {
     en: '✓ Evened out well — about as good as these players and rounds allow',
   },
   fairVerdictOk: {
-    th: 'พอใช้ บางข้อยังไม่ดีที่สุด ลองกด "จัดใหม่" ดูได้ ระบบจะสุ่มจัดชุดใหม่',
-    en: 'Decent, but some items could be better — try Reshuffle for a fresh build',
+    th: '💡 เกลี่ยได้พอใช้ ถ้าอยากให้ดีขึ้น ลองจัดใหม่อีกครั้ง',
+    en: '💡 Fairly even — a reshuffle may do a little better',
   },
   fairVerdictBad: {
-    th: 'ยังไม่แฟร์ ลองกด "จัดใหม่" เพิ่มจำนวนรอบ หรือเปลี่ยนแบบการพักในหน้าตั้งค่า',
-    en: 'Not even yet — try Reshuffle, more rounds, or another rest mode in Settings',
+    th: '💡 ยังเกลี่ยได้ดีกว่านี้ ลองจัดใหม่ เพิ่มจำนวนรอบ หรือเปลี่ยนแบบการพักในหน้าตั้งค่า',
+    en: '💡 Could be more even — try a reshuffle, more rounds, or another rest mode in Settings',
   },
+  fairStale: {
+    th: 'รายชื่อเปลี่ยนหลังจัดตาราง {n} รอบที่ยังไม่เล่นยังเป็นรายชื่อเดิม ตัวเลขด้านล่างจึงยังไม่ตรง จัดรอบที่เหลือใหม่แล้วจะปรับตาม',
+    en: 'The group changed after the schedule was built — the {n} rounds still to come use the old list, so the numbers below are off until they are rebuilt',
+  },
+  fairStaleLink: { th: 'ไปจัดรอบที่เหลือใหม่', en: 'Rebuild them' },
   fairPartners: { th: 'คู่ที่ไม่เคยเป็นคู่กัน', en: 'Pairs never partnered' },
   fairPartnersNote: {
     th: 'น้อยที่สุดที่เป็นไปได้ {best} คู่',

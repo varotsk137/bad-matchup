@@ -11,6 +11,7 @@ import MatchCard from './MatchCard'
 import ScheduleTable from './ScheduleTable'
 import { analyse } from './FairnessReport'
 import HelpSheet from './HelpSheet'
+import { rosterChange } from '../lib/roster'
 import RoundAdvisor from './RoundAdvisor'
 import { LevelBadge } from './PlayerBits'
 import { Button, Card, Empty, Sheet, cx } from './ui'
@@ -162,11 +163,22 @@ export default function PlayTab({
     } else rebuildAll(addCount)
   }
 
-  const reshuffleRemaining = async () => {
+  const reshuffleRemaining = async (n = redoCount) => {
     setReshuffleOpen(false)
     setOpenId(undefined)
-    const n = redoCount
     await solve((onProgress) => actions.regenerateRemaining(onProgress, n), n)
+  }
+
+  // someone left or arrived after the rest of the schedule was built
+  const change = useMemo(
+    () => (readOnly || mode === 'manual' ? null : rosterChange(state)),
+    [state, readOnly, mode]
+  )
+  const namesOf = (ids) => {
+    const names = ids.map((id) => playersById.get(id)?.name).filter(Boolean)
+    return names.length > 3
+      ? `${names.slice(0, 3).join(', ')} +${names.length - 3}`
+      : names.join(', ')
   }
 
   const startOver = async () => {
@@ -377,7 +389,7 @@ export default function PlayTab({
               mode !== 'manual' &&
               hasRounds && (
                 <Button variant="accent" className="h-11" onClick={reshuffle}>
-                  {t('regenerate')}
+                  {t(played > 0 ? 'redoRemainingShort' : 'redoAllShort')}
                 </Button>
               )
             )}
@@ -409,6 +421,32 @@ export default function PlayTab({
             </p>
           )}
         </Card>
+      )}
+
+      {/* ------------------------------------------------ the group changed */}
+      {change && !busy && (
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-2xl border-2 border-accent-500 bg-accent-50 px-3 py-2.5 dark:bg-accent-950/50">
+          <span className="min-w-0 flex-1 text-sm">
+            <span className="block font-semibold text-accent-800 dark:text-accent-200">
+              {t('rosterChangedTitle')}
+            </span>
+            <span className="block text-xs text-slate-600 dark:text-slate-300">
+              {[
+                change.gone.length && t('rosterGone', { names: namesOf(change.gone) }),
+                change.arrived.length && t('rosterArrived', { names: namesOf(change.arrived) }),
+              ]
+                .filter(Boolean)
+                .join(' · ')}
+            </span>
+          </span>
+          <Button
+            variant="accent"
+            className="h-10 shrink-0"
+            onClick={() => reshuffleRemaining(Math.max(1, change.upcoming))}
+          >
+            {t('redoRemainingN', { n: change.upcoming })}
+          </Button>
+        </div>
       )}
 
       {/* ------------------------------------------------ everyone has met */}

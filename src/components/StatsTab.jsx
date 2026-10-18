@@ -3,7 +3,7 @@ import FairnessReport from './FairnessReport'
 import { Avatar, LevelBadge } from './PlayerBits'
 import { Card, Empty, SectionTitle, Sheet, cx } from './ui'
 
-export default function StatsTab({ state, stats, playersById, t, lang }) {
+export default function StatsTab({ state, stats, playersById, t, lang, goTo }) {
   const [sort, setSort] = useState('games')
   const [openId, setOpenId] = useState(null)
   const formats = useMemo(() => countFormats(state.rounds), [state.rounds])
@@ -53,7 +53,7 @@ export default function StatsTab({ state, stats, playersById, t, lang }) {
         </p>
       </div>
 
-      <FairnessReport state={state} playersById={playersById} t={t} />
+      <FairnessReport state={state} playersById={playersById} t={t} goTo={goTo} />
 
       <div>
         <SectionTitle>{t('players')}</SectionTitle>
