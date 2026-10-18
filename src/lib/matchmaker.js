@@ -126,6 +126,9 @@ export function makeContext(players, rounds) {
       // (on court or on the bench) adds seats ÷ people present
       share: 0,
       load: 0, // games − share: above 0 ahead of the group, below 0 owed games
+      present: 0, // rounds they were there for
+      firstPresent: -1, // first and last round they were there (0-based)
+      lastPresent: -1,
       wins: 0,
       losses: 0,
       pointsFor: 0,
@@ -210,7 +213,14 @@ export function makeContext(players, rounds) {
     // someone who turns up at round 10 is not owed nine rounds of games
     const present = new Set([...playing, ...(round.benched || [])])
     const portion = present.size ? playing.size / present.size : 0
-    for (const id of present) if (stats[id]) stats[id].share += portion
+    for (const id of present) {
+      const s = stats[id]
+      if (!s) continue
+      s.share += portion
+      s.present++
+      if (s.firstPresent < 0) s.firstPresent = ri
+      s.lastPresent = ri
+    }
 
     for (const p of players) {
       const s = stats[p.id]

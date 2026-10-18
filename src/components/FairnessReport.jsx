@@ -17,7 +17,9 @@ export default function FairnessReport({ state, playersById, t }) {
     {
       label: t('fairPartners'),
       value: `${r.neverPartnered}`,
-      note: t('fairPartnersNote', { best: r.partnerFloor }),
+      note:
+        t('fairPartnersNote', { best: r.partnerFloor }) +
+        (r.neverMet ? ` · ${t('fairNeverMetNote', { n: r.neverMet })}` : ''),
       grade:
         r.neverPartnered <= r.partnerFloor ? 0 : r.neverPartnered <= r.partnerFloor + 2 ? 1 : 2,
     },
@@ -31,7 +33,8 @@ export default function FairnessReport({ state, playersById, t }) {
     },
     {
       label: t('fairGames'),
-      value: `${r.gamesMin}–${r.gamesMax}`,
+      // with part-timers the raw range says nothing; show the gap to fair share
+      value: r.partTime ? `±${Math.round(r.loadSpread)}` : `${r.gamesMin}–${r.gamesMax}`,
       note: t(r.partTime ? 'fairGamesNotePartTime' : 'fairGamesNote'),
       grade: r.loadSpread <= 1.01 ? 0 : r.loadSpread <= 2.01 ? 1 : 2,
     },
@@ -204,6 +207,9 @@ export function analyse(state) {
   // fair share of games for the rounds each person was there (see makeContext)
   const share = new Array(n).fill(0)
   const presentRounds = new Array(n).fill(0)
+  // rounds two people were both there — a pair who never overlapped cannot
+  // have partnered, so they are left out of "never partnered"
+  const overlap = mk()
   const singles = new Array(n).fill(0)
   const play = new Array(n).fill(0)
   const rest = new Array(n).fill(0)
@@ -244,6 +250,7 @@ export function analyse(state) {
     for (const i of present) {
       share[i] += on.size / present.size
       presentRounds[i]++
+      for (const j of present) if (j !== i) overlap[i][j]++
     }
     for (let i = 0; i < n; i++) {
       if (on.has(i)) {
@@ -251,7 +258,8 @@ export function analyse(state) {
         play[i]++
         rest[i] = 0
       } else {
-        if (started[i]) rest[i]++
+        // a rest is a round on the bench — not the rounds after going home
+        rest[i] = started[i] && present.has(i) ? rest[i] + 1 : 0
         play[i] = 0
       }
       longestPlay = Math.max(longestPlay, play[i])
@@ -259,11 +267,17 @@ export function analyse(state) {
     }
   }
 
-  const pairs = (n * (n - 1)) / 2
+  let pairs = 0
+  let neverMet = 0
   let neverPartnered = 0
   const oppCounts = []
   for (let i = 0; i < n; i++)
     for (let j = i + 1; j < n; j++) {
+      if (!overlap[i][j]) {
+        neverMet++
+        continue
+      }
+      pairs++
       if (!partner[i][j]) neverPartnered++
       oppCounts.push(opp[i][j])
     }
@@ -278,6 +292,7 @@ export function analyse(state) {
     opp,
     together,
     neverPartnered,
+    neverMet,
     partnerFloor: Math.max(0, pairs - partnerSeats),
     oppMin: Math.min(...oppCounts),
     oppMax: Math.max(...oppCounts),

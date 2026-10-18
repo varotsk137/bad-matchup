@@ -49,6 +49,7 @@ export default function PlayTab({
   const setAddCount = (v) => setCounts((c) => ({ ...c, addCount: v }))
   const [helpOpen, setHelpOpen] = useState(false)
   const [reshuffleOpen, setReshuffleOpen] = useState(false)
+  const [redoCount, setRedoCount] = useState(1)
   // a build that runs past a few seconds earns a pointer to the knobs that
   // make it faster
   const [slow, setSlow] = useState(false)
@@ -155,14 +156,17 @@ export default function PlayTab({
    * Before that, it is the plain rebuild it always was.
    */
   const reshuffle = () => {
-    if (played > 0) setReshuffleOpen(true)
-    else rebuildAll(addCount)
+    if (played > 0) {
+      setRedoCount(Math.max(1, remaining))
+      setReshuffleOpen(true)
+    } else rebuildAll(addCount)
   }
 
   const reshuffleRemaining = async () => {
     setReshuffleOpen(false)
     setOpenId(undefined)
-    await solve((onProgress) => actions.regenerateRemaining(onProgress), remaining)
+    const n = redoCount
+    await solve((onProgress) => actions.regenerateRemaining(onProgress, n), n)
   }
 
   const startOver = async () => {
@@ -282,16 +286,22 @@ export default function PlayTab({
               <p className="text-sm text-slate-600 dark:text-slate-300">
                 {t('reshuffleIntro', { played })}
               </p>
+              <div className="flex items-center justify-between gap-3 rounded-xl bg-slate-100 px-3 py-2 dark:bg-slate-800/60">
+                <span className="text-sm">{t('reshuffleHowMany', { played })}</span>
+                <Stepper
+                  value={redoCount}
+                  onChange={setRedoCount}
+                  max={MAX_AHEAD}
+                  label={t('roundsLabel')}
+                />
+              </div>
               <Button
                 variant="primary"
                 className="h-auto w-full flex-col items-start gap-0.5 py-3 text-left"
-                disabled={remaining <= 0}
                 onClick={reshuffleRemaining}
               >
                 <span className="text-sm font-semibold">
-                  {remaining > 0
-                    ? t('reshuffleRemaining', { n: remaining })
-                    : t('reshuffleNothingLeft')}
+                  {t('reshuffleRemaining', { n: redoCount })}
                 </span>
                 <span className="text-xs font-normal opacity-80">
                   {t('reshuffleRemainingHint')}

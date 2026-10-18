@@ -24,8 +24,12 @@ export default function StatsTab({ state, stats, playersById, t, lang }) {
   const totalMatches = state.rounds.reduce((s, r) => s + r.matches.length, 0)
   const played = rows.filter((r) => r.s.games > 0)
   const maxGames = Math.max(1, ...rows.map((r) => r.s.games))
-  const minGames = played.length ? Math.min(...played.map((r) => r.s.games)) : 0
-  const spread = played.length ? Math.max(...played.map((r) => r.s.games)) - minGames : 0
+  // measured against fair share, so someone who came late or left early does
+  // not make the session look unfair (same number as before when everyone
+  // was there throughout)
+  const loads = played.map((r) => r.s.load ?? r.s.games)
+  const spread = loads.length ? Math.round(Math.max(...loads) - Math.min(...loads)) : 0
+  const total = state.rounds.length
 
   if (!state.rounds.length) {
     return (
@@ -84,10 +88,24 @@ export default function StatsTab({ state, stats, playersById, t, lang }) {
             >
               <div className="flex items-center gap-3">
                 <Avatar name={p.name} size="sm" />
-                <span className="min-w-0 flex-1 truncate text-sm font-medium">{p.name}</span>
+                <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                  {p.name}
+                  {s.present > 0 && s.present < total && (
+                    <span className="ml-1.5 rounded bg-slate-200 px-1 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                      {s.firstPresent > 0
+                        ? t('joinedAt', { n: s.firstPresent + 1 })
+                        : t('leftAfter', { n: s.lastPresent + 1 })}
+                    </span>
+                  )}
+                </span>
                 <LevelBadge level={p.level} />
-                <span className="w-10 text-right text-sm font-bold tabular-nums">
+                <span className="text-right text-sm font-bold tabular-nums">
                   {s.games}
+                  {s.present > 0 && s.present < total && (
+                    <span className="block text-[10px] font-normal text-slate-500 dark:text-slate-400">
+                      {t('fairShareN', { n: Math.round(s.share) })}
+                    </span>
+                  )}
                 </span>
               </div>
 

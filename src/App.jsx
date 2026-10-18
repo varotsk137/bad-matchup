@@ -500,10 +500,11 @@ export default function App() {
        * Keeps every round up to the last one with a played match and rebuilds
        * the rest with today's player list — someone left, someone arrived.
        */
-      regenerateRemaining: async (onProgress) => {
+      regenerateRemaining: async (onProgress, wanted) => {
         const s = stateRef.current
         const kept = playedRounds(s.rounds)
-        const count = s.rounds.length - kept
+        // how many rounds to have after the played ones (default: as many as now)
+        const count = wanted ?? s.rounds.length - kept
         if (count <= 0) return
         cancelRef.current = false
         const res = await generateRoundsAsync({

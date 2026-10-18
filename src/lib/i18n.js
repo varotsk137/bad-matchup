@@ -187,12 +187,12 @@ const dict = {
     en: '{played} rounds played so far. Rounds already played (or with a ticked match) stay as history.',
   },
   reshuffleRemaining: {
-    th: 'จัดใหม่เฉพาะ {n} รอบที่ยังไม่เล่น',
-    en: 'Redo the {n} rounds not played yet',
+    th: 'จัดใหม่ {n} รอบต่อจากรอบที่เล่นแล้ว',
+    en: 'Build {n} new rounds after the played ones',
   },
-  reshuffleNothingLeft: {
-    th: 'ไม่มีรอบที่ยังไม่เล่น — ใช้ปุ่มเพิ่มรอบแทน',
-    en: 'Nothing left to redo — add rounds instead',
+  reshuffleHowMany: {
+    th: 'ต่อจากรอบที่ {played} จัดใหม่กี่รอบ',
+    en: 'Rounds after round {played}',
   },
   reshuffleRemainingHint: {
     th: 'ใช้รายชื่อคนที่อยู่ตอนนี้ เหมาะกับตอนมีคนมาเพิ่มหรือกลับก่อน ระบบนับเกมที่เล่นไปแล้วด้วย',
@@ -328,6 +328,13 @@ const dict = {
   },
   fairGames: { th: 'จำนวนเกมต่อคน', en: 'Games each' },
   fairGamesNote: { th: 'ห่างกันไม่เกิน 1 เกม = แฟร์', en: 'within one game = fair' },
+  fairNeverMetNote: {
+    th: 'ไม่นับ {n} คู่ที่ไม่ได้อยู่พร้อมกันเลย',
+    en: '{n} pairs who were never there together are not counted',
+  },
+  joinedAt: { th: 'มาตั้งแต่รอบ {n}', en: 'from round {n}' },
+  leftAfter: { th: 'อยู่ถึงรอบ {n}', en: 'until round {n}' },
+  fairShareN: { th: 'ควรได้ ~{n}', en: 'fair share ~{n}' },
   fairGamesNotePartTime: {
     th: 'มีคนมาสาย / กลับก่อน จึงเทียบกับจำนวนรอบที่แต่ละคนอยู่ ห่างกันไม่เกิน 1 เกม = แฟร์',
     en: 'Some came late or left early, so this is measured against the rounds each was there — within one game = fair',
