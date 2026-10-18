@@ -317,6 +317,10 @@ const dict = {
   },
   fairGames: { th: 'จำนวนเกมต่อคน', en: 'Games each' },
   fairGamesNote: { th: 'ห่างกันไม่เกิน 1 เกม = แฟร์', en: 'within one game = fair' },
+  fairGamesNotePartTime: {
+    th: 'มีคนมาสาย / กลับก่อน จึงเทียบกับจำนวนรอบที่แต่ละคนอยู่ ห่างกันไม่เกิน 1 เกม = แฟร์',
+    en: 'Some came late or left early, so this is measured against the rounds each was there — within one game = fair',
+  },
   fairStreak: { th: 'ลงติดกันนานสุด (รอบ)', en: 'Longest streak (rounds)' },
   fairStreakNote: { th: 'ตั้งไว้ไม่เกิน {limit} รอบ', en: 'limit set to {limit}' },
   fairStaminaOff: { th: 'ปิดสตามินาอยู่', en: 'stamina is off' },

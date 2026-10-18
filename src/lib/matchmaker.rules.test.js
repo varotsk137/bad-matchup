@@ -260,3 +260,35 @@ describe('played vs planned rounds', () => {
     for (const r of rest) expectValidRound(r, ps, cs)
   })
 })
+
+describe('late arrivals', () => {
+  it('someone joining halfway is not pushed on court to catch up', () => {
+    for (const seed of SEEDS) {
+      seeded(seed)
+      const early = players(8)
+      const cs = courts(1)
+      const first = generateRounds({
+        players: early,
+        courts: cs,
+        rounds: [],
+        options: FAST,
+        count: 10,
+      }).created
+      const all = [...early, { id: 'late', name: 'Late', level: 1 }]
+      const second = generateRounds({
+        players: all,
+        courts: cs,
+        rounds: first,
+        options: FAST,
+        count: 10,
+      }).created
+      const games = Object.fromEntries(all.map((p) => [p.id, 0]))
+      for (const r of second)
+        for (const m of r.matches) for (const id of [...m.teamA, ...m.teamB]) games[id]++
+      const others = early.map((p) => games[p.id])
+      // the old engine gave the latecomer 7 of 10 while everyone else got 4–5
+      expect(games.late).toBeLessThanOrEqual(Math.max(...others))
+      expect(games.late).toBeGreaterThanOrEqual(Math.min(...others) - 1)
+    }
+  })
+})

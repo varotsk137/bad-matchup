@@ -32,8 +32,8 @@ export default function FairnessReport({ state, playersById, t }) {
     {
       label: t('fairGames'),
       value: `${r.gamesMin}–${r.gamesMax}`,
-      note: t('fairGamesNote'),
-      grade: r.gamesMax - r.gamesMin <= 1 ? 0 : r.gamesMax - r.gamesMin === 2 ? 1 : 2,
+      note: t(r.partTime ? 'fairGamesNotePartTime' : 'fairGamesNote'),
+      grade: r.loadSpread <= 1.01 ? 0 : r.loadSpread <= 2.01 ? 1 : 2,
     },
     {
       label: t('fairStreak'),
@@ -201,6 +201,9 @@ export function analyse(state) {
   const partner = mk()
   const opp = mk()
   const games = new Array(n).fill(0)
+  // fair share of games for the rounds each person was there (see makeContext)
+  const share = new Array(n).fill(0)
+  const presentRounds = new Array(n).fill(0)
   const singles = new Array(n).fill(0)
   const play = new Array(n).fill(0)
   const rest = new Array(n).fill(0)
@@ -233,6 +236,14 @@ export function analyse(state) {
           opp[b][a]++
           oppSlots++
         }
+    }
+    const present = new Set([
+      ...on,
+      ...(r.benched || []).filter((id) => at.has(id)).map((id) => at.get(id)),
+    ])
+    for (const i of present) {
+      share[i] += on.size / present.size
+      presentRounds[i]++
     }
     for (let i = 0; i < n; i++) {
       if (on.has(i)) {
@@ -275,6 +286,12 @@ export function analyse(state) {
     oppOff: oppCounts.filter((x) => x < oppLo || x > oppHi).length,
     gamesMin: Math.min(...games),
     gamesMax: Math.max(...games),
+    // spread of games against fair share; equals the plain spread when
+    // everyone was there throughout
+    loadSpread:
+      Math.max(...games.map((g, i) => g - share[i])) -
+      Math.min(...games.map((g, i) => g - share[i])),
+    partTime: new Set(presentRounds).size > 1,
     singlesMin: Math.min(...singles),
     singlesMax: Math.max(...singles),
     longestPlay,

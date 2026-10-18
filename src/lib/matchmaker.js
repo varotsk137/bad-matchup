@@ -118,6 +118,10 @@ export function makeContext(players, rounds) {
   for (const p of players) {
     stats[p.id] = {
       games: 0,
+      // what an even split would have given them: each round they were there
+      // (on court or on the bench) adds seats ÷ people present
+      share: 0,
+      load: 0, // games − share: above 0 ahead of the group, below 0 owed games
       wins: 0,
       losses: 0,
       pointsFor: 0,
@@ -198,8 +202,19 @@ export function makeContext(players, rounds) {
       }
     }
 
+    // only people who were there this round earn a share or count as waiting —
+    // someone who turns up at round 10 is not owed nine rounds of games
+    const present = new Set([...playing, ...(round.benched || [])])
+    const portion = present.size ? playing.size / present.size : 0
+    for (const id of present) if (stats[id]) stats[id].share += portion
+
     for (const p of players) {
       const s = stats[p.id]
+      if (!present.has(p.id)) {
+        s.streak = 0
+        s.rest = 0
+        continue
+      }
       if (playing.has(p.id)) {
         s.streak++
         s.rest = 0
@@ -210,6 +225,8 @@ export function makeContext(players, rounds) {
       }
     }
   })
+
+  for (const s of Object.values(stats)) s.load = s.games - s.share
 
   let maxPair = 0
   for (const v of pairCount.values()) if (v > maxPair) maxPair = v
@@ -258,13 +275,16 @@ export function rankPlayers(pool, ctx, weights, options, jitter = 0) {
     return rows.sort((a, b) => b.score - a.score)
   }
 
+  // "fewer games" means fewer than their fair share — with everyone there from
+  // the start that is the same ordering as raw games
   const maxGames = Math.max(1, ...rows.map((r) => r.s.games))
+  const maxLoad = Math.max(...rows.map((r) => r.s.load ?? r.s.games))
   const maxRest = Math.max(1, ...rows.map((r) => r.s.rest))
   const limit = Math.max(1, options.maxConsecutive)
 
   for (const r of rows) {
     let score = 0
-    score += (w.fewGames / 100) * ((maxGames - r.s.games) / maxGames)
+    score += (w.fewGames / 100) * ((maxLoad - (r.s.load ?? r.s.games)) / maxGames)
     score += (w.waiting / 100) * (r.s.rest / maxRest)
     // deliberately uncapped: when there are too few bench seats to honour the
     // hard limit, the longest streak still has to be the first to sit down
@@ -570,7 +590,7 @@ function compareKeys(a, b) {
 function lookAhead(pool, ctx, seatOptions, cap, floor) {
   const start = pool.map((p) => {
     const s = ctx.stats[p.id] || {}
-    return { streak: s.streak || 0, games: s.games || 0, rest: s.rest || 0 }
+    return { streak: s.streak || 0, games: s.load ?? s.games ?? 0, rest: s.rest || 0 }
   })
   const order = (st) =>
     st
@@ -656,9 +676,11 @@ function spreadOut(plan, enabled) {
  * the stamina limit still holds.
  */
 function selectionModel(pool, queuePick, need, courts, ctx, w, opts) {
-  const st = (id) => ctx.stats[id] || { games: 0, rest: 0, streak: 0 }
+  const st = (id) => ctx.stats[id] || { games: 0, load: 0, rest: 0, streak: 0 }
   const limit = Math.max(1, opts.maxConsecutive)
-  const minGames = Math.min(...pool.map((p) => st(p.id).games))
+  // games measured against each person's fair share (see makeContext)
+  const load = (id) => st(id).load ?? st(id).games
+  const minGames = Math.min(...pool.map((p) => load(p.id)))
   const picked = new Set(queuePick)
 
   const freshCount = pool.filter((p) => st(p.id).streak < limit).length
@@ -670,7 +692,7 @@ function selectionModel(pool, queuePick, need, courts, ctx, w, opts) {
         if (picked.has(id)) return false
         const s = st(id)
         if (opts.enforceStamina && freshCount >= need && s.streak >= limit) return false
-        return s.games <= minGames + 1
+        return load(id) <= minGames + 1
       }),
   ]
 
@@ -684,7 +706,7 @@ function selectionModel(pool, queuePick, need, courts, ctx, w, opts) {
   const seat = (id) => {
     const s = st(id)
     return (
-      fw * 0.45 * (s.games - minGames) +
+      fw * 0.45 * (load(id) - minGames) +
       sw * 0.2 * s.streak +
       // past the limit only when the bench is too small — longest streak sits first
       sw * 1.5 * Math.max(0, s.streak - limit + 1) -
@@ -848,7 +870,6 @@ function scheduleKey({ players, rounds, options }, created) {
   const ids = players.map((p) => p.id).filter((id) => seen.has(id))
 
   let over = 0
-  const games = Object.fromEntries(ids.map((id) => [id, 0]))
   const streak = {}
   const pc = new Map()
   const oc = new Map()
@@ -865,11 +886,9 @@ function scheduleKey({ players, rounds, options }, created) {
     }
     for (const id of ids) {
       streak[id] = on.has(id) ? (streak[id] || 0) + 1 : 0
-      if (on.has(id)) games[id]++
       if (opts.useStamina !== false && streak[id] > limit) over++
     }
   }
-  const g = Object.values(games)
 
   let never = 0
   const opp = []
@@ -882,7 +901,10 @@ function scheduleKey({ players, rounds, options }, created) {
   const mean = opp.reduce((a, b) => a + b, 0) / (opp.length || 1)
   const spread = opp.reduce((a, x) => a + (x - mean) ** 2, 0)
 
-  return [over, Math.max(...g) - Math.min(...g), never, spread]
+  // games against fair share, so a late arrival with fewer games is not "unfair"
+  const ctx = makeContext(players, all)
+  const loads = ids.map((id) => ctx.stats[id].load)
+  return [over, Math.max(...loads) - Math.min(...loads), never, spread]
 }
 
 /**
@@ -1254,6 +1276,7 @@ export function createRefiner({ players, rounds, created, weights, options, focu
         .filter((m) => m.teamA?.length === 1 && m.teamB?.length === 1)
         .flatMap((m) => [...m.teamA, ...m.teamB])
     )
+    const benched = new Set(r.benched || [])
     for (const p of players) {
       const l = lead[p.id]
       if (on.has(p.id)) {
@@ -1261,7 +1284,7 @@ export function createRefiner({ players, rounds, created, weights, options, focu
         l.rest = 0
       } else {
         l.play = 0
-        l.rest++
+        l.rest = benched.has(p.id) ? l.rest + 1 : 0
       }
       if (single.has(p.id)) l.singles++
       l.lastSingles = single.has(p.id)
