@@ -1,5 +1,5 @@
 import { GenderDot, LevelBadge } from './PlayerBits'
-import { cx } from './ui'
+import { courtTone, cx } from './ui'
 
 const SIDE = {
   A: {
@@ -115,6 +115,7 @@ export default function MatchCard({
   onToggleDone,
   editable,
   readOnly = false,
+  courtIndex = 0,
 }) {
   const winner =
     typeof match.scoreA === 'number' &&
@@ -156,16 +157,21 @@ export default function MatchCard({
   return (
     <div
       className={cx(
-        'rounded-xl border p-2 transition',
+        'rounded-xl border-2 p-2 transition',
         match.done
-          ? 'border-slate-200 bg-slate-50/60 dark:border-slate-800 dark:bg-slate-800/20'
-          : 'border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900'
+          ? 'border-slate-300 bg-slate-50/60 dark:border-slate-700 dark:bg-slate-800/20'
+          : 'border-slate-900 bg-slate-50 dark:border-slate-700 dark:bg-slate-900'
       )}
     >
       {renderTeam('A')}
 
       <div className="flex items-center gap-2 py-1">
-        <span className="shrink-0 rounded bg-slate-900 px-1.5 py-0.5 text-[10px] font-bold text-white dark:bg-slate-700">
+        <span
+          className={cx(
+            'font-display shrink-0 rounded-full border-2 border-slate-900 px-2 py-0.5 text-[10px] dark:border-slate-950',
+            courtTone(courtIndex)
+          )}
+        >
           {match.courtName}
         </span>
         {match.type === 'singles' && (

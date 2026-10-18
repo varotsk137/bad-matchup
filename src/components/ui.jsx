@@ -2,14 +2,27 @@ import { useEffect } from 'react'
 
 export const cx = (...parts) => parts.filter(Boolean).join(' ')
 
+/**
+ * Every court gets a team colour, league style — court 1 is always blue,
+ * court 2 orange, and so on, in the table and on the cards alike.
+ */
+const COURT_TONES = [
+  'bg-brand-600 text-white',
+  'bg-accent-500 text-white',
+  'bg-emerald-600 text-white',
+  'bg-violet-600 text-white',
+  'bg-pink-600 text-white',
+]
+export const courtTone = (index) => COURT_TONES[Math.max(0, index) % COURT_TONES.length]
+
 /* ---------------------------------------------------------------- Card */
 
 export function Card({ className = '', children, ...rest }) {
   return (
     <div
       className={cx(
-        'rounded-2xl border border-slate-200 bg-slate-50 shadow-sm',
-        'dark:border-slate-800 dark:bg-slate-900',
+        'rounded-2xl border-2 border-slate-900 bg-slate-50 shadow-[var(--shadow-hard)]',
+        'dark:border-slate-700 dark:bg-slate-900',
         className
       )}
       {...rest}
@@ -23,9 +36,7 @@ export function SectionTitle({ children, hint, action }) {
   return (
     <div className="mb-2 flex items-end justify-between gap-3 px-1">
       <div className="min-w-0">
-        <h2 className="text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
-          {children}
-        </h2>
+        <h2 className="text-base text-slate-900 dark:text-slate-100">{children}</h2>
         {hint && <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">{hint}</p>}
       </div>
       {action}
@@ -35,18 +46,15 @@ export function SectionTitle({ children, hint, action }) {
 
 /* -------------------------------------------------------------- Button */
 
+// every solid button wears an ink outline and a hard shadow it sinks into
+const INKED = 'press border-2 border-slate-900 dark:border-slate-950'
 const VARIANTS = {
-  primary:
-    'bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-700 shadow-sm disabled:bg-slate-300 dark:disabled:bg-slate-700',
-  secondary:
-    'bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-50',
-  outline:
-    'border border-slate-300 bg-slate-50 text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800',
+  primary: `${INKED} bg-brand-600 text-white hover:bg-brand-700 disabled:bg-slate-300 dark:disabled:bg-slate-700`,
+  secondary: `${INKED} bg-slate-900 text-slate-50 hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900`,
+  outline: `${INKED} bg-slate-50 text-slate-900 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700`,
   ghost: 'text-slate-600 hover:bg-slate-200/70 dark:text-slate-300 dark:hover:bg-slate-800',
-  accent:
-    'bg-accent-500 text-white hover:bg-accent-600 active:bg-accent-600 shadow-sm dark:bg-accent-600 dark:hover:bg-accent-500',
-  danger:
-    'border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 dark:border-rose-900/60 dark:bg-rose-950/50 dark:text-rose-300 dark:hover:bg-rose-950',
+  accent: `${INKED} bg-accent-500 text-white hover:bg-accent-600`,
+  danger: `${INKED} bg-rose-100 text-rose-800 hover:bg-rose-200 dark:bg-rose-950 dark:text-rose-200`,
 }
 
 const SIZES = {
@@ -67,7 +75,7 @@ export function Button({
     <button
       type="button"
       className={cx(
-        'inline-flex shrink-0 items-center justify-center font-medium transition',
+        'inline-flex shrink-0 items-center justify-center font-medium whitespace-nowrap transition',
         'focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none',
         'dark:focus-visible:ring-offset-slate-950',
         'disabled:cursor-not-allowed disabled:opacity-60',
@@ -88,7 +96,7 @@ export function Segmented({ options, value, onChange, className = '', size = 'md
   return (
     <div
       className={cx(
-        'inline-flex w-full rounded-xl bg-slate-200/70 p-1 dark:bg-slate-800/80',
+        'inline-flex w-full gap-1 rounded-xl border-2 border-slate-900 bg-slate-100 p-1 dark:border-slate-700 dark:bg-slate-800',
         className
       )}
       role="tablist"
@@ -106,8 +114,8 @@ export function Segmented({ options, value, onChange, className = '', size = 'md
               'flex-1 rounded-lg font-medium transition',
               size === 'sm' ? 'h-8 px-2 text-xs' : 'h-9 px-3 text-sm',
               active
-                ? 'bg-slate-50 text-slate-900 shadow-sm dark:bg-slate-950 dark:text-white'
-                : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+                ? 'bg-shuttle text-shuttle-ink shadow-[var(--shadow-hard-sm)]'
+                : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'
             )}
           >
             {o.label}
@@ -228,13 +236,13 @@ export function Sheet({ open, onClose, title, children, footer }) {
         aria-modal="true"
         className={cx(
           'animate-sheet safe-b relative flex max-h-[85vh] w-full flex-col',
-          'rounded-t-3xl border-t border-slate-200 bg-slate-50 shadow-2xl',
-          'sm:max-w-lg sm:rounded-3xl sm:border',
-          'dark:border-slate-800 dark:bg-slate-900'
+          'rounded-t-3xl border-2 border-b-0 border-slate-900 bg-slate-50',
+          'sm:max-w-lg sm:rounded-3xl sm:border-b-2 sm:shadow-[var(--shadow-hard)]',
+          'dark:border-slate-700 dark:bg-slate-900'
         )}
       >
-        <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-5 py-4 dark:border-slate-800">
-          <h3 className="text-base font-semibold">{title}</h3>
+        <div className="flex items-center justify-between gap-3 border-b-2 border-slate-900 px-5 py-4 dark:border-slate-700">
+          <h3 className="text-lg">{title}</h3>
           <button
             type="button"
             onClick={onClose}

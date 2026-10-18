@@ -2,7 +2,7 @@ import { Fragment, useMemo, useState } from 'react'
 import { renderSchedulePng } from '../lib/exportImage'
 import ImageSheet from './ImageSheet'
 import { levelMeta } from './PlayerBits'
-import { Card, cx } from './ui'
+import { Card, courtTone, cx } from './ui'
 
 /**
  * The whole session on one grid: a row per round (1 → n), a column per court.
@@ -160,10 +160,10 @@ export default function ScheduleTable({
         <button
           onClick={() => setShowLevels((v) => !v)}
           className={cx(
-            'rounded-lg px-2.5 py-1 text-xs font-medium transition',
+            'rounded-full border-2 px-2.5 py-0.5 text-xs whitespace-nowrap transition',
             showLevels
-              ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
-              : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+              ? 'border-slate-900 bg-shuttle text-shuttle-ink dark:border-slate-950'
+              : 'border-slate-300 bg-slate-50 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300'
           )}
         >
           {t('showLevels')}
@@ -171,21 +171,21 @@ export default function ScheduleTable({
         <button
           onClick={() => setShowStamina((v) => !v)}
           className={cx(
-            'rounded-lg px-2.5 py-1 text-xs font-medium transition',
+            'rounded-full border-2 px-2.5 py-0.5 text-xs whitespace-nowrap transition',
             showStamina
-              ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
-              : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+              ? 'border-slate-900 bg-shuttle text-shuttle-ink dark:border-slate-950'
+              : 'border-slate-300 bg-slate-50 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300'
           )}
         >
           {t('showStamina')}
         </button>
-        <span className="ml-auto text-[11px] text-slate-400 dark:text-slate-500">
+        <span className="ml-auto hidden text-[11px] text-slate-400 sm:inline dark:text-slate-500">
           {t('tableHint')}
         </span>
         <button
           onClick={onExport}
           disabled={busy}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-700 disabled:opacity-60"
+          className="press ml-auto inline-flex items-center gap-1.5 rounded-full border-2 border-slate-900 bg-brand-600 px-3 py-1 text-xs whitespace-nowrap text-white hover:bg-brand-700 disabled:opacity-60 sm:ml-0 dark:border-slate-950"
         >
           <svg
             viewBox="0 0 20 20"
@@ -217,13 +217,20 @@ export default function ScheduleTable({
               <th className="sticky left-0 z-10 bg-slate-50 py-1.5 pr-2 pl-3 text-[10px] font-semibold tracking-wide text-slate-400 uppercase dark:bg-slate-900">
                 #
               </th>
-              {columns.map((c) => (
+              {columns.map((c, ci) => (
                 <th
                   key={c.id}
                   colSpan={onToggleDone ? 2 : 1}
-                  className="min-w-36 px-2 py-1.5 text-[10px] font-semibold tracking-wide text-slate-400 uppercase"
+                  className="min-w-36 px-2 py-1.5 text-left"
                 >
-                  {t('courtLabel')} {c.name}
+                  <span
+                    className={cx(
+                      'font-display inline-block rounded-full border-2 border-slate-900 px-2.5 py-0.5 text-[11px] dark:border-slate-950',
+                      courtTone(ci)
+                    )}
+                  >
+                    {t('courtLabel')} {c.name}
+                  </span>
                 </th>
               ))}
               {hasBench && (

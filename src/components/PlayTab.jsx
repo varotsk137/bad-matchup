@@ -226,6 +226,8 @@ export default function PlayTab({
 
   // `key` is deliberately NOT in here — React 19 ignores a key that arrives via
   // a spread, so each call site passes it directly on the element instead.
+  // court colour follows the court's place in the courts list, round to round
+  const courtOrder = new Map(state.courts.map((c, i) => [c.id, i]))
   const roundProps = ({ round, number }) => ({
     round,
     number,
@@ -240,6 +242,7 @@ export default function PlayTab({
     readOnly,
     sel: sel?.roundId === round.id ? sel.slot : null,
     onTap: onSlotTap(round.id),
+    courtOrder,
   })
 
   const buttonLabel = busy
@@ -273,10 +276,10 @@ export default function PlayTab({
                   key={value}
                   onClick={() => actions.setOption('mode', value)}
                   className={cx(
-                    'h-9 rounded-lg text-xs font-semibold transition active:scale-95',
+                    'h-9 rounded-full border-2 text-xs transition active:scale-95',
                     mode === value
-                      ? 'bg-brand-600 text-white shadow-sm'
-                      : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+                      ? 'border-slate-900 bg-brand-600 text-white shadow-[var(--shadow-hard-sm)] dark:border-slate-950'
+                      : 'border-transparent bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
                   )}
                 >
                   {t(key)}
@@ -358,10 +361,10 @@ export default function PlayTab({
                     key={p}
                     onClick={() => setPreset(p)}
                     className={cx(
-                      'h-9 rounded-lg text-xs font-semibold tabular-nums transition active:scale-95',
+                      'h-9 rounded-full border-2 text-xs tabular-nums transition active:scale-95',
                       preset === p
-                        ? 'bg-accent-500 text-white shadow-sm'
-                        : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+                        ? 'border-slate-900 bg-shuttle text-shuttle-ink shadow-[var(--shadow-hard-sm)]'
+                        : 'border-transparent bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
                     )}
                   >
                     {p === 'custom' ? t('customCount') : `${p} ${t('roundsUnit')}`}
@@ -564,7 +567,7 @@ export default function PlayTab({
       ) : (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <div className="flex flex-1 rounded-xl bg-slate-200/70 p-1 dark:bg-slate-800/80">
+            <div className="flex flex-1 gap-1 rounded-xl border-2 border-slate-900 bg-slate-100 p-1 dark:border-slate-700 dark:bg-slate-800">
               {[
                 ['table', 'viewTable'],
                 ['cards', 'viewCards'],
@@ -573,10 +576,10 @@ export default function PlayTab({
                   key={v}
                   onClick={() => setView(v)}
                   className={cx(
-                    'h-10 flex-1 rounded-lg text-sm font-semibold transition active:scale-[0.98]',
+                    'h-9 flex-1 rounded-lg text-sm transition active:scale-[0.98]',
                     view === v
-                      ? 'bg-slate-50 text-slate-900 shadow-sm dark:bg-slate-950 dark:text-white'
-                      : 'text-slate-500 dark:text-slate-400'
+                      ? 'bg-shuttle text-shuttle-ink shadow-[var(--shadow-hard-sm)]'
+                      : 'text-slate-600 dark:text-slate-300'
                   )}
                 >
                   {t(key)}
@@ -587,7 +590,7 @@ export default function PlayTab({
               <>
                 <button
                   onClick={onShare}
-                  className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl bg-slate-200/70 px-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-300/70 active:scale-[0.98] dark:bg-slate-800 dark:text-slate-200"
+                  className="press inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl border-2 border-slate-900 bg-slate-50 px-3 text-sm text-slate-900 hover:bg-slate-100 dark:border-slate-950 dark:bg-slate-800 dark:text-slate-100"
                 >
                   <svg
                     viewBox="0 0 20 20"
@@ -774,6 +777,7 @@ function RoundCard({
   onTap,
   archived = false,
   readOnly = false,
+  courtOrder = new Map(),
 }) {
   const quality = useMemo(
     () => (open ? roundQuality(round, players, priorRounds) : null),
@@ -834,6 +838,7 @@ function RoundCard({
                 onToggleDone={(matchId) => onMatchDone(round, matchId)}
                 editable={!m.done && !readOnly}
                 readOnly={readOnly}
+                courtIndex={courtOrder.get(m.courtId) ?? 0}
               />
             ))}
           </div>

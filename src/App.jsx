@@ -108,13 +108,13 @@ const TABS = [
 
 function Header({ t, state, actions, readyCount, roundCount, shared = false }) {
   return (
-    <header className="sticky top-0 z-40 border-b border-chrome-edge bg-chrome/90 backdrop-blur-md dark:border-slate-800 dark:bg-chrome-dark/90">
+    <header className="sticky top-0 z-40 border-b-2 border-chrome-edge bg-chrome/95 backdrop-blur-md dark:border-slate-700 dark:bg-chrome-dark/95">
       <div className="mx-auto flex h-14 max-w-3xl items-center gap-3 px-4">
-        <span className="text-xl" aria-hidden>
-          🏸
-        </span>
         <div className="min-w-0 flex-1">
-          <h1 className="truncate text-base leading-tight font-bold">{t('appName')}</h1>
+          {/* the league badge: the name in an ink pill, no emoji mascot */}
+          <h1 className="inline-block truncate rounded-full bg-slate-900 px-3 py-0.5 text-sm leading-tight text-slate-50 dark:bg-slate-100 dark:text-slate-900">
+            {t('appName')}
+          </h1>
           {!shared && (
             <p className="truncate text-[11px] leading-tight text-slate-500 dark:text-slate-400">
               {readyCount} {t('playersUnit')} · {roundCount} {t('roundsUnit')}

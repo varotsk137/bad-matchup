@@ -332,7 +332,7 @@ export function RestModeHelp({ open, onClose, t }) {
     <Sheet open={open} onClose={onClose} title={t('restMode')}>
       <div className="space-y-3">
         <p className="text-sm text-slate-600 dark:text-slate-300">{t('restHelpIntro')}</p>
-        <div className="grid grid-cols-3 gap-1 rounded-xl bg-slate-200/70 p-1 dark:bg-slate-800">
+        <div className="grid grid-cols-3 gap-1 rounded-xl border-2 border-slate-900 bg-slate-100 p-1 dark:border-slate-700 dark:bg-slate-800">
           {['fill', 'flex', 'strict'].map((m) => (
             <button
               key={m}
@@ -340,7 +340,7 @@ export function RestModeHelp({ open, onClose, t }) {
               className={cx(
                 'h-8 rounded-lg text-xs font-semibold transition',
                 mode === m
-                  ? 'bg-slate-50 text-slate-900 shadow-sm dark:bg-slate-950 dark:text-slate-100'
+                  ? 'bg-shuttle text-shuttle-ink shadow-[var(--shadow-hard-sm)]'
                   : 'text-slate-500 dark:text-slate-400'
               )}
             >
