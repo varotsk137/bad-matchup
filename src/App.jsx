@@ -219,11 +219,19 @@ export default function App() {
   }, [state.lang])
 
   /* ----------------------------------------------------------------- toast */
-  const setToast = useCallback((message, tone = 'info') => {
+  // `action` ({ label, run }) adds a button, e.g. Undo — and a little longer
+  // on screen, so there is time to reach for it
+  const setToast = useCallback((message, tone = 'info', action = null) => {
     clearTimeout(toastTimer.current)
-    setToastState({ message, tone })
-    toastTimer.current = setTimeout(() => setToastState(null), 2600)
+    setToastState({ message, tone, action })
+    toastTimer.current = setTimeout(() => setToastState(null), action ? 5000 : 2600)
   }, [])
+
+  const onToastAction = () => {
+    clearTimeout(toastTimer.current)
+    toast?.action?.run()
+    setToastState(null)
+  }
 
   /* --------------------------------------------------------------- derived */
   const playersById = useMemo(
@@ -574,6 +582,18 @@ export default function App() {
 
       swapInRound: (roundId, a, b) => patchRound(roundId, (r) => swapSlots(r, a, b)),
 
+      // puts who-plays-where back the way it was (undoing a swap) without
+      // touching scores or ticks entered since
+      restoreLineup: (roundId, before) =>
+        patchRound(roundId, (r) => ({
+          ...r,
+          benched: before.benched,
+          matches: r.matches.map((m) => {
+            const old = before.matches.find((x) => x.id === m.id)
+            return old ? { ...m, teamA: old.teamA, teamB: old.teamB } : m
+          }),
+        })),
+
       updateMatch: (roundId, matchId, patch) =>
         patchRound(roundId, (r) => ({
           ...r,
@@ -677,7 +697,12 @@ export default function App() {
           />
         </main>
 
-        <Toast message={toast?.message} tone={toast?.tone} />
+        <Toast
+          message={toast?.message}
+          tone={toast?.tone}
+          action={toast?.action}
+          onAction={onToastAction}
+        />
       </div>
     )
   }
@@ -777,7 +802,12 @@ export default function App() {
         setToast={setToast}
       />
 
-      <Toast message={toast?.message} tone={toast?.tone} />
+      <Toast
+          message={toast?.message}
+          tone={toast?.tone}
+          action={toast?.action}
+          onAction={onToastAction}
+        />
     </div>
   )
 }

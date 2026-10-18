@@ -1,17 +1,17 @@
 # Graph Report - bad-matchup  (2026-10-19)
 
 ## Corpus Check
-- 40 files · ~42,174 words
+- 40 files · ~42,673 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 3 file(s) not represented in the graph (top: (none) 2, .css 1)
 
 ## Summary
-- 301 nodes · 883 edges · 11 communities (10 shown, 1 thin omitted)
+- 301 nodes · 885 edges · 11 communities (10 shown, 1 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 8 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `da79875c`
+- Built from commit: `96f9228d`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -106,7 +106,7 @@ Nodes (20): analyse(), Chevron(), isArchived(), MODES, PlayTab(), RoundCard(), S
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `cx()` connect `ui.jsx` to `App.jsx`, `exportImage.js`, `HelpSheet.jsx`, `share.js`, `PlayTab.jsx`?**
-  _High betweenness centrality (0.150) - this node is a cross-community bridge._
+  _High betweenness centrality (0.149) - this node is a cross-community bridge._
 - **What connects `tailwindcss` to the rest of the system?**
   _1 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `matchmaker.js` be split into smaller, more focused modules?**

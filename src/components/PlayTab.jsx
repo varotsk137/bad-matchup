@@ -13,7 +13,7 @@ import { analyse } from './FairnessReport'
 import HelpSheet from './HelpSheet'
 import { rosterChange } from '../lib/roster'
 import RoundAdvisor from './RoundAdvisor'
-import { LevelBadge } from './PlayerBits'
+import { GenderDot, LevelBadge } from './PlayerBits'
 import { Button, Card, Empty, Sheet, cx } from './ui'
 
 const MAX_AHEAD = 100
@@ -115,9 +115,35 @@ export default function PlayTab({
       setSel(null)
       return
     }
+    // swapping two people on the bench changes nothing — treat the second tap
+    // as "I meant this one" and move the selection over
+    if (a.bench && b.bench) {
+      setSel({ roundId, slot })
+      return
+    }
+    const before = state.rounds.find((r) => r.id === roundId)
     actions.swapInRound(roundId, a, b)
     setSel(null)
+    if (before)
+      setToast(
+        t('swapped', { a: slotName(before, a), b: slotName(before, b) }),
+        'info',
+        { label: t('undo'), run: () => actions.restoreLineup(roundId, before) }
+      )
   }
+
+  const slotName = (round, slot) => {
+    const id = slot.bench
+      ? slot.playerId
+      : round.matches.find((m) => m.id === slot.matchId)?.[slot.team === 'A' ? 'teamA' : 'teamB'][
+          slot.idx
+        ]
+    return (id && playersById.get(id)?.name) || t('emptySlot')
+  }
+
+  // what the hint bar says while someone is picked and waiting for a partner
+  const selRound = sel && state.rounds.find((r) => r.id === sel.roundId)
+  const selName = selRound ? slotName(selRound, sel.slot) : null
 
   const noCourts = !state.courts.some((c) => c.enabled !== false)
   const canGenerate = !noCourts && pool.length >= 2
@@ -536,11 +562,13 @@ export default function PlayTab({
       {/* pinned so selecting a name never reflows the courts under the thumb */}
       {!readOnly && sel && (
         <div className="fixed inset-x-0 bottom-16 z-30 flex justify-center px-4 md:bottom-6">
-          <div className="animate-pop flex items-center gap-3 rounded-xl bg-accent-600 py-2 pr-2 pl-4 text-sm font-medium text-white shadow-lg">
-            {t('swapHint')}
+          <div className="animate-pop flex max-w-sm items-center gap-3 rounded-xl bg-accent-600 py-1.5 pr-1.5 pl-4 text-sm font-medium text-white shadow-lg">
+            <span className="min-w-0 flex-1">
+              {selName ? t('swapHintNamed', { name: selName }) : t('swapHint')}
+            </span>
             <button
               onClick={() => setSel(null)}
-              className="rounded-lg bg-white/20 px-2.5 py-1 text-xs font-semibold"
+              className="h-9 shrink-0 rounded-lg bg-white/20 px-3 text-sm font-semibold transition active:scale-95"
             >
               {t('cancel')}
             </button>
@@ -863,27 +891,34 @@ function RoundCard({
                 const p = playersById.get(id)
                 if (!p) return null
                 const isSel = sel?.bench && sel.playerId === id
-                return readOnly ? (
-                  <span
-                    key={id}
-                    className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2 py-1 text-xs font-medium dark:border-slate-700"
-                  >
+                // same height and make-up as a court seat, so swapping one
+                // for the other reads as moving a chip between two places
+                const chip =
+                  'inline-flex h-10 items-center gap-1.5 rounded-lg border bg-slate-50 px-2.5 text-sm font-semibold dark:bg-slate-900'
+                const body = (
+                  <>
+                    <GenderDot gender={p.gender} />
                     {p.name}
                     <LevelBadge level={p.level} />
+                  </>
+                )
+                return readOnly ? (
+                  <span key={id} className={cx(chip, 'border-slate-200 dark:border-slate-700')}>
+                    {body}
                   </span>
                 ) : (
                   <button
                     key={id}
                     onClick={() => onTap({ bench: true, playerId: id })}
                     className={cx(
-                      'inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-xs font-medium transition active:scale-95',
+                      chip,
+                      'transition active:scale-95',
                       isSel
-                        ? 'border-accent-500 ring-2 ring-accent-500'
+                        ? 'border-accent-500 ring-2 ring-accent-500 ring-offset-1 dark:ring-offset-slate-900'
                         : 'border-slate-200 dark:border-slate-700'
                     )}
                   >
-                    {p.name}
-                    <LevelBadge level={p.level} />
+                    {body}
                   </button>
                 )
               })}

@@ -177,6 +177,20 @@ describe('editing a round', () => {
     expect(next.benched).not.toContain(inn)
   })
 
+  it('swapping two bench seats keeps both players benched', () => {
+    seeded(8)
+    const { round } = generateRound({
+      players: players(7),
+      courts: courts(1),
+      rounds: [],
+      options: FAST,
+    })
+    expect(round.benched.length).toBeGreaterThanOrEqual(2)
+    const [x, y] = round.benched
+    const next = swapSlots(round, { bench: true, playerId: x }, { bench: true, playerId: y })
+    expect([...next.benched].sort()).toEqual([...round.benched].sort())
+  })
+
   it('auto-fill keeps the players already placed', () => {
     seeded(9)
     const ps = players(8)

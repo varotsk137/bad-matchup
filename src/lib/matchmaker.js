@@ -1209,6 +1209,10 @@ export function swapSlots(round, a, b) {
     r.matches.find((m) => m.id === p.matchId)[teamKey(p.team)][p.idx] = v
   }
 
+  // two bench seats: both stay benched either way, and running the bench
+  // bookkeeping below twice would drop one of them
+  if (a.bench && b.bench) return round
+
   const va = a.bench ? a.playerId : readCourt(a)
   const vb = b.bench ? b.playerId : readCourt(b)
   if (va == null && vb == null) return round

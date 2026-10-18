@@ -153,6 +153,9 @@ const dict = {
     en: 'Tap two names to swap them',
   },
   swapHint: { th: 'เลือกอีกคนเพื่อสลับ', en: 'Pick someone to swap with' },
+  swapHintNamed: { th: 'สลับ {name} กับใคร? แตะอีกคน', en: 'Swap {name} with? Tap another' },
+  swapped: { th: 'สลับ {a} ↔ {b} แล้ว', en: 'Swapped {a} ↔ {b}' },
+  undo: { th: 'เลิกทำ', en: 'Undo' },
   noRounds: { th: 'ยังไม่ได้เริ่มแข่ง', en: 'No rounds yet' },
   noRoundsHint: {
     th: 'กดปุ่มด้านล่างเพื่อให้ระบบจัดคนลงคอร์ทให้',

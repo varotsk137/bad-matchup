@@ -311,17 +311,26 @@ export function Chip({ children, tone = 'slate', className = '' }) {
 
 /* ---------------------------------------------------------------- Toast */
 
-export function Toast({ message, tone = 'slate' }) {
+export function Toast({ message, tone = 'slate', action, onAction }) {
   if (!message) return null
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-24 z-60 flex justify-center px-4 sm:bottom-8">
       <div
         className={cx(
-          'animate-pop max-w-sm rounded-xl px-4 py-2.5 text-sm font-medium text-white shadow-lg',
-          tone === 'error' ? 'bg-rose-600' : 'bg-slate-900 dark:bg-slate-700'
+          'animate-pop flex max-w-sm items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-white shadow-lg',
+          tone === 'error' ? 'bg-rose-600' : 'bg-slate-900 dark:bg-slate-700',
+          action && 'pointer-events-auto py-1.5 pr-1.5'
         )}
       >
-        {message}
+        <span className="min-w-0 flex-1">{message}</span>
+        {action && (
+          <button
+            onClick={onAction}
+            className="h-9 shrink-0 rounded-lg px-3 font-bold text-accent-300 transition hover:bg-white/10 active:scale-95"
+          >
+            {action.label}
+          </button>
+        )}
       </div>
     </div>
   )
