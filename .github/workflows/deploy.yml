@@ -28,6 +28,8 @@ jobs:
           cache: npm
 
       - run: npm ci
+      # a schedule that breaks the pairing rules never goes live
+      - run: npm test
       - run: npm run build
 
       # vite.config.js sets `base: './'`, so the bundle works from any

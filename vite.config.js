@@ -8,4 +8,6 @@ export default defineConfig({
   base: './',
   plugins: [react(), tailwindcss()],
   server: { host: true },
+  // the schedules in the tests are real builds and take a few seconds each
+  test: { testTimeout: 60000 },
 })

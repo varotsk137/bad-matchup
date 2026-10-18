@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { version } from '../../package.json'
 import { DEFAULT_OPTIONS, DEFAULT_WEIGHTS } from '../lib/matchmaker'
 import { exportState, importState } from '../lib/storage'
 import { RestModeHelp } from './HelpSheet'
@@ -251,7 +252,7 @@ export default function SettingsTab({ state, t, actions, setToast }) {
       </div>
 
       <p className="px-2 pb-2 text-center text-xs text-slate-400 dark:text-slate-600">
-        🏸 {t('appName')} · v1.0
+        🏸 {t('appName')} · v{version}
       </p>
     </div>
   )
