@@ -135,7 +135,6 @@ export default function ScheduleTable({
         rounds,
         courts,
         playersById,
-        showLevels,
         title: t('imageTitle'),
         subtitle: `${rounds.length} ${t('roundsUnit')} · ${new Date().toLocaleDateString()}`,
         labels: {

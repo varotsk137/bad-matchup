@@ -10,7 +10,6 @@
  * what was on screen when the button was pressed.
  */
 
-import { LEVEL_META } from './matchmaker'
 
 const FONT = '"Noto Sans Thai", "Inter", system-ui, sans-serif'
 
@@ -73,21 +72,17 @@ const F = {
   header: font(12, 700),
   team: font(17, 600),
   mid: font(12, 700),
-  score: font(13, 700),
   bench: font(13, 400),
   chip: font(15, 700),
   footer: font(11, 400),
 }
 
-const levelCode = (v) => (LEVEL_META.find((l) => l.value === v) || LEVEL_META[0]).code
-
-/** Team as one line: "สมชาย + หมู" (levels optional). */
-function teamLine(ids, playersById, showLevels) {
+/** Team as one line: "สมชาย + หมู". */
+function teamLine(ids, playersById) {
   return ids
     .map((id) => {
       const p = id ? playersById.get(id) : null
-      if (!p) return '—'
-      return showLevels ? `${p.name} ${levelCode(p.level)}` : p.name
+      return p ? p.name : '—'
     })
     .join('  +  ')
 }
@@ -123,7 +118,6 @@ export function drawSchedule({
   title,
   subtitle,
   labels,
-  showLevels = false,
   dark = isDarkNow(),
 }) {
   const C = dark ? PALETTES.dark : PALETTES.light
@@ -157,12 +151,11 @@ export function drawSchedule({
   const cellOf = (round, col) => {
     const m = round.matches.find((x) => x.courtId === col.id)
     if (!m) return null
-    const scored = typeof m.scoreA === 'number' && typeof m.scoreB === 'number'
+    // the plan only: who plays whom where. Levels, stamina, scores and ticks
+    // are for the organiser's screen, not the group chat
     return {
-      a: teamLine(m.teamA, playersById, showLevels),
-      b: teamLine(m.teamB, playersById, showLevels),
-      score: scored ? `${m.scoreA} – ${m.scoreB}` : '',
-      done: !!m.done,
+      a: teamLine(m.teamA, playersById),
+      b: teamLine(m.teamB, playersById),
     }
   }
 
@@ -179,7 +172,6 @@ export function drawSchedule({
       const cell = cellOf(round, col)
       if (!cell) continue
       w = Math.max(w, widthOf(cell.a, F.team), widthOf(cell.b, F.team))
-      if (cell.score) w = Math.max(w, widthOf(`${labels.vs}   ${cell.score}  ✓`, F.score))
     }
     return Math.round(Math.min(MAX_COL, Math.max(MIN_COL, w + 8)))
   })
@@ -289,18 +281,6 @@ export function drawSchedule({
       ctx.font = F.mid
       ctx.fillStyle = C.faint
       ctx.fillText(labels.vs, xs[i], lineMid)
-      let cursor = xs[i] + ctx.measureText(labels.vs).width + 12
-      if (cell.score) {
-        ctx.font = F.score
-        ctx.fillStyle = C.text
-        ctx.fillText(cell.score, cursor, lineMid)
-        cursor += ctx.measureText(cell.score).width + 10
-      }
-      if (cell.done) {
-        ctx.font = F.score
-        ctx.fillStyle = C.brand
-        ctx.fillText('✓', cursor, lineMid)
-      }
 
       ctx.font = F.team
       ctx.fillStyle = C.teamB
