@@ -1,4 +1,5 @@
 import { DEFAULT_OPTIONS, DEFAULT_WEIGHTS, uid } from './matchmaker'
+import { DEFAULT_SKIN, isSkin } from './skins'
 
 const KEY = 'bad-matchup:v1'
 
@@ -20,6 +21,7 @@ export function defaultState() {
     version: 1,
     lang: 'th',
     theme: systemTheme(),
+    skin: DEFAULT_SKIN,
     players: [],
     courts: [
       { id: uid(), name: '1', type: 'doubles', enabled: true },
@@ -52,6 +54,7 @@ export function loadState() {
       ...saved,
       // older saves could hold 'system' — pin it to whatever that means now
       theme: saved.theme === 'light' || saved.theme === 'dark' ? saved.theme : systemTheme(),
+      skin: isSkin(saved.skin) ? saved.skin : DEFAULT_SKIN,
       weights: { ...base.weights, ...(saved.weights || {}) },
       options: migrateOptions({ ...base.options, ...(saved.options || {}) }),
       players: Array.isArray(saved.players) ? saved.players : base.players,
@@ -110,6 +113,7 @@ export function importState(file) {
         resolve({
           ...base,
           ...data,
+          skin: isSkin(data.skin) ? data.skin : base.skin,
           weights: { ...base.weights, ...(data.weights || {}) },
           options: migrateOptions({ ...base.options, ...(data.options || {}) }),
         })

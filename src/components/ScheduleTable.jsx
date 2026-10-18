@@ -160,9 +160,9 @@ export default function ScheduleTable({
         <button
           onClick={() => setShowLevels((v) => !v)}
           className={cx(
-            'rounded-full border-2 px-2.5 py-0.5 text-xs whitespace-nowrap transition',
+            'rounded-[var(--radius-pill)] border-(length:--line-w) px-2.5 py-0.5 text-xs whitespace-nowrap transition',
             showLevels
-              ? 'border-slate-900 bg-shuttle text-shuttle-ink dark:border-slate-950'
+              ? 'border-btn-edge bg-chip text-chip-ink'
               : 'border-slate-300 bg-slate-50 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300'
           )}
         >
@@ -171,9 +171,9 @@ export default function ScheduleTable({
         <button
           onClick={() => setShowStamina((v) => !v)}
           className={cx(
-            'rounded-full border-2 px-2.5 py-0.5 text-xs whitespace-nowrap transition',
+            'rounded-[var(--radius-pill)] border-(length:--line-w) px-2.5 py-0.5 text-xs whitespace-nowrap transition',
             showStamina
-              ? 'border-slate-900 bg-shuttle text-shuttle-ink dark:border-slate-950'
+              ? 'border-btn-edge bg-chip text-chip-ink'
               : 'border-slate-300 bg-slate-50 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300'
           )}
         >
@@ -185,7 +185,7 @@ export default function ScheduleTable({
         <button
           onClick={onExport}
           disabled={busy}
-          className="press ml-auto inline-flex items-center gap-1.5 rounded-full border-2 border-slate-900 bg-brand-600 px-3 py-1 text-xs whitespace-nowrap text-white hover:bg-brand-700 disabled:opacity-60 sm:ml-0 dark:border-slate-950"
+          className="press ml-auto inline-flex items-center gap-1.5 rounded-[var(--radius-pill)] border-(length:--line-w) border-btn-edge bg-brand-600 px-3 py-1 text-xs whitespace-nowrap text-white hover:bg-brand-700 disabled:opacity-60 sm:ml-0"
         >
           <svg
             viewBox="0 0 20 20"
@@ -225,7 +225,7 @@ export default function ScheduleTable({
                 >
                   <span
                     className={cx(
-                      'font-display inline-block rounded-full border-2 border-slate-900 px-2.5 py-0.5 text-[11px] dark:border-slate-950',
+                      'font-display inline-block rounded-[var(--radius-pill)] border-(length:--line-w) border-btn-edge px-2.5 py-0.5 text-[11px]',
                       courtTone(ci)
                     )}
                   >

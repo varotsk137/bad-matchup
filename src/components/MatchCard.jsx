@@ -157,10 +157,10 @@ export default function MatchCard({
   return (
     <div
       className={cx(
-        'rounded-xl border-2 p-2 transition',
+        'rounded-xl border-(length:--line-w) p-2 transition',
         match.done
-          ? 'border-slate-300 bg-slate-50/60 dark:border-slate-700 dark:bg-slate-800/20'
-          : 'border-slate-900 bg-slate-50 dark:border-slate-700 dark:bg-slate-900'
+          ? 'border-slate-200 bg-slate-50/60 dark:border-slate-800 dark:bg-slate-800/20'
+          : 'border-edge bg-slate-50 dark:bg-slate-900'
       )}
     >
       {renderTeam('A')}
@@ -168,7 +168,7 @@ export default function MatchCard({
       <div className="flex items-center gap-2 py-1">
         <span
           className={cx(
-            'font-display shrink-0 rounded-full border-2 border-slate-900 px-2 py-0.5 text-[10px] dark:border-slate-950',
+            'font-display shrink-0 rounded-[var(--radius-pill)] border-(length:--line-w) border-btn-edge px-2 py-0.5 text-[10px]',
             courtTone(courtIndex)
           )}
         >

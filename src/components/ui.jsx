@@ -3,15 +3,15 @@ import { useEffect } from 'react'
 export const cx = (...parts) => parts.filter(Boolean).join(' ')
 
 /**
- * Every court gets a team colour, league style — court 1 is always blue,
- * court 2 orange, and so on, in the table and on the cards alike.
+ * Every court gets a colour of its own from the skin — in League court 1 is
+ * blue, court 2 orange and so on; Classic keeps them all the same dark pill.
  */
 const COURT_TONES = [
-  'bg-brand-600 text-white',
-  'bg-accent-500 text-white',
-  'bg-emerald-600 text-white',
-  'bg-violet-600 text-white',
-  'bg-pink-600 text-white',
+  'bg-court-1 text-white',
+  'bg-court-2 text-white',
+  'bg-court-3 text-white',
+  'bg-court-4 text-white',
+  'bg-court-5 text-white',
 ]
 export const courtTone = (index) => COURT_TONES[Math.max(0, index) % COURT_TONES.length]
 
@@ -21,8 +21,7 @@ export function Card({ className = '', children, ...rest }) {
   return (
     <div
       className={cx(
-        'rounded-2xl border-2 border-slate-900 bg-slate-50 shadow-[var(--shadow-hard)]',
-        'dark:border-slate-700 dark:bg-slate-900',
+        'rounded-2xl border-(length:--line-w) border-edge bg-slate-50 shadow-[var(--shadow-card)] dark:bg-slate-900',
         className
       )}
       {...rest}
@@ -36,7 +35,7 @@ export function SectionTitle({ children, hint, action }) {
   return (
     <div className="mb-2 flex items-end justify-between gap-3 px-1">
       <div className="min-w-0">
-        <h2 className="text-base text-slate-900 dark:text-slate-100">{children}</h2>
+        <h2 className="section-title">{children}</h2>
         {hint && <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">{hint}</p>}
       </div>
       {action}
@@ -46,15 +45,16 @@ export function SectionTitle({ children, hint, action }) {
 
 /* -------------------------------------------------------------- Button */
 
-// every solid button wears an ink outline and a hard shadow it sinks into
-const INKED = 'press border-2 border-slate-900 dark:border-slate-950'
+// solid buttons wear the skin's button outline and shadow (ink and a hard
+// shadow they sink into in League; none and a soft one in Classic)
+const SOLID = 'press border-(length:--line-w) border-btn-edge'
 const VARIANTS = {
-  primary: `${INKED} bg-brand-600 text-white hover:bg-brand-700 disabled:bg-slate-300 dark:disabled:bg-slate-700`,
-  secondary: `${INKED} bg-slate-900 text-slate-50 hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900`,
-  outline: `${INKED} bg-slate-50 text-slate-900 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700`,
+  primary: `${SOLID} bg-brand-600 text-white hover:bg-brand-700 disabled:bg-slate-300 dark:disabled:bg-slate-700`,
+  secondary: `${SOLID} bg-slate-900 text-slate-50 hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900`,
+  outline: `press border-(length:--line-w) border-edge-strong bg-slate-50 text-slate-900 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700`,
   ghost: 'text-slate-600 hover:bg-slate-200/70 dark:text-slate-300 dark:hover:bg-slate-800',
-  accent: `${INKED} bg-accent-500 text-white hover:bg-accent-600`,
-  danger: `${INKED} bg-rose-100 text-rose-800 hover:bg-rose-200 dark:bg-rose-950 dark:text-rose-200`,
+  accent: `${SOLID} bg-accent-500 text-white hover:bg-accent-600`,
+  danger: `${SOLID} bg-rose-100 text-rose-800 hover:bg-rose-200 dark:bg-rose-950 dark:text-rose-200`,
 }
 
 const SIZES = {
@@ -96,7 +96,7 @@ export function Segmented({ options, value, onChange, className = '', size = 'md
   return (
     <div
       className={cx(
-        'inline-flex w-full gap-1 rounded-xl border-2 border-slate-900 bg-slate-100 p-1 dark:border-slate-700 dark:bg-slate-800',
+        'inline-flex w-full gap-1 rounded-xl border-(length:--line-w) border-edge bg-track p-1',
         className
       )}
       role="tablist"
@@ -114,7 +114,7 @@ export function Segmented({ options, value, onChange, className = '', size = 'md
               'flex-1 rounded-lg font-medium transition',
               size === 'sm' ? 'h-8 px-2 text-xs' : 'h-9 px-3 text-sm',
               active
-                ? 'bg-shuttle text-shuttle-ink shadow-[var(--shadow-hard-sm)]'
+                ? 'bg-pick text-pick-ink shadow-[var(--shadow-pick)]'
                 : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'
             )}
           >
@@ -236,12 +236,12 @@ export function Sheet({ open, onClose, title, children, footer }) {
         aria-modal="true"
         className={cx(
           'animate-sheet safe-b relative flex max-h-[85vh] w-full flex-col',
-          'rounded-t-3xl border-2 border-b-0 border-slate-900 bg-slate-50',
-          'sm:max-w-lg sm:rounded-3xl sm:border-b-2 sm:shadow-[var(--shadow-hard)]',
-          'dark:border-slate-700 dark:bg-slate-900'
+          'rounded-t-3xl border-(length:--line-w) border-edge border-b-0 bg-slate-50 shadow-[var(--shadow-sheet)]',
+          'sm:max-w-lg sm:rounded-3xl sm:border-b-(length:--line-w)',
+          'dark:bg-slate-900'
         )}
       >
-        <div className="flex items-center justify-between gap-3 border-b-2 border-slate-900 px-5 py-4 dark:border-slate-700">
+        <div className="flex items-center justify-between gap-3 border-b-(length:--line-w) border-edge px-5 py-4">
           <h3 className="text-lg">{title}</h3>
           <button
             type="button"

@@ -83,6 +83,9 @@ The interface is available in Thai and English.
 ### Everything else
 - Thai and English, light and dark themes. The first visit follows the system; afterwards the
   user's choice sticks.
+- Five skins — Classic (the default), League, Scoreboard, Editorial and Candy — that change
+  colours, fonts, outlines, shadows and corner shapes. Only the look changes; everything works
+  the same.
 - JSON backup export and import.
 
 ---
@@ -145,7 +148,7 @@ The workflow's `GITHUB_TOKEN` cannot enable Pages by itself.
 ### Versions
 
 Releases are tagged (`v1.0.0`, …). `main` is what the live site runs; new work happens on a
-version branch (currently `v2`) and reaches the site when it is merged into `main`. The running
+version branch (currently `v2.2`) and reaches the site when it is merged into `main`. The running
 version is shown at the bottom of the Settings page.
 
 ---
@@ -214,12 +217,18 @@ schedule is always kept apart from the recipient's own data until they explicitl
 page has already loaded. Output is rendered at 2–3× device pixel ratio, follows the active
 theme, sizes columns to the real names and truncates with an ellipsis rather than overflowing.
 
-### Theme
-Defined once in `src/index.css` by **overriding Tailwind's `slate` scale**, so every component
-that already uses `slate-*` picks it up. Light mode layers a sage header over an ivory page with
-cream cards (nothing approaches pure white). Dark mode uses navy, deep green and a raised green.
-Green is the primary colour and orange the accent, used only where green would blend into
-itself.
+### Skins and themes
+Every skin lives in `src/index.css`, selected by `<html data-skin="…">`; components never name
+a skin. Each skin re-points Tailwind's `slate`, `brand` and `accent` scales (so every
+`slate-*` class follows it) and its `--radius-*` scale, and sets a handful of semantic tokens —
+`edge` for outlines, `track`/`pick` for segmented controls, `chip`, `preset`, `court-1…5`, the
+header badge — plus line weight, shadows and the display font, each for light and dark.
+`src/lib/skins.js` lists the skins for the settings picker; a skin's display font is fetched
+only when it is used. Adding a skin is one CSS block and one list entry.
+
+Classic layers a sage header over an ivory page with cream cards (nothing approaches pure
+white); its dark mode uses navy, deep green and a raised green, with green as the primary
+colour and orange as the accent.
 
 ---
 
@@ -235,6 +244,7 @@ src/
     share.js           packing schedules into share links
     storage.js         localStorage, backup import/export, settings migration
     i18n.js            Thai and English strings
+    skins.js           the skins offered in settings
     testkit.js         shared helpers for the test suite
   components/
     PlayTab.jsx        modes, round controls, schedule, reshuffle, roster-change banner

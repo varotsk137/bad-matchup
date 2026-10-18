@@ -1,6 +1,7 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { version } from '../../package.json'
 import { DEFAULT_OPTIONS, DEFAULT_WEIGHTS } from '../lib/matchmaker'
+import { DEFAULT_SKIN, SKINS, loadSkinFont } from '../lib/skins'
 import { exportState, importState } from '../lib/storage'
 import { RestModeHelp } from './HelpSheet'
 import PresetCard from './PresetCard'
@@ -9,6 +10,9 @@ import { Button, Card, SectionTitle, Segmented, Slider, Toggle, cx } from './ui'
 export default function SettingsTab({ state, t, actions, setToast }) {
   const fileRef = useRef(null)
   const [restHelp, setRestHelp] = useState(false)
+
+  // the skin picker names each skin in its own font
+  useEffect(() => SKINS.forEach(loadSkinFont), [])
 
   const onImport = async (e) => {
     const file = e.target.files?.[0]
@@ -49,6 +53,52 @@ export default function SettingsTab({ state, t, actions, setToast }) {
             { value: 'dark', label: t('themeDark') },
           ]}
         />
+        <label className="mt-4 block text-sm font-medium">{t('skin')}</label>
+        <p className="mb-1.5 text-xs text-slate-500 dark:text-slate-400">{t('skinHint')}</p>
+        <div
+          className="grid grid-cols-2 gap-2 sm:grid-cols-3"
+          role="radiogroup"
+          aria-label={t('skin')}
+        >
+          {SKINS.map((s) => {
+            const on = (state.skin || DEFAULT_SKIN) === s.id
+            return (
+              <button
+                key={s.id}
+                type="button"
+                role="radio"
+                aria-checked={on}
+                onClick={() => actions.set({ skin: s.id })}
+                className={cx(
+                  'rounded-xl border-(length:--line-w) p-1.5 text-left transition active:scale-[0.98]',
+                  on
+                    ? 'border-brand-600 ring-2 ring-brand-500/40'
+                    : 'border-edge hover:border-slate-400'
+                )}
+              >
+                <SkinSwatch preview={s.preview} />
+                <span
+                  className="flex items-center justify-between gap-1 px-1 pt-1.5 text-sm"
+                  style={{ fontFamily: s.font }}
+                >
+                  {t(s.label)}
+                  {on && (
+                    <svg
+                      viewBox="0 0 20 20"
+                      className="h-4 w-4 text-brand-600"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M16.7 5.3a1 1 0 0 1 0 1.4l-8 8a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.4L8 12.6l7.3-7.3a1 1 0 0 1 1.4 0Z"
+                      />
+                    </svg>
+                  )}
+                </span>
+              </button>
+            )
+          })}
+        </div>
       </Card>
 
       <PresetCard state={state} t={t} actions={actions} setToast={setToast} />
@@ -258,6 +308,25 @@ export default function SettingsTab({ state, t, actions, setToast }) {
         🏸 {t('appName')} · v{version}
       </p>
     </div>
+  )
+}
+
+/** A thumbnail of a skin: its page, a card with its outline, and its colours. */
+function SkinSwatch({ preview: p }) {
+  return (
+    <span className="block rounded-lg p-2" style={{ background: p.page }} aria-hidden>
+      <span
+        className="flex items-center gap-1.5 rounded-md p-1.5"
+        style={{ background: p.card, border: p.line, boxShadow: p.shadow }}
+      >
+        <span className="h-3 flex-1" style={{ background: p.brand, borderRadius: p.radius }} />
+        <span className="h-3 w-5" style={{ background: p.accent, borderRadius: p.radius }} />
+        <span
+          className="h-3 w-3"
+          style={{ background: p.pick, border: p.line, borderRadius: '9999px' }}
+        />
+      </span>
+    </span>
   )
 }
 

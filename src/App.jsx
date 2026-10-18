@@ -22,6 +22,7 @@ import {
 } from './lib/matchmaker'
 import { PLAN_MAX, PLAN_MIN, planKey } from './lib/plan'
 import { clearShareHash, decodeShare, readShareHash } from './lib/share'
+import { loadSkinFont, skinById } from './lib/skins'
 import { clearState, defaultState, loadState, saveState } from './lib/storage'
 
 /* ------------------------------------------------------------------ icons */
@@ -108,13 +109,14 @@ const TABS = [
 
 function Header({ t, state, actions, readyCount, roundCount, shared = false }) {
   return (
-    <header className="sticky top-0 z-40 border-b-2 border-chrome-edge bg-chrome/95 backdrop-blur-md dark:border-slate-700 dark:bg-chrome-dark/95">
+    <header className="sticky top-0 z-40 border-b-(length:--line-w) border-chrome-edge bg-chrome/95 backdrop-blur-md dark:bg-chrome-dark/95">
       <div className="mx-auto flex h-14 max-w-3xl items-center gap-3 px-4">
+        <span className="app-mascot text-xl" aria-hidden>
+          🏸
+        </span>
         <div className="min-w-0 flex-1">
-          {/* the league badge: the name in an ink pill, no emoji mascot */}
-          <h1 className="inline-block truncate rounded-full bg-slate-900 px-3 py-0.5 text-sm leading-tight text-slate-50 dark:bg-slate-100 dark:text-slate-900">
-            {t('appName')}
-          </h1>
+          {/* the skin dresses the name: an ink pill in League, plain bold in Classic */}
+          <h1 className="app-title truncate">{t('appName')}</h1>
           {!shared && (
             <p className="truncate text-[11px] leading-tight text-slate-500 dark:text-slate-400">
               {readyCount} {t('playersUnit')} · {roundCount} {t('roundsUnit')}
@@ -201,6 +203,16 @@ export default function App() {
   useEffect(() => {
     document.documentElement.classList.toggle('dark', state.theme === 'dark')
   }, [state.theme])
+
+  /* ------------------------------------------------------------------ skin */
+  useEffect(() => {
+    const skin = skinById(state.skin)
+    document.documentElement.dataset.skin = skin.id
+    loadSkinFont(skin)
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', skin.bar[state.theme === 'dark' ? 'dark' : 'light'])
+  }, [state.skin, state.theme])
 
   useEffect(() => {
     document.documentElement.lang = state.lang
@@ -584,7 +596,7 @@ export default function App() {
 
       resetAll: () => {
         clearState()
-        setState((s) => ({ ...defaultState(), lang: s.lang, theme: s.theme }))
+        setState((s) => ({ ...defaultState(), lang: s.lang, theme: s.theme, skin: s.skin }))
       },
     }
   }, [setToast, t])
@@ -686,7 +698,7 @@ export default function App() {
         className={cx(
           'safe-b fixed inset-x-0 bottom-0 z-40 border-t border-chrome-edge bg-chrome/95 backdrop-blur-md',
           'md:sticky md:top-14 md:bottom-auto md:border-t-0 md:border-b',
-          'dark:border-slate-800 dark:bg-chrome-dark/95'
+          'dark:bg-chrome-dark/95'
         )}
       >
         <div className="mx-auto flex max-w-3xl">

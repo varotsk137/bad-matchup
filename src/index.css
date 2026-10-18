@@ -3,17 +3,28 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
- * Palette — "League".
+ * Skins.
  *
- * A community-league look: warm cream paper, ink-brown lines, a league blue
- * for actions, orange for the second call to action, and shuttle yellow for
- * highlights. The neutral ramp still overrides Tailwind's `slate`, so every
- * component that reaches for slate-* picks the new paper and ink up.
+ * Components never name a skin. They use a small set of semantic tokens —
+ * the palette ramps (slate = paper and ink, brand, accent, chrome) plus a few
+ * roles: `edge` (outlines), `track`/`pick` (segmented controls), `chip`
+ * (on/off toggles), `preset` (the chosen count), `court-1…5`, `badge`. Each
+ * skin below gives those tokens their values, for light and for dark, and
+ * <html data-skin="…"> picks one. A new skin is one more block here plus an
+ * entry in src/lib/skins.js.
  *
- *   light — cream page, near-white cream cards, ink borders and hard shadows
- *   dark  — the same ink brown becomes the page, cards one step up, cream lines
+ * League (the values in @theme, so it is also what an unknown skin falls back
+ * to; the app's default skin is Classic) — a community-league look: cream
+ * paper, ink-brown outlines with hard offset shadows, league blue, orange,
+ * shuttle-yellow highlights, a colour per court.
+ *
+ * Classic — the v2 look: warm ivory paper, soft shadows, green and orange;
+ * in the dark a deep navy page under deep green cards.
+ *
+ * Scoreboard, Editorial, Candy — see their blocks below. Skins may also
+ * re-point Tailwind's --radius-* scale, so corners change everywhere at once.
  */
-@theme {
+@theme static {
   --font-sans:
     'Noto Sans Thai', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
     sans-serif;
@@ -64,13 +75,503 @@
   --color-accent-900: oklch(0.36 0.1 46);
   --color-accent-950: oklch(0.25 0.07 46);
 
-  /* shuttle yellow — highlights and chips */
+  /* shuttle yellow — highlights */
   --color-shuttle: oklch(0.88 0.16 95);
   --color-shuttle-ink: oklch(0.3 0.06 80);
 
-  /* the league's signature: a solid offset shadow in ink */
-  --shadow-hard: 3px 3px 0 0 var(--color-slate-900);
-  --shadow-hard-sm: 2px 2px 0 0 var(--color-slate-900);
+  /* roles */
+  --color-edge: var(--color-slate-900); /* cards, sheets, tracks */
+  --color-edge-strong: var(--color-slate-900); /* outline buttons, off toggles */
+  --color-btn-edge: var(--color-slate-900); /* around solid buttons and pills */
+  --color-track: var(--color-slate-100); /* behind a segmented control */
+  --color-pick: var(--color-shuttle); /* the chosen segment */
+  --color-pick-ink: var(--color-shuttle-ink);
+  --color-chip: var(--color-shuttle); /* an on/off toggle that is on */
+  --color-chip-ink: var(--color-shuttle-ink);
+  --color-preset: var(--color-shuttle); /* the chosen round count */
+  --color-preset-ink: var(--color-shuttle-ink);
+  --color-title: var(--color-slate-900);
+  --color-badge: var(--color-slate-900);
+  --color-badge-ink: var(--color-slate-50);
+  /* every court gets a team colour: 1 blue, 2 orange, then green, violet, pink */
+  --color-court-1: var(--color-brand-600);
+  --color-court-2: var(--color-accent-500);
+  --color-court-3: oklch(0.596 0.145 163.225); /* emerald-600 */
+  --color-court-4: oklch(0.541 0.281 293.009); /* violet-600 */
+  --color-court-5: oklch(0.592 0.249 0.584); /* pink-600 */
+}
+
+/* the parts of a skin that are not colours: line weight, shadows, type */
+@layer base {
+  :root {
+    --line-w: 2px;
+    --radius-pill: 9999px;
+    --shadow-hard: 3px 3px 0 0 var(--color-slate-900);
+    --shadow-hard-sm: 2px 2px 0 0 var(--color-slate-900);
+    --shadow-card: var(--shadow-hard);
+    --shadow-sheet: var(--shadow-hard);
+    --shadow-pick: var(--shadow-hard-sm);
+    --shadow-btn: var(--shadow-hard);
+    --shadow-btn-down: 1px 1px 0 0 var(--color-slate-900);
+    --press-shift: 2px;
+    --display-weight: 500;
+    --title-size: 1rem;
+    --title-leading: 1.5rem;
+    --title-tracking: normal;
+    --title-case: none;
+    --badge-px: 0.75rem;
+    --badge-py: 0.125rem;
+    --badge-size: 0.875rem;
+    --badge-weight: 500;
+    --badge-radius: 9999px;
+    --mascot: none;
+  }
+  /* League in the dark: ink becomes the page, so lines lift a step and the
+     hard shadow turns pure black */
+  :root.dark {
+    --color-edge: var(--color-slate-700);
+    --color-edge-strong: var(--color-slate-950);
+    --color-btn-edge: var(--color-slate-950);
+    --color-track: var(--color-slate-800);
+    --color-title: var(--color-slate-100);
+    --color-badge: var(--color-slate-100);
+    --color-badge-ink: var(--color-slate-900);
+    --color-chrome-edge: var(--color-slate-700);
+    --shadow-hard: 3px 3px 0 0 oklch(0.1 0.01 54);
+    --shadow-hard-sm: 2px 2px 0 0 oklch(0.1 0.01 54);
+    --shadow-btn-down: 1px 1px 0 0 oklch(0.1 0.01 54);
+  }
+
+  /* ---------------------------------------------------------- Classic */
+  :root[data-skin='classic'] {
+    --font-display: var(--font-sans);
+
+    /* neutrals — warm ivory at the light end, navy/green at the dark end.
+       Nothing in light mode goes near #fff: the page is a deep sand and cards
+       sit one soft step above it, easy on the eyes under hall lighting. */
+    --color-slate-50: oklch(0.952 0.014 92); /* card surface */
+    --color-slate-100: oklch(0.915 0.019 91); /* page background */
+    --color-slate-200: oklch(0.858 0.021 91); /* hairlines */
+    --color-slate-300: oklch(0.782 0.02 92);
+    --color-slate-400: oklch(0.668 0.017 110);
+    --color-slate-500: oklch(0.552 0.018 140);
+    --color-slate-600: oklch(0.45 0.02 155);
+    --color-slate-700: oklch(0.354 0.023 168);
+    --color-slate-800: oklch(0.278 0.03 175); /* dark: raised surface, green */
+    --color-slate-900: oklch(0.223 0.034 172); /* dark: card, deep green */
+    --color-slate-950: oklch(0.163 0.035 252); /* dark: page, deep navy */
+
+    /* main — green */
+    --color-brand-50: oklch(0.975 0.018 158);
+    --color-brand-100: oklch(0.935 0.048 158);
+    --color-brand-200: oklch(0.882 0.078 157);
+    --color-brand-300: oklch(0.802 0.108 156);
+    --color-brand-400: oklch(0.716 0.138 155);
+    --color-brand-500: oklch(0.636 0.148 154);
+    --color-brand-600: oklch(0.546 0.136 154);
+    --color-brand-700: oklch(0.456 0.112 154);
+    --color-brand-800: oklch(0.368 0.088 156);
+    --color-brand-900: oklch(0.302 0.068 160);
+    --color-brand-950: oklch(0.212 0.05 165);
+
+    /* a sage band that sits below the page tone, tied to the brand */
+    --color-chrome: oklch(0.874 0.028 126);
+    --color-chrome-edge: oklch(0.806 0.032 128);
+    --color-chrome-dark: oklch(0.196 0.034 232);
+
+    /* สีตัด — orange, used where green would disappear into itself */
+    --color-accent-50: oklch(0.975 0.018 70);
+    --color-accent-100: oklch(0.941 0.048 70);
+    --color-accent-200: oklch(0.886 0.082 68);
+    --color-accent-300: oklch(0.822 0.118 65);
+    --color-accent-400: oklch(0.762 0.148 60);
+    --color-accent-500: oklch(0.706 0.168 55);
+    --color-accent-600: oklch(0.636 0.166 50);
+    --color-accent-700: oklch(0.526 0.138 48);
+    --color-accent-800: oklch(0.432 0.108 48);
+    --color-accent-900: oklch(0.356 0.084 50);
+    --color-accent-950: oklch(0.242 0.058 50);
+
+    --color-edge: var(--color-slate-200);
+    --color-edge-strong: var(--color-slate-300);
+    --color-btn-edge: transparent;
+    --color-track: oklch(0.858 0.021 91 / 0.7); /* slate-200 at 70% */
+    --color-pick: var(--color-slate-50);
+    --color-pick-ink: var(--color-slate-900);
+    --color-chip: var(--color-slate-900);
+    --color-chip-ink: white;
+    --color-preset: var(--color-accent-500);
+    --color-preset-ink: white;
+    --color-title: var(--color-slate-500);
+    --color-badge: transparent;
+    --color-badge-ink: currentColor;
+    --color-court-1: var(--color-slate-900);
+    --color-court-2: var(--color-slate-900);
+    --color-court-3: var(--color-slate-900);
+    --color-court-4: var(--color-slate-900);
+    --color-court-5: var(--color-slate-900);
+
+    --line-w: 1px;
+    --radius-pill: 0.5rem;
+    --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-sheet: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    --shadow-pick: var(--shadow-card);
+    --shadow-btn: var(--shadow-card);
+    --shadow-btn-down: var(--shadow-card);
+    --press-shift: 0px;
+    --display-weight: 600;
+    --title-size: 0.875rem;
+    --title-leading: 1.25rem;
+    --title-tracking: 0.025em;
+    --title-case: uppercase;
+    --badge-px: 0;
+    --badge-py: 0;
+    --badge-size: 1rem;
+    --badge-weight: 700;
+    --mascot: inline;
+  }
+  :root.dark[data-skin='classic'] {
+    --color-edge: var(--color-slate-800);
+    --color-edge-strong: var(--color-slate-700);
+    --color-btn-edge: transparent;
+    --color-track: oklch(0.278 0.03 175 / 0.8); /* slate-800 at 80% */
+    --color-pick: var(--color-slate-950);
+    --color-pick-ink: white;
+    --color-chip: var(--color-slate-100);
+    --color-chip-ink: var(--color-slate-900);
+    --color-title: var(--color-slate-400);
+    --color-badge: transparent;
+    --color-badge-ink: currentColor;
+    --color-chrome-edge: var(--color-slate-800);
+    --color-court-1: var(--color-slate-700);
+    --color-court-2: var(--color-slate-700);
+    --color-court-3: var(--color-slate-700);
+    --color-court-4: var(--color-slate-700);
+    --color-court-5: var(--color-slate-700);
+    --shadow-btn-down: var(--shadow-card);
+  }
+
+  /* ------------------------------------------------------- Scoreboard
+     A stadium scoreboard: cool steel, LED amber, square panels with an amber
+     strip on top, and buttons with a key-cap edge. Kanit for the numbers. */
+  :root[data-skin='scoreboard'] {
+    --font-display: 'Kanit', 'Noto Sans Thai', ui-sans-serif, system-ui, sans-serif;
+
+    --color-slate-50: oklch(0.985 0.003 255);
+    --color-slate-100: oklch(0.952 0.006 255);
+    --color-slate-200: oklch(0.905 0.01 255);
+    --color-slate-300: oklch(0.83 0.014 255);
+    --color-slate-400: oklch(0.7 0.02 255);
+    --color-slate-500: oklch(0.56 0.025 255);
+    --color-slate-600: oklch(0.45 0.028 255);
+    --color-slate-700: oklch(0.36 0.03 258);
+    --color-slate-800: oklch(0.28 0.03 260);
+    --color-slate-900: oklch(0.215 0.028 262);
+    --color-slate-950: oklch(0.16 0.025 265);
+
+    /* main — stadium blue */
+    --color-brand-50: oklch(0.97 0.018 235);
+    --color-brand-100: oklch(0.93 0.04 235);
+    --color-brand-200: oklch(0.87 0.075 235);
+    --color-brand-300: oklch(0.79 0.11 235);
+    --color-brand-400: oklch(0.7 0.14 237);
+    --color-brand-500: oklch(0.61 0.16 240);
+    --color-brand-600: oklch(0.53 0.16 242);
+    --color-brand-700: oklch(0.46 0.14 244);
+    --color-brand-800: oklch(0.39 0.11 246);
+    --color-brand-900: oklch(0.32 0.08 248);
+    --color-brand-950: oklch(0.24 0.06 250);
+
+    --color-chrome: oklch(0.905 0.01 255);
+    --color-chrome-edge: oklch(0.7 0.02 255);
+    --color-chrome-dark: oklch(0.13 0.022 265);
+
+    /* LED amber */
+    --color-accent-50: oklch(0.98 0.02 80);
+    --color-accent-100: oklch(0.95 0.06 80);
+    --color-accent-200: oklch(0.91 0.1 80);
+    --color-accent-300: oklch(0.86 0.14 78);
+    --color-accent-400: oklch(0.81 0.16 72);
+    --color-accent-500: oklch(0.74 0.17 62);
+    --color-accent-600: oklch(0.66 0.17 55);
+    --color-accent-700: oklch(0.56 0.15 52);
+    --color-accent-800: oklch(0.46 0.12 52);
+    --color-accent-900: oklch(0.38 0.09 54);
+    --color-accent-950: oklch(0.27 0.06 54);
+
+    --color-edge: var(--color-slate-300);
+    --color-edge-strong: var(--color-slate-400);
+    --color-btn-edge: transparent;
+    --color-track: var(--color-slate-200);
+    --color-pick: var(--color-slate-900);
+    --color-pick-ink: var(--color-accent-300);
+    --color-chip: var(--color-slate-900);
+    --color-chip-ink: var(--color-accent-300);
+    --color-preset: var(--color-accent-400);
+    --color-preset-ink: var(--color-slate-950);
+    --color-title: var(--color-slate-600);
+    --color-badge: var(--color-slate-900);
+    --color-badge-ink: var(--color-accent-300);
+    --color-court-1: var(--color-brand-600);
+    --color-court-2: oklch(0.56 0.2 25);
+    --color-court-3: oklch(0.52 0.12 175);
+    --color-court-4: var(--color-accent-700);
+    --color-court-5: oklch(0.48 0.17 300);
+
+    --line-w: 1px;
+    --radius-lg: 0.25rem;
+    --radius-xl: 0.3rem;
+    --radius-2xl: 0.375rem;
+    --radius-3xl: 0.5rem;
+    --radius-pill: 0.25rem;
+    --shadow-card: inset 0 3px 0 0 var(--color-accent-500), 0 1px 2px 0 rgb(0 0 0 / 0.08);
+    --shadow-sheet:
+      inset 0 3px 0 0 var(--color-accent-500), 0 20px 40px -12px rgb(0 0 0 / 0.35);
+    --shadow-pick: 0 0 #0000;
+    --shadow-btn: inset 0 -3px 0 0 rgb(0 0 0 / 0.22);
+    --shadow-btn-down: inset 0 -1px 0 0 rgb(0 0 0 / 0.22);
+    --press-shift: 0px;
+    --display-weight: 500;
+    --title-size: 0.8rem;
+    --title-leading: 1.25rem;
+    --title-tracking: 0.08em;
+    --title-case: uppercase;
+    --badge-px: 0.625rem;
+    --badge-py: 0.125rem;
+    --badge-size: 0.875rem;
+    --badge-weight: 600;
+    --badge-radius: 0.25rem;
+    --mascot: none;
+  }
+  :root.dark[data-skin='scoreboard'] {
+    --color-edge: var(--color-slate-700);
+    --color-edge-strong: var(--color-slate-600);
+    --color-btn-edge: transparent;
+    --color-track: var(--color-slate-800);
+    --color-pick: var(--color-accent-400);
+    --color-pick-ink: var(--color-slate-950);
+    --color-chip: var(--color-accent-400);
+    --color-chip-ink: var(--color-slate-950);
+    --color-title: var(--color-slate-400);
+    --color-badge: oklch(0.1 0.015 265);
+    --color-badge-ink: var(--color-accent-300);
+    --color-chrome-edge: var(--color-slate-800);
+    --shadow-btn-down: inset 0 -1px 0 0 rgb(0 0 0 / 0.3);
+  }
+
+  /* -------------------------------------------------------- Editorial
+     A sports page: newsprint, black rules, serif headings, navy and
+     vermilion, square corners, cards that sit on a second sheet. */
+  :root[data-skin='editorial'] {
+    --font-display: 'Noto Serif Thai', 'Noto Sans Thai', Georgia, serif;
+
+    --color-slate-50: oklch(0.99 0.004 90);
+    --color-slate-100: oklch(0.962 0.009 88);
+    --color-slate-200: oklch(0.91 0.01 85);
+    --color-slate-300: oklch(0.83 0.012 80);
+    --color-slate-400: oklch(0.68 0.012 75);
+    --color-slate-500: oklch(0.54 0.012 70);
+    --color-slate-600: oklch(0.43 0.012 65);
+    --color-slate-700: oklch(0.34 0.01 60);
+    --color-slate-800: oklch(0.27 0.008 60);
+    --color-slate-900: oklch(0.2 0.006 60);
+    --color-slate-950: oklch(0.15 0.005 60);
+
+    /* main — ink navy */
+    --color-brand-50: oklch(0.97 0.015 255);
+    --color-brand-100: oklch(0.93 0.03 255);
+    --color-brand-200: oklch(0.86 0.06 255);
+    --color-brand-300: oklch(0.76 0.09 255);
+    --color-brand-400: oklch(0.64 0.12 256);
+    --color-brand-500: oklch(0.53 0.13 257);
+    --color-brand-600: oklch(0.43 0.12 258);
+    --color-brand-700: oklch(0.37 0.1 258);
+    --color-brand-800: oklch(0.31 0.08 258);
+    --color-brand-900: oklch(0.26 0.06 258);
+    --color-brand-950: oklch(0.2 0.04 258);
+
+    --color-chrome: oklch(0.99 0.004 90);
+    --color-chrome-edge: oklch(0.2 0.006 60);
+    --color-chrome-dark: oklch(0.15 0.005 60);
+
+    /* vermilion */
+    --color-accent-50: oklch(0.97 0.02 32);
+    --color-accent-100: oklch(0.93 0.05 32);
+    --color-accent-200: oklch(0.87 0.09 32);
+    --color-accent-300: oklch(0.79 0.13 32);
+    --color-accent-400: oklch(0.7 0.17 32);
+    --color-accent-500: oklch(0.62 0.2 32);
+    --color-accent-600: oklch(0.55 0.2 30);
+    --color-accent-700: oklch(0.47 0.17 30);
+    --color-accent-800: oklch(0.39 0.14 30);
+    --color-accent-900: oklch(0.32 0.11 30);
+    --color-accent-950: oklch(0.23 0.08 30);
+
+    --color-edge: var(--color-slate-900);
+    --color-edge-strong: var(--color-slate-900);
+    --color-btn-edge: var(--color-slate-900);
+    --color-track: var(--color-slate-100);
+    --color-pick: var(--color-slate-900);
+    --color-pick-ink: var(--color-slate-50);
+    --color-chip: var(--color-slate-900);
+    --color-chip-ink: var(--color-slate-50);
+    --color-preset: var(--color-accent-600);
+    --color-preset-ink: white;
+    --color-title: var(--color-slate-900);
+    --color-badge: transparent;
+    --color-badge-ink: var(--color-slate-900);
+    --color-court-1: var(--color-slate-900);
+    --color-court-2: var(--color-accent-600);
+    --color-court-3: var(--color-brand-600);
+    --color-court-4: oklch(0.45 0.09 140);
+    --color-court-5: oklch(0.42 0.08 50);
+
+    --line-w: 1px;
+    --radius-lg: 0.125rem;
+    --radius-xl: 0.125rem;
+    --radius-2xl: 0.25rem;
+    --radius-3xl: 0.375rem;
+    --radius-pill: 0.125rem;
+    --shadow-card: 4px 4px 0 -1px var(--color-slate-50), 4px 4px 0 0 var(--color-slate-900);
+    --shadow-sheet: 0 20px 40px -12px rgb(0 0 0 / 0.3);
+    --shadow-pick: 0 0 #0000;
+    --shadow-btn: 0 0 #0000;
+    --shadow-btn-down: 0 0 #0000;
+    --press-shift: 1px;
+    --display-weight: 600;
+    --title-size: 1.0625rem;
+    --title-leading: 1.5rem;
+    --title-tracking: normal;
+    --title-case: none;
+    --badge-px: 0;
+    --badge-py: 0;
+    --badge-size: 1.125rem;
+    --badge-weight: 700;
+    --badge-leading: 1.5;
+    --badge-radius: 0;
+    --mascot: none;
+  }
+  :root.dark[data-skin='editorial'] {
+    --color-edge: var(--color-slate-600);
+    --color-edge-strong: var(--color-slate-500);
+    --color-btn-edge: var(--color-slate-950);
+    --color-track: var(--color-slate-800);
+    --color-pick: var(--color-slate-100);
+    --color-pick-ink: var(--color-slate-900);
+    --color-chip: var(--color-slate-100);
+    --color-chip-ink: var(--color-slate-900);
+    --color-title: var(--color-slate-100);
+    --color-badge: transparent;
+    --color-badge-ink: var(--color-slate-100);
+    --color-chrome-edge: var(--color-slate-600);
+    --color-court-1: var(--color-slate-600);
+    --shadow-card: 4px 4px 0 -1px var(--color-slate-900), 4px 4px 0 0 var(--color-slate-600);
+  }
+
+  /* ------------------------------------------------------------ Candy
+     Pastel and playful: lavender paper, violet and coral, mint highlights,
+     extra-round corners, soft coloured glows instead of lines. Mali font. */
+  :root[data-skin='candy'] {
+    --font-display: 'Mali', 'Noto Sans Thai', ui-sans-serif, system-ui, sans-serif;
+
+    --color-slate-50: oklch(0.992 0.007 320);
+    --color-slate-100: oklch(0.965 0.02 310);
+    --color-slate-200: oklch(0.92 0.03 305);
+    --color-slate-300: oklch(0.85 0.04 300);
+    --color-slate-400: oklch(0.72 0.05 298);
+    --color-slate-500: oklch(0.58 0.055 295);
+    --color-slate-600: oklch(0.47 0.055 292);
+    --color-slate-700: oklch(0.38 0.05 290);
+    --color-slate-800: oklch(0.31 0.05 290);
+    --color-slate-900: oklch(0.25 0.045 290);
+    --color-slate-950: oklch(0.19 0.04 290);
+
+    /* main — violet */
+    --color-brand-50: oklch(0.97 0.02 300);
+    --color-brand-100: oklch(0.93 0.05 300);
+    --color-brand-200: oklch(0.87 0.09 300);
+    --color-brand-300: oklch(0.79 0.14 300);
+    --color-brand-400: oklch(0.7 0.18 300);
+    --color-brand-500: oklch(0.62 0.21 300);
+    --color-brand-600: oklch(0.55 0.22 300);
+    --color-brand-700: oklch(0.48 0.2 300);
+    --color-brand-800: oklch(0.4 0.17 300);
+    --color-brand-900: oklch(0.33 0.13 300);
+    --color-brand-950: oklch(0.25 0.09 300);
+
+    --color-chrome: oklch(0.992 0.007 320);
+    --color-chrome-edge: oklch(0.92 0.03 305);
+    --color-chrome-dark: oklch(0.19 0.04 290);
+
+    /* coral */
+    --color-accent-50: oklch(0.97 0.02 12);
+    --color-accent-100: oklch(0.94 0.045 12);
+    --color-accent-200: oklch(0.89 0.08 12);
+    --color-accent-300: oklch(0.82 0.12 12);
+    --color-accent-400: oklch(0.75 0.16 12);
+    --color-accent-500: oklch(0.68 0.19 12);
+    --color-accent-600: oklch(0.61 0.2 10);
+    --color-accent-700: oklch(0.52 0.18 10);
+    --color-accent-800: oklch(0.43 0.15 10);
+    --color-accent-900: oklch(0.35 0.11 10);
+    --color-accent-950: oklch(0.26 0.08 10);
+
+    --color-edge: var(--color-slate-200);
+    --color-edge-strong: var(--color-slate-300);
+    --color-btn-edge: transparent;
+    --color-track: var(--color-slate-100);
+    --color-pick: oklch(0.89 0.1 170); /* mint */
+    --color-pick-ink: oklch(0.32 0.07 175);
+    --color-chip: oklch(0.89 0.1 170);
+    --color-chip-ink: oklch(0.32 0.07 175);
+    --color-preset: oklch(0.89 0.1 170);
+    --color-preset-ink: oklch(0.32 0.07 175);
+    --color-title: var(--color-brand-700);
+    --color-badge: linear-gradient(90deg, var(--color-brand-500), var(--color-accent-500));
+    --color-badge-ink: white;
+    --color-court-1: var(--color-brand-600);
+    --color-court-2: var(--color-accent-600);
+    --color-court-3: oklch(0.58 0.12 190);
+    --color-court-4: oklch(0.58 0.16 250);
+    --color-court-5: oklch(0.62 0.16 60);
+
+    --line-w: 1.5px;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --radius-2xl: 1.5rem;
+    --radius-3xl: 2rem;
+    --radius-pill: 9999px;
+    --shadow-card: 0 8px 24px -10px oklch(0.55 0.2 300 / 0.35);
+    --shadow-sheet: 0 20px 50px -12px oklch(0.4 0.2 300 / 0.45);
+    --shadow-pick: 0 2px 8px -2px oklch(0.5 0.12 175 / 0.45);
+    --shadow-btn: 0 6px 14px -6px oklch(0.5 0.22 300 / 0.6);
+    --shadow-btn-down: 0 1px 4px -1px oklch(0.5 0.22 300 / 0.5);
+    --press-shift: 1px;
+    --display-weight: 600;
+    --title-size: 1rem;
+    --title-leading: 1.5rem;
+    --title-tracking: normal;
+    --title-case: none;
+    --badge-px: 0.75rem;
+    --badge-py: 0;
+    --badge-size: 0.875rem;
+    --badge-weight: 600;
+    --badge-leading: 1.9;
+    --badge-radius: 9999px;
+    --mascot: none;
+  }
+  :root.dark[data-skin='candy'] {
+    --color-edge: var(--color-slate-700);
+    --color-edge-strong: var(--color-slate-600);
+    --color-btn-edge: transparent;
+    --color-track: var(--color-slate-800);
+    --color-title: var(--color-brand-300);
+    --color-badge: linear-gradient(90deg, var(--color-brand-500), var(--color-accent-500));
+    --color-badge-ink: white;
+    --color-chrome-edge: var(--color-slate-800);
+    --shadow-card: 0 8px 24px -10px oklch(0 0 0 / 0.6);
+    --shadow-btn-down: 0 1px 4px -1px oklch(0 0 0 / 0.5);
+  }
 }
 
 @layer base {
@@ -107,7 +608,7 @@
     touch-action: manipulation;
   }
 
-  /* the display face carries the league feel: headings, buttons, numbers */
+  /* the display face: headings, buttons, numbers — each skin picks its own */
   h1,
   h2,
   h3,
@@ -115,30 +616,50 @@
   button,
   .font-display {
     font-family: var(--font-display);
-    font-weight: 500;
+    font-weight: var(--display-weight);
+  }
+}
+
+@layer components {
+  /* the small heading above a card */
+  .section-title {
+    font-size: var(--title-size);
+    line-height: var(--title-leading);
+    letter-spacing: var(--title-tracking);
+    text-transform: var(--title-case);
+    color: var(--color-title);
   }
 
-  /* in the dark the ink shadow would vanish, so it turns pure black */
-  .dark {
-    --shadow-hard: 3px 3px 0 0 oklch(0.1 0.01 54);
-    --shadow-hard-sm: 2px 2px 0 0 oklch(0.1 0.01 54);
+  /* the app name in the header, and the shuttle in front of it */
+  .app-title {
+    display: inline-block;
+    max-width: 100%;
+    padding: var(--badge-py) var(--badge-px);
+    border-radius: var(--badge-radius);
+    background: var(--color-badge);
+    color: var(--color-badge-ink);
+    font-size: var(--badge-size);
+    font-weight: var(--badge-weight);
+    /* tall faces (Mali, the serif) need room for Thai tone marks */
+    line-height: var(--badge-leading, 1.25);
+  }
+  .app-mascot {
+    display: var(--mascot);
   }
 }
 
 @layer utilities {
-  /* a hard-shadowed surface that sinks into its shadow when pressed */
+  /* a solid button: in League it sinks into its hard shadow when pressed */
   .press {
-    box-shadow: var(--shadow-hard);
+    box-shadow: var(--shadow-btn);
     transition:
       transform 0.08s ease,
-      box-shadow 0.08s ease;
+      box-shadow 0.08s ease,
+      background-color 0.15s ease;
   }
   .press:active:not(:disabled) {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 0 var(--color-slate-900);
-  }
-  .dark .press:active:not(:disabled) {
-    box-shadow: 1px 1px 0 0 oklch(0.1 0.01 54);
+    transform: translate(var(--press-shift), var(--press-shift));
+    box-shadow: var(--shadow-btn-down);
   }
   .safe-b {
     padding-bottom: env(safe-area-inset-bottom, 0px);

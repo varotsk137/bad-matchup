@@ -120,7 +120,7 @@ export default function FairnessReport({ state, playersById, t, goTo }) {
         </ul>
 
         <div>
-          <div className="mb-2 grid grid-cols-3 gap-1 rounded-xl border-2 border-slate-900 bg-slate-100 p-1 dark:border-slate-700 dark:bg-slate-800">
+          <div className="mb-2 grid grid-cols-3 gap-1 rounded-xl border-(length:--line-w) border-edge bg-track p-1">
             {[
               ['partners', t('partneredWith')],
               ['opponents', t('playedAgainst')],
@@ -132,7 +132,7 @@ export default function FairnessReport({ state, playersById, t, goTo }) {
                 className={cx(
                   'h-8 rounded-lg text-xs font-semibold transition',
                   view === k
-                    ? 'bg-shuttle text-shuttle-ink shadow-[var(--shadow-hard-sm)]'
+                    ? 'bg-pick text-pick-ink shadow-[var(--shadow-pick)]'
                     : 'text-slate-500 dark:text-slate-400'
                 )}
               >

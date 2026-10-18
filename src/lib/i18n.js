@@ -413,6 +413,16 @@ const dict = {
   theme: { th: 'ธีม', en: 'Theme' },
   themeLight: { th: 'สว่าง', en: 'Light' },
   themeDark: { th: 'มืด', en: 'Dark' },
+  skin: { th: 'สกิน', en: 'Skin' },
+  skinHint: {
+    th: 'เปลี่ยนแค่หน้าตา การใช้งานและการจัดคู่เหมือนเดิม',
+    en: 'Only the look changes — everything works the same',
+  },
+  skinLeague: { th: 'ลีก', en: 'League' },
+  skinClassic: { th: 'คลาสสิก', en: 'Classic' },
+  skinScoreboard: { th: 'สกอร์บอร์ด', en: 'Scoreboard' },
+  skinEditorial: { th: 'หนังสือพิมพ์', en: 'Editorial' },
+  skinCandy: { th: 'ลูกกวาด', en: 'Candy' },
   weightsTitle: { th: 'น้ำหนักการจับคู่', en: 'Matching weights' },
   weightsHint: {
     th: 'ปรับว่าอยากให้ระบบให้ความสำคัญกับเรื่องไหนมากกว่ากัน (ใช้กับโหมดยุติธรรม)',

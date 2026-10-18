@@ -276,9 +276,9 @@ export default function PlayTab({
                   key={value}
                   onClick={() => actions.setOption('mode', value)}
                   className={cx(
-                    'h-9 rounded-full border-2 text-xs transition active:scale-95',
+                    'h-9 rounded-[var(--radius-pill)] border-(length:--line-w) text-xs transition active:scale-95',
                     mode === value
-                      ? 'border-slate-900 bg-brand-600 text-white shadow-[var(--shadow-hard-sm)] dark:border-slate-950'
+                      ? 'border-btn-edge bg-brand-600 text-white shadow-[var(--shadow-pick)]'
                       : 'border-transparent bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
                   )}
                 >
@@ -361,9 +361,9 @@ export default function PlayTab({
                     key={p}
                     onClick={() => setPreset(p)}
                     className={cx(
-                      'h-9 rounded-full border-2 text-xs tabular-nums transition active:scale-95',
+                      'h-9 rounded-[var(--radius-pill)] border-(length:--line-w) text-xs tabular-nums transition active:scale-95',
                       preset === p
-                        ? 'border-slate-900 bg-shuttle text-shuttle-ink shadow-[var(--shadow-hard-sm)]'
+                        ? 'border-btn-edge bg-preset text-preset-ink shadow-[var(--shadow-pick)]'
                         : 'border-transparent bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
                     )}
                   >
@@ -567,7 +567,7 @@ export default function PlayTab({
       ) : (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <div className="flex flex-1 gap-1 rounded-xl border-2 border-slate-900 bg-slate-100 p-1 dark:border-slate-700 dark:bg-slate-800">
+            <div className="flex flex-1 gap-1 rounded-xl border-(length:--line-w) border-edge bg-track p-1">
               {[
                 ['table', 'viewTable'],
                 ['cards', 'viewCards'],
@@ -578,7 +578,7 @@ export default function PlayTab({
                   className={cx(
                     'h-9 flex-1 rounded-lg text-sm transition active:scale-[0.98]',
                     view === v
-                      ? 'bg-shuttle text-shuttle-ink shadow-[var(--shadow-hard-sm)]'
+                      ? 'bg-pick text-pick-ink shadow-[var(--shadow-pick)]'
                       : 'text-slate-600 dark:text-slate-300'
                   )}
                 >
@@ -590,7 +590,7 @@ export default function PlayTab({
               <>
                 <button
                   onClick={onShare}
-                  className="press inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl border-2 border-slate-900 bg-slate-50 px-3 text-sm text-slate-900 hover:bg-slate-100 dark:border-slate-950 dark:bg-slate-800 dark:text-slate-100"
+                  className="press inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl border-(length:--line-w) border-edge-strong bg-slate-50 px-3 text-sm text-slate-900 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-100"
                 >
                   <svg
                     viewBox="0 0 20 20"
