@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   isAvailable,
   makeContext,
+  playedRounds,
   rankPlayers,
   roundQuality,
   totalCapacity,
@@ -11,7 +12,7 @@ import ScheduleTable from './ScheduleTable'
 import { analyse } from './FairnessReport'
 import HelpSheet from './HelpSheet'
 import { LevelBadge } from './PlayerBits'
-import { Button, Card, Empty, cx } from './ui'
+import { Button, Card, Empty, Sheet, cx } from './ui'
 
 const MAX_AHEAD = 100
 const SLOW_MS = 5000
@@ -47,6 +48,7 @@ export default function PlayTab({
   const setCustomCount = (v) => setCounts((c) => ({ ...c, customCount: v }))
   const setAddCount = (v) => setCounts((c) => ({ ...c, addCount: v }))
   const [helpOpen, setHelpOpen] = useState(false)
+  const [reshuffleOpen, setReshuffleOpen] = useState(false)
   // a build that runs past a few seconds earns a pointer to the knobs that
   // make it faster
   const [slow, setSlow] = useState(false)
@@ -144,9 +146,35 @@ export default function PlayTab({
     }
   }
 
-  /** Wipes the schedule and builds however many rounds the number box says. */
-  const reshuffle = async () => {
-    const n = addCount
+  const played = playedRounds(state.rounds)
+  const remaining = state.rounds.length - played
+
+  /**
+   * Once a match has been played there are two very different "reshuffles":
+   * redo what is left (the usual one — someone left or arrived) or start over.
+   * Before that, it is the plain rebuild it always was.
+   */
+  const reshuffle = () => {
+    if (played > 0) setReshuffleOpen(true)
+    else rebuildAll(addCount)
+  }
+
+  const reshuffleRemaining = async () => {
+    setReshuffleOpen(false)
+    setOpenId(undefined)
+    await solve((onProgress) => actions.regenerateRemaining(onProgress), remaining)
+  }
+
+  const startOver = async () => {
+    setReshuffleOpen(false)
+    if (!confirm(t('startOverConfirm', { n: state.rounds.length }))) return
+    setOpenId(undefined)
+    const n = state.rounds.length
+    await solve((onProgress) => actions.regenerate(n, onProgress), n)
+  }
+
+  /** Wipes the schedule and builds `n` rounds. */
+  const rebuildAll = async (n) => {
     const old = state.rounds.length
     const hasResults = state.rounds.some((r) =>
       r.matches.some((m) => m.done || typeof m.scoreA === 'number')
@@ -243,6 +271,41 @@ export default function PlayTab({
             </button>
           </div>
           <HelpSheet open={helpOpen} onClose={() => setHelpOpen(false)} t={t} />
+          <Sheet
+            open={reshuffleOpen}
+            onClose={() => setReshuffleOpen(false)}
+            title={t('regenerate')}
+          >
+            <div className="space-y-3">
+              <p className="text-sm text-slate-600 dark:text-slate-300">
+                {t('reshuffleIntro', { played })}
+              </p>
+              <Button
+                variant="primary"
+                className="h-auto w-full flex-col items-start gap-0.5 py-3 text-left"
+                disabled={remaining <= 0}
+                onClick={reshuffleRemaining}
+              >
+                <span className="text-sm font-semibold">
+                  {remaining > 0
+                    ? t('reshuffleRemaining', { n: remaining })
+                    : t('reshuffleNothingLeft')}
+                </span>
+                <span className="text-xs font-normal opacity-80">
+                  {t('reshuffleRemainingHint')}
+                </span>
+              </Button>
+              <button
+                onClick={startOver}
+                className="w-full rounded-xl border border-rose-300 px-4 py-3 text-left text-rose-700 transition hover:bg-rose-50 dark:border-rose-900 dark:text-rose-300 dark:hover:bg-rose-950/40"
+              >
+                <span className="block text-sm font-semibold">
+                  {t('startOver', { n: state.rounds.length })}
+                </span>
+                <span className="block text-xs opacity-80">{t('startOverHint')}</span>
+              </button>
+            </div>
+          </Sheet>
 
           {mode !== 'manual' && !hasRounds && (
             <>
@@ -498,6 +561,7 @@ export default function PlayTab({
               t={t}
               setToast={setToast}
               staminaLimit={state.options.maxConsecutive}
+              onToggleDone={readOnly ? undefined : onMatchDone}
             />
           ) : (
             <>

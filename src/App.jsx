@@ -12,6 +12,7 @@ import {
   createEmptyRound,
   fillRound as fillRoundFn,
   generateRoundsAsync,
+  playedRounds,
   makeContext,
   swapSlots,
   uid,
@@ -408,6 +409,37 @@ export default function App() {
         // a cancel before the very first round produced nothing — keep what was there
         if (!res.created.length) return
         setState((prev) => ({ ...prev, rounds: res.created }))
+      },
+
+      /**
+       * Keeps every round up to the last one with a played match and rebuilds
+       * the rest with today's player list — someone left, someone arrived.
+       */
+      regenerateRemaining: async (onProgress) => {
+        const s = stateRef.current
+        const kept = playedRounds(s.rounds)
+        const count = s.rounds.length - kept
+        if (count <= 0) return
+        cancelRef.current = false
+        const res = await generateRoundsAsync({
+          players: s.players,
+          courts: s.courts,
+          rounds: s.rounds.slice(0, kept),
+          weights: s.weights,
+          options: s.options,
+          count,
+          onProgress,
+          shouldCancel: () => cancelRef.current,
+        })
+        if (res.error && !res.created.length) {
+          setToast(t(res.error === 'no_courts' ? 'errNoCourts' : 'errNotEnough'), 'error')
+          return
+        }
+        if (!res.created.length) return
+        setState((prev) => ({
+          ...prev,
+          rounds: [...prev.rounds.slice(0, kept), ...res.created],
+        }))
       },
 
       cancelGenerate: () => {

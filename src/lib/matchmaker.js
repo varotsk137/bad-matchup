@@ -1040,6 +1040,23 @@ export function fillRound({ round, players, courts, rounds, weights, options }) 
   }
 }
 
+/* ----------------------------------------------------- played vs planned */
+
+/** A match has started counting once it is ticked off or has a score. */
+export const isMatchPlayed = (m) =>
+  !!m.done || typeof m.scoreA === 'number' || typeof m.scoreB === 'number'
+
+/**
+ * How many rounds from the start are history: everything up to and including
+ * the last round with any played match. Reshuffling "what is left" rebuilds
+ * only the rounds after that, so a round that is half played stays as it is.
+ */
+export function playedRounds(rounds) {
+  for (let i = rounds.length - 1; i >= 0; i--)
+    if ((rounds[i].matches || []).some(isMatchPlayed)) return i + 1
+  return 0
+}
+
 /* ------------------------------------------------------- editing a round */
 
 const teamKey = (t) => (t === 'A' ? 'teamA' : 'teamB')

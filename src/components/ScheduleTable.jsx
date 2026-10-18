@@ -16,6 +16,7 @@ export default function ScheduleTable({
   t,
   setToast,
   staminaLimit = 2,
+  onToggleDone, // absent in the read-only shared view
 }) {
   const [showLevels, setShowLevels] = useState(false)
   // a checking aid, so it stays off the everyday view and out of the image
@@ -70,6 +71,8 @@ export default function ScheduleTable({
       .join(', ')
 
   const hasBench = rounds.some((r) => r.benched.length)
+  // the first round that is not fully ticked off is the one on court now
+  const currentIdx = rounds.findIndex((r) => !r.matches.every((m) => m.done))
 
   const PlayBadge = ({ n }) => (
     <span
@@ -231,74 +234,114 @@ export default function ScheduleTable({
             </tr>
           </thead>
           <tbody>
-            {rounds.map((round, i) => (
-              <tr
-                key={round.id}
-                className={cx(
-                  'border-b border-slate-100 last:border-0 dark:border-slate-800/70',
-                  i % 2 === 1 && 'bg-slate-50/60 dark:bg-slate-800/20'
-                )}
-              >
-                <td
+            {rounds.map((round, i) => {
+              const finished = round.matches.length > 0 && round.matches.every((m) => m.done)
+              const current = i === currentIdx
+              return (
+                <tr
+                  key={round.id}
                   className={cx(
-                    'sticky left-0 z-10 py-1.5 pr-2 pl-3 align-middle',
-                    i % 2 === 1
-                      ? 'bg-slate-50 dark:bg-slate-900'
-                      : 'bg-slate-50 dark:bg-slate-900'
+                    'border-b border-slate-100 last:border-0 dark:border-slate-800/70',
+                    current
+                      ? 'bg-brand-50 dark:bg-brand-950/40'
+                      : i % 2 === 1 && 'bg-slate-50/60 dark:bg-slate-800/20',
+                    finished && 'opacity-55'
                   )}
                 >
-                  <span className="text-xs font-bold text-slate-400 tabular-nums">{i + 1}</span>
-                </td>
+                  <td
+                    className={cx(
+                      'sticky left-0 z-10 py-1.5 pr-2 pl-3 align-middle',
+                      current
+                        ? 'border-l-4 border-brand-600 bg-brand-50 pl-2 dark:bg-brand-950'
+                        : 'bg-slate-50 dark:bg-slate-900'
+                    )}
+                  >
+                    <span
+                      className={cx(
+                        'block text-xs font-bold tabular-nums',
+                        current ? 'text-brand-700 dark:text-brand-300' : 'text-slate-400'
+                      )}
+                    >
+                      {i + 1}
+                    </span>
+                    {current && (
+                      <span className="block text-[9px] leading-tight font-semibold text-brand-700 dark:text-brand-300">
+                        {t('nowPlaying')}
+                      </span>
+                    )}
+                  </td>
 
-                {columns.map((c) => {
-                  const m = round.matches.find((x) => x.courtId === c.id)
-                  if (!m)
+                  {columns.map((c) => {
+                    const m = round.matches.find((x) => x.courtId === c.id)
+                    if (!m)
+                      return (
+                        <td key={c.id} className="px-2 py-1.5 text-xs text-slate-300">
+                          —
+                        </td>
+                      )
+                    const hasScore =
+                      typeof m.scoreA === 'number' && typeof m.scoreB === 'number'
                     return (
-                      <td key={c.id} className="px-2 py-1.5 text-xs text-slate-300">
-                        —
+                      <td key={c.id} className="px-2 py-1.5 align-middle">
+                        <div className="flex items-center gap-2">
+                          <div className="min-w-0 flex-1">
+                            <Side ids={m.teamA} tone="A" ri={i} />
+                            <span className="flex items-center gap-1 text-[10px] leading-3 font-bold text-slate-300 dark:text-slate-600">
+                              {t('vs')}
+                              {hasScore && (
+                                <span className="text-slate-500 tabular-nums dark:text-slate-400">
+                                  {m.scoreA}–{m.scoreB}
+                                </span>
+                              )}
+                              {m.done && !onToggleDone && (
+                                <span className="text-brand-600 dark:text-brand-400">✓</span>
+                              )}
+                            </span>
+                            <Side ids={m.teamB} tone="B" ri={i} />
+                          </div>
+                          {onToggleDone && (
+                            <button
+                              onClick={() => onToggleDone(round, m.id)}
+                              aria-pressed={!!m.done}
+                              aria-label={t(m.done ? 'reopen' : 'finishGame')}
+                              title={t(m.done ? 'reopen' : 'finishGame')}
+                              className={cx(
+                                'grid h-8 w-8 shrink-0 place-items-center rounded-full border-2 text-sm font-bold transition active:scale-90',
+                                m.done
+                                  ? 'border-brand-600 bg-brand-600 text-white'
+                                  : 'border-slate-300 text-transparent hover:border-brand-500 dark:border-slate-600'
+                              )}
+                            >
+                              ✓
+                            </button>
+                          )}
+                        </div>
                       </td>
                     )
-                  const hasScore = typeof m.scoreA === 'number' && typeof m.scoreB === 'number'
-                  return (
-                    <td key={c.id} className="px-2 py-1.5 align-middle">
-                      <Side ids={m.teamA} tone="A" ri={i} />
-                      <span className="flex items-center gap-1 text-[10px] leading-3 font-bold text-slate-300 dark:text-slate-600">
-                        {t('vs')}
-                        {hasScore && (
-                          <span className="text-slate-500 tabular-nums dark:text-slate-400">
-                            {m.scoreA}–{m.scoreB}
-                          </span>
-                        )}
-                        {m.done && (
-                          <span className="text-brand-600 dark:text-brand-400">✓</span>
-                        )}
-                      </span>
-                      <Side ids={m.teamB} tone="B" ri={i} />
-                    </td>
-                  )
-                })}
+                  })}
 
-                {hasBench && (
-                  <td className="px-2 py-1.5 align-middle text-[11px] leading-4 text-slate-400 dark:text-slate-500">
-                    {!round.benched.length
-                      ? '—'
-                      : showStamina
-                        ? round.benched.map((id, j) => {
-                            const p = playersById.get(id)
-                            if (!p) return null
-                            return (
-                              <span key={id} className="whitespace-nowrap">
-                                {j > 0 && ', '}
-                                {p.name}
-                                <RestBadge n={stamina[i].get(id)?.rest ?? 1} />
-                              </span>
-                            )
-                          })
-                        : benchNames(round) || '—'}
-                  </td>
-                )}
-              </tr>
-            ))}
+                  {hasBench && (
+                    <td className="px-2 py-1.5 align-middle text-[11px] leading-4 text-slate-400 dark:text-slate-500">
+                      {!round.benched.length
+                        ? '—'
+                        : showStamina
+                          ? round.benched.map((id, j) => {
+                              const p = playersById.get(id)
+                              if (!p) return null
+                              return (
+                                <span key={id} className="whitespace-nowrap">
+                                  {j > 0 && ', '}
+                                  {p.name}
+                                  <RestBadge n={stamina[i].get(id)?.rest ?? 1} />
+                                </span>
+                              )
+                            })
+                          : benchNames(round) || '—'}
+                    </td>
+                  )}
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </div>

@@ -186,6 +186,32 @@ const dict = {
   addRounds: { th: 'เพิ่มรอบ', en: 'Add round' },
   addRoundsN: { th: 'เพิ่ม {n} รอบ', en: 'Add {n} rounds' },
   regenerate: { th: 'จัดใหม่', en: 'Reshuffle' },
+  nowPlaying: { th: 'กำลังเล่น', en: 'now' },
+  reshuffleIntro: {
+    th: 'เล่นไปแล้ว {played} รอบ รอบที่เล่นแล้ว (หรือมีคู่ที่ติ๊กจบแล้ว) จะเก็บไว้เป็นประวัติ',
+    en: '{played} rounds played so far. Rounds already played (or with a ticked match) stay as history.',
+  },
+  reshuffleRemaining: {
+    th: 'จัดใหม่เฉพาะ {n} รอบที่ยังไม่เล่น',
+    en: 'Redo the {n} rounds not played yet',
+  },
+  reshuffleNothingLeft: {
+    th: 'ไม่มีรอบที่ยังไม่เล่น — ใช้ปุ่มเพิ่มรอบแทน',
+    en: 'Nothing left to redo — add rounds instead',
+  },
+  reshuffleRemainingHint: {
+    th: 'ใช้รายชื่อคนที่อยู่ตอนนี้ เหมาะกับตอนมีคนมาเพิ่มหรือกลับก่อน ระบบนับเกมที่เล่นไปแล้วด้วย',
+    en: 'Uses who is here now — for when someone arrives or leaves. Games already played still count.',
+  },
+  startOver: { th: 'เริ่มใหม่ทั้งหมด {n} รอบ', en: 'Start over with {n} rounds' },
+  startOverHint: {
+    th: 'ล้างทุกรอบรวมถึงผลที่บันทึกไว้',
+    en: 'Clears every round, including recorded results',
+  },
+  startOverConfirm: {
+    th: 'ล้างทุกรอบและผลที่บันทึกไว้ แล้วจัดใหม่ {n} รอบ?',
+    en: 'Clear every round and recorded result, and build {n} new rounds?',
+  },
   regenerateConfirm: {
     th: 'ล้างตารางเดิม {old} รอบ แล้วจัดใหม่ {n} รอบ? สกอร์ที่บันทึกไว้จะหายไป',
     en: 'Clear the current {old} rounds and build {n} fresh ones? Recorded scores are lost.',

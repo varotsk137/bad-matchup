@@ -9,7 +9,9 @@ import {
   createEmptyRound,
   fillRound,
   generateRound,
+  generateRounds,
   generateRoundsAsync,
+  playedRounds,
   swapSlots,
 } from './matchmaker'
 import {
@@ -212,5 +214,49 @@ describe('async build', () => {
     })
     expect(res.cancelled).toBe(true)
     expect(res.created.length).toBeGreaterThan(0)
+  })
+})
+
+describe('played vs planned rounds', () => {
+  const round = (...matches) => ({ matches })
+  const m = (extra = {}) => ({
+    teamA: ['a', 'b'],
+    teamB: ['c', 'd'],
+    scoreA: null,
+    scoreB: null,
+    ...extra,
+  })
+
+  it('counts up to the last round with a played match', () => {
+    expect(playedRounds([])).toBe(0)
+    expect(playedRounds([round(m()), round(m())])).toBe(0)
+    expect(playedRounds([round(m({ done: true })), round(m())])).toBe(1)
+    // a half-played round counts, and so does everything before it
+    expect(playedRounds([round(m()), round(m({ done: true }), m()), round(m())])).toBe(2)
+    expect(playedRounds([round(m({ scoreA: 21, scoreB: 15 })), round(m())])).toBe(1)
+  })
+
+  it('rebuilding what is left keeps the played rounds and counts their games', () => {
+    seeded(12)
+    const ps = players(9)
+    const cs = courts(1)
+    const first = build(9, 1, 6, { restMode: 'strict' }, 12).rounds
+    first[0].matches[0].done = true
+    first[1].matches[0].done = true
+    const kept = first.slice(0, playedRounds(first))
+    const rest = generateRounds({
+      players: ps,
+      courts: cs,
+      rounds: kept,
+      weights: {},
+      options: { ...FAST, restMode: 'strict' },
+      count: first.length - kept.length,
+    }).created
+    const all = [...kept, ...rest]
+    expect(all).toHaveLength(6)
+    expect(all.slice(0, 2)).toEqual(first.slice(0, 2))
+    // the stamina rule runs across the join between old and new rounds
+    expect(analyse(ps, all).longestPlay).toBeLessThanOrEqual(2)
+    for (const r of rest) expectValidRound(r, ps, cs)
   })
 })
