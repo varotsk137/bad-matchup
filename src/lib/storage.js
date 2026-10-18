@@ -35,6 +35,12 @@ export function defaultState() {
   }
 }
 
+/** Settings from older versions that no longer exist get a sensible stand-in. */
+function migrateOptions(options) {
+  // v2 dropped rotation mode — balanced covers what it did, and more
+  return options.mode === 'rotation' ? { ...options, mode: 'balanced' } : options
+}
+
 export function loadState() {
   const base = defaultState()
   try {
@@ -47,7 +53,7 @@ export function loadState() {
       // older saves could hold 'system' — pin it to whatever that means now
       theme: saved.theme === 'light' || saved.theme === 'dark' ? saved.theme : systemTheme(),
       weights: { ...base.weights, ...(saved.weights || {}) },
-      options: { ...base.options, ...(saved.options || {}) },
+      options: migrateOptions({ ...base.options, ...(saved.options || {}) }),
       players: Array.isArray(saved.players) ? saved.players : base.players,
       courts: Array.isArray(saved.courts) && saved.courts.length ? saved.courts : base.courts,
       rounds: Array.isArray(saved.rounds) ? saved.rounds : [],
@@ -105,7 +111,7 @@ export function importState(file) {
           ...base,
           ...data,
           weights: { ...base.weights, ...(data.weights || {}) },
-          options: { ...base.options, ...(data.options || {}) },
+          options: migrateOptions({ ...base.options, ...(data.options || {}) }),
         })
       } catch (e) {
         reject(e)

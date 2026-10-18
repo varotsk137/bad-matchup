@@ -22,7 +22,6 @@ export const DEFAULT_COUNTS = { preset: 5, customCount: 3, addCount: 1 }
 
 const MODES = [
   ['balanced', 'modeBalanced'],
-  ['rotation', 'modeRotation'],
   ['random', 'modeRandom'],
   ['manual', 'modeManual'],
 ]
@@ -246,7 +245,7 @@ export default function PlayTab({
       {!readOnly && (
         <Card className="space-y-2.5 p-3">
           <div className="flex gap-1">
-            <div className="grid flex-1 grid-cols-4 gap-1">
+            <div className="grid flex-1 grid-cols-3 gap-1">
               {MODES.map(([value, key]) => (
                 <button
                   key={value}

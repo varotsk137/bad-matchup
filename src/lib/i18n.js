@@ -122,11 +122,6 @@ const dict = {
     th: 'ถ่วงน้ำหนักฝีมือ จำนวนเกม ความหลากหลายของคู่ และเพศ',
     en: 'Weighs skill, games played, partner variety and gender',
   },
-  modeRotation: { th: 'หมุนเวียน', en: 'Rotation' },
-  modeRotationDesc: {
-    th: 'เรียงคิวตายตัว ใครรอนานสุด/เล่นน้อยสุดได้ลงก่อน',
-    en: 'Strict queue — longest wait and fewest games go first',
-  },
   modeRandom: { th: 'สุ่ม', en: 'Random' },
   modeRandomDesc: {
     th: 'สุ่มล้วน ไม่คิดอะไรทั้งนั้น',
@@ -550,17 +545,6 @@ const dict = {
     th: '👑 + 🐣 สู้ ⭐ + ⭐ ฝีมือรวมสองฝั่งพอ ๆ กัน',
     en: '👑 + 🐣 vs ⭐ + ⭐ — the two sides add up evenly',
   },
-  helpRotation1: {
-    th: 'เข้าคิวตายตัว ใครรอนานสุดหรือเล่นน้อยสุดได้ลงก่อน เล่นจบแล้วไปต่อท้ายคิว',
-    en: 'A fixed queue: longest wait / fewest games goes on first, then back to the end of the line',
-  },
-  helpRotation2: {
-    th: 'คาดเดาได้ง่าย แต่ไม่ได้สนใจว่าใครคู่กับใคร',
-    en: 'Easy to predict, but it does not care who partners whom',
-  },
-  helpQueue: { th: 'คิว', en: 'Queue' },
-  helpNext: { th: 'รอบถัดไป', en: 'Next' },
-  helpBackOfQueue: { th: 'ต่อท้ายคิว', en: 'Back of queue' },
   helpRandom1: {
     th: 'สุ่มทั้งคนลงและการจับคู่ทุกรอบ',
     en: 'Who plays and who partners whom are both drawn at random',

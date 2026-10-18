@@ -32,7 +32,7 @@ const QUICK = { effort: 'fast' }
 /* ------------------------------------------------------------ the rules */
 
 describe('every round is well formed', () => {
-  for (const mode of ['balanced', 'rotation', 'random']) {
+  for (const mode of ['balanced', 'random']) {
     it(`${mode}: 9 players, 2 courts`, () => {
       const cs = courts(2)
       const { ps, rounds } = build(9, 2, 12, { mode })
@@ -40,6 +40,17 @@ describe('every round is well formed', () => {
       for (const r of rounds) expectValidRound(r, ps, cs)
     })
   }
+
+  it('a saved "rotation" setting from v1 falls back to balanced', () => {
+    seeded(13)
+    const { round } = generateRound({
+      players: players(9),
+      courts: courts(1),
+      rounds: [],
+      options: { ...FAST, mode: 'rotation' },
+    })
+    expect(round.mode).toBe('balanced')
+  })
 
   it('reports errors instead of building nonsense', () => {
     expect(generateRound({ players: players(9), courts: [], rounds: [] }).error).toBe(

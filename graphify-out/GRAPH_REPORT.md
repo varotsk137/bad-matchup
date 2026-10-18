@@ -1,17 +1,17 @@
 # Graph Report - bad-matchup  (2026-10-18)
 
 ## Corpus Check
-- 34 files · ~37,481 words
+- 34 files · ~37,373 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 3 file(s) not represented in the graph (top: (none) 2, .css 1)
 
 ## Summary
-- 274 nodes · 793 edges · 11 communities (10 shown, 1 thin omitted)
+- 274 nodes · 791 edges · 10 communities (9 shown, 1 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 7 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `be03c55f`
+- Built from commit: `4fb7e82f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -19,12 +19,11 @@
 - matchmaker.js
 - App.jsx
 - package.json
-- PlayTab.jsx
+- ui.jsx
 - exportImage.js
 - 🏸 Bad Matchup · จับคู่ตีแบด
 - HelpSheet.jsx
 - matchmaker.rules.test.js
-- share.js
 - cx
 - CLAUDE.md
 
@@ -43,39 +42,39 @@
 ## Surprising Connections (you probably didn't know these)
 - `Icon()` --calls--> `cx()`  [EXTRACTED]
   src/App.jsx → src/components/ui.jsx
+- `CourtsTab()` --indirect_call--> `isAvailable()`  [INFERRED]
+  src/components/CourtsTab.jsx → src/lib/matchmaker.js
 - `PlayTab()` --indirect_call--> `isAvailable()`  [INFERRED]
   src/components/PlayTab.jsx → src/lib/matchmaker.js
 - `App()` --calls--> `CourtsTab()`  [EXTRACTED]
   src/App.jsx → src/components/CourtsTab.jsx
 - `App()` --calls--> `PlayersTab()`  [EXTRACTED]
   src/App.jsx → src/components/PlayersTab.jsx
-- `App()` --calls--> `PlayTab()`  [EXTRACTED]
-  src/App.jsx → src/components/PlayTab.jsx
 
 ## Import Cycles
 - None detected.
 
-## Communities (11 total, 1 thin omitted)
+## Communities (10 total, 1 thin omitted)
 
 ### Community 0 - "matchmaker.js"
-Cohesion: 0.11
-Nodes (45): CourtIcon(), CourtsTab(), attempts(), buildOnce(), buildOnceAsync(), compareKeys(), cost(), courtSize() (+37 more)
+Cohesion: 0.10
+Nodes (48): HOURS, MINUTES, Pick(), RoundAdvisor(), Row(), attempts(), buildOnce(), buildOnceAsync() (+40 more)
 
 ### Community 1 - "App.jsx"
-Cohesion: 0.11
-Nodes (31): react-dom, App(), Header(), Icon(), ICONS, TABS, DEFAULT_COUNTS, PresetCard() (+23 more)
+Cohesion: 0.10
+Nodes (34): react-dom, App(), Header(), Icon(), ICONS, TABS, Toast(), dict (+26 more)
 
 ### Community 2 - "package.json"
 Cohesion: 0.09
 Nodes (23): dependencies, react, react-dom, description, devDependencies, tailwindcss, @tailwindcss/vite, vite (+15 more)
 
-### Community 3 - "PlayTab.jsx"
-Cohesion: 0.21
-Nodes (15): analyse(), Chevron(), isArchived(), MODES, PlayTab(), RoundCard(), Stepper(), HOURS (+7 more)
+### Community 3 - "ui.jsx"
+Cohesion: 0.15
+Nodes (34): react, CourtIcon(), CourtsTab(), ImageSheet(), levelLabel(), levelMeta(), nextStatus(), PlayerEditor() (+26 more)
 
 ### Community 4 - "exportImage.js"
-Cohesion: 0.19
-Nodes (17): react, ImageSheet(), ScheduleTable(), asFile(), canSharePng(), downloadPng(), drawSchedule(), ellipsize() (+9 more)
+Cohesion: 0.26
+Nodes (10): drawSchedule(), ellipsize(), F, filename(), PALETTES, renderSchedulePng(), roundRect(), teamLine() (+2 more)
 
 ### Community 5 - "🏸 Bad Matchup · จับคู่ตีแบด"
 Cohesion: 0.14
@@ -83,19 +82,15 @@ Nodes (13): 🏸 Bad Matchup · จับคู่ตีแบด, Deploy, Expor
 
 ### Community 6 - "HelpSheet.jsx"
 Cohesion: 0.11
-Nodes (32): PAIRINGS, REST, Heatmap(), HelpInsight(), LEVEL, OPTIONS, PairArt(), PolishArt() (+24 more)
+Nodes (31): PAIRINGS, REST, Heatmap(), HelpInsight(), LEVEL, OPTIONS, PairArt(), PolishArt() (+23 more)
 
 ### Community 7 - "matchmaker.rules.test.js"
 Cohesion: 0.30
 Nodes (12): vitest, QUICK, analyse(), build(), courts(), expectValidRound(), FAST, key() (+4 more)
 
-### Community 8 - "share.js"
-Cohesion: 0.33
-Nodes (10): buildShareUrl(), canCompress(), decodeShare(), deflate(), encodeShare(), fromB64Url(), inflate(), packSession() (+2 more)
-
 ### Community 9 - "cx"
 Cohesion: 0.14
-Nodes (40): FairnessReport(), MeetGrid(), MatchCard(), SCORE_TONE, ScoreBox(), SIDE, Slot(), Avatar() (+32 more)
+Nodes (33): analyse(), FairnessReport(), MeetGrid(), MatchCard(), SCORE_TONE, ScoreBox(), SIDE, Slot() (+25 more)
 
 ## Knowledge Gaps
 - **1 isolated node(s):** `tailwindcss`
@@ -105,17 +100,17 @@ Nodes (40): FairnessReport(), MeetGrid(), MatchCard(), SCORE_TONE, ScoreBox(), S
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `cx()` connect `cx` to `matchmaker.js`, `App.jsx`, `PlayTab.jsx`, `exportImage.js`, `HelpSheet.jsx`?**
-  _High betweenness centrality (0.169) - this node is a cross-community bridge._
+- **Why does `cx()` connect `cx` to `matchmaker.js`, `App.jsx`, `ui.jsx`, `HelpSheet.jsx`?**
+  _High betweenness centrality (0.168) - this node is a cross-community bridge._
 - **What connects `tailwindcss` to the rest of the system?**
   _1 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `matchmaker.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.11008325624421832 - nodes in this community are weakly interconnected._
-- **Why does `react` connect `exportImage.js` to `App.jsx`, `package.json`, `PlayTab.jsx`, `HelpSheet.jsx`, `cx`?**
+  _Cohesion score 0.09714285714285714 - nodes in this community are weakly interconnected._
+- **Why does `react` connect `ui.jsx` to `App.jsx`, `package.json`, `cx`, `HelpSheet.jsx`?**
   _High betweenness centrality (0.078) - this node is a cross-community bridge._
 - **Should `App.jsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.10810810810810811 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09615384615384616 - nodes in this community are weakly interconnected._
 - **Should `package.json` be split into smaller, more focused modules?**
   _Cohesion score 0.08666666666666667 - nodes in this community are weakly interconnected._
-- **Should `🏸 Bad Matchup · จับคู่ตีแบด` be split into smaller, more focused modules?**
-  _Cohesion score 0.14285714285714285 - nodes in this community are weakly interconnected._
+- **Should `ui.jsx` be split into smaller, more focused modules?**
+  _Cohesion score 0.1461794019933555 - nodes in this community are weakly interconnected._

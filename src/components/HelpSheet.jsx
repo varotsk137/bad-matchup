@@ -6,7 +6,7 @@ import { Sheet, cx } from './ui'
 /**
  * The "?" manual. One card per matching mode, each with a small drawing of
  * what that mode actually does to the courts — the one-line descriptions on
- * the mode buttons are not enough to tell "balanced" from "rotation".
+ * the mode buttons are not enough to tell the modes apart.
  */
 export default function HelpSheet({ open, onClose, t }) {
   return (
@@ -20,14 +20,6 @@ export default function HelpSheet({ open, onClose, t }) {
           points={[t('helpBalanced1'), t('helpBalanced2'), t('helpBalanced3')]}
         >
           <BalancedArt t={t} />
-        </Section>
-
-        <Section
-          emoji="🔁"
-          title={t('modeRotation')}
-          points={[t('helpRotation1'), t('helpRotation2')]}
-        >
-          <RotationArt t={t} />
         </Section>
 
         <Section
@@ -197,36 +189,6 @@ function BalancedArt({ t }) {
         <span className="text-[11px] text-slate-500 dark:text-slate-400">
           {t('helpBalancedLevel')}
         </span>
-      </div>
-    </div>
-  )
-}
-
-function RotationArt({ t }) {
-  return (
-    <div className="space-y-2">
-      <div className="flex flex-wrap items-center gap-1.5">
-        <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
-          {t('helpQueue')}
-        </span>
-        {['E', 'F', 'G', 'H'].map((id) => (
-          <Dot key={id} id={id} />
-        ))}
-        <Arrow />
-        <Court a={['A', 'B']} b={['C', 'D']} />
-      </div>
-      <div className="flex flex-wrap items-center gap-1.5">
-        <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
-          {t('helpNext')}
-        </span>
-        <Court a={['E', 'F']} b={['G', 'H']} />
-        <Arrow />
-        <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
-          {t('helpBackOfQueue')}
-        </span>
-        {['A', 'B', 'C', 'D'].map((id) => (
-          <Dot key={id} id={id} dim />
-        ))}
       </div>
     </div>
   )

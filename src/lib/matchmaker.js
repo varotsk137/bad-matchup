@@ -29,7 +29,7 @@ export const LEVEL_META = [
 /** What a brand new player gets until someone says otherwise. */
 export const DEFAULT_LEVEL = 1
 
-export const MODES = ['balanced', 'rotation', 'random', 'manual']
+export const MODES = ['balanced', 'random', 'manual']
 
 export const DEFAULT_WEIGHTS = {
   // --- who goes on court this round ---
@@ -69,6 +69,8 @@ export const DEFAULT_OPTIONS = {
  */
 function resolve(options, weights) {
   const opts = { ...DEFAULT_OPTIONS, ...options }
+  // rotation mode was retired in v2; a saved setting falls back to balanced
+  if (!MODES.includes(opts.mode)) opts.mode = 'balanced'
   const w = { ...DEFAULT_WEIGHTS, ...weights }
   if (opts.useStamina === false) {
     opts.enforceStamina = false
@@ -261,8 +263,8 @@ export function makeContext(players, rounds) {
 /**
  * Orders the available players by "who deserves to play next".
  * `jitter` of 0 makes the order fully deterministic (used for the queue
- * preview and for rotation mode); a bit of jitter keeps balanced mode from
- * producing the same line-up every session.
+ * preview); a bit of jitter keeps balanced mode from producing the same
+ * line-up every session.
  */
 export function rankPlayers(pool, ctx, weights, options, jitter = 0) {
   const w = weights
@@ -298,7 +300,7 @@ export function rankPlayers(pool, ctx, weights, options, jitter = 0) {
 }
 
 function selectPlayers(pool, capacity, ctx, weights, options) {
-  const jitter = options.mode === 'rotation' ? 0 : 0.08
+  const jitter = 0.08
   let ranked = rankPlayers(pool, ctx, weights, options, jitter)
 
   // Hard stamina rule: anyone who already played `maxConsecutive` rounds in a
