@@ -1,17 +1,17 @@
 # Graph Report - bad-matchup  (2026-10-18)
 
 ## Corpus Check
-- 39 files · ~40,566 words
+- 39 files · ~40,986 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 3 file(s) not represented in the graph (top: (none) 2, .css 1)
 
 ## Summary
-- 293 nodes · 859 edges · 10 communities (9 shown, 1 thin omitted)
+- 292 nodes · 855 edges · 10 communities (9 shown, 1 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 7 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `6ead6389`
+- Built from commit: `6a13d384`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -24,7 +24,7 @@
 - 🏸 Bad Matchup
 - HelpSheet.jsx
 - matchmaker.rules.test.js
-- PlayTab.jsx
+- share.js
 - CLAUDE.md
 
 ## God Nodes (most connected - your core abstractions)
@@ -58,19 +58,19 @@
 
 ### Community 0 - "matchmaker.js"
 Cohesion: 0.09
-Nodes (43): HOURS, MINUTES, Pick(), RoundAdvisor(), Row(), attempts(), buildOnce(), buildOnceAsync() (+35 more)
+Nodes (56): Chevron(), isArchived(), MODES, PlayTab(), RoundCard(), Stepper(), HOURS, MINUTES (+48 more)
 
 ### Community 1 - "App.jsx"
-Cohesion: 0.10
-Nodes (36): react-dom, App(), Header(), Icon(), ICONS, TABS, Toast(), dict (+28 more)
+Cohesion: 0.11
+Nodes (29): react-dom, App(), Header(), Icon(), ICONS, TABS, DEFAULT_COUNTS, pickTuning() (+21 more)
 
 ### Community 2 - "package.json"
 Cohesion: 0.09
 Nodes (23): dependencies, react, react-dom, description, devDependencies, tailwindcss, @tailwindcss/vite, vite (+15 more)
 
 ### Community 3 - "ui.jsx"
-Cohesion: 0.13
-Nodes (48): react, CourtIcon(), CourtsTab(), MatchCard(), SCORE_TONE, ScoreBox(), SIDE, Slot() (+40 more)
+Cohesion: 0.12
+Nodes (47): react, CourtIcon(), CourtsTab(), analyse(), FairnessReport(), MeetGrid(), MatchCard(), SCORE_TONE (+39 more)
 
 ### Community 4 - "exportImage.js"
 Cohesion: 0.20
@@ -85,12 +85,12 @@ Cohesion: 0.11
 Nodes (31): PAIRINGS, REST, Heatmap(), HelpInsight(), LEVEL, OPTIONS, PairArt(), PolishArt() (+23 more)
 
 ### Community 7 - "matchmaker.rules.test.js"
-Cohesion: 0.30
-Nodes (15): vitest, generateRounds(), QUICK, situation(), session(), analyse(), build(), courts() (+7 more)
+Cohesion: 0.26
+Nodes (17): vitest, generateRounds(), QUICK, swapSlots(), teamKey(), situation(), session(), analyse() (+9 more)
 
-### Community 8 - "PlayTab.jsx"
-Cohesion: 0.21
-Nodes (19): analyse(), FairnessReport(), MeetGrid(), Chevron(), DEFAULT_COUNTS, isArchived(), MODES, PlayTab() (+11 more)
+### Community 8 - "share.js"
+Cohesion: 0.29
+Nodes (11): buildShareUrl(), canCompress(), decodeShare(), deflate(), encodeShare(), fromB64Url(), inflate(), packSession() (+3 more)
 
 ## Knowledge Gaps
 - **1 isolated node(s):** `tailwindcss`
@@ -100,17 +100,17 @@ Nodes (19): analyse(), FairnessReport(), MeetGrid(), Chevron(), DEFAULT_COUNTS, 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `cx()` connect `ui.jsx` to `matchmaker.js`, `App.jsx`, `exportImage.js`, `HelpSheet.jsx`, `PlayTab.jsx`?**
-  _High betweenness centrality (0.153) - this node is a cross-community bridge._
+- **Why does `cx()` connect `ui.jsx` to `matchmaker.js`, `App.jsx`, `exportImage.js`, `HelpSheet.jsx`?**
+  _High betweenness centrality (0.154) - this node is a cross-community bridge._
 - **What connects `tailwindcss` to the rest of the system?**
   _1 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `matchmaker.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.09292929292929293 - nodes in this community are weakly interconnected._
-- **Why does `react` connect `ui.jsx` to `App.jsx`, `package.json`, `exportImage.js`, `HelpSheet.jsx`, `PlayTab.jsx`?**
+  _Cohesion score 0.08644067796610169 - nodes in this community are weakly interconnected._
+- **Why does `react` connect `ui.jsx` to `matchmaker.js`, `App.jsx`, `package.json`, `exportImage.js`, `HelpSheet.jsx`?**
   _High betweenness centrality (0.071) - this node is a cross-community bridge._
 - **Should `App.jsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.09745293466223699 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.11428571428571428 - nodes in this community are weakly interconnected._
 - **Should `package.json` be split into smaller, more focused modules?**
   _Cohesion score 0.08666666666666667 - nodes in this community are weakly interconnected._
 - **Should `ui.jsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.12522686025408347 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.12468671679197994 - nodes in this community are weakly interconnected._

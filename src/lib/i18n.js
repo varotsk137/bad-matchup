@@ -230,8 +230,8 @@ const dict = {
   generating: { th: 'กำลังจัด…', en: 'Working…' },
   planningAhead: { th: 'กำลังวางแผนล่วงหน้า…', en: 'Planning ahead…' },
   adviseCover: {
-    th: '{n} รอบ ทุกคนได้คู่กันครบ (คนละประมาณ {g} เกม)',
-    en: '{n} rounds for everyone to partner everyone (about {g} games each)',
+    th: '≈ {n} รอบ ทุกคนได้คู่กันครบ (คนละประมาณ {g} เกม)',
+    en: '≈ {n} rounds for everyone to partner everyone (about {g} games each)',
   },
   adviseTime: {
     th: 'จองคอร์ทไว้ ≈ {n} รอบ (คนละประมาณ {g} เกม)',

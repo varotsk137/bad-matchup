@@ -333,6 +333,24 @@ describe('round suggestions', () => {
     expect(roundsForTime(1.5, 12)).toBe(7)
   })
 
+  it('counts every court — several courts need far fewer rounds than one', () => {
+    // the old formula assumed "rest on time" seating and suggested 25 here;
+    // the court planner, played forward, says 16 — and the engine agrees
+    const r = suggest(10, 2)
+    expect(r.coverAll).toBeLessThan(20)
+    const { ps, rounds } = build(10, 2, r.coverAll)
+    expect(analyse(ps, rounds).neverPartnered).toBe(0)
+  })
+
+  it('20 players on 4 courts are covered in the suggested rounds', () => {
+    // the exact minimum (28) left almost no slack and missed a pair or two;
+    // big groups get a small margin
+    const r = suggest(20, 4)
+    expect(r.coverAll).toBeLessThan(40)
+    const { ps, rounds } = build(20, 4, r.coverAll)
+    expect(analyse(ps, rounds).neverPartnered).toBe(0)
+  })
+
   it('the engine really does cover everyone in the suggested rounds', () => {
     const { coverAll } = suggest(9, 1)
     const { ps, rounds } = build(9, 1, coverAll)

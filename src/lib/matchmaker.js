@@ -310,7 +310,9 @@ export function rankPlayers(pool, ctx, weights, options, jitter = 0) {
 }
 
 function selectPlayers(pool, capacity, ctx, weights, options) {
-  const jitter = 0.08
+  // a little randomness keeps sessions varied; the round-count simulation
+  // (suggestRounds) turns it off so its answer does not wobble between renders
+  const jitter = options.selectionJitter ?? 0.08
   let ranked = rankPlayers(pool, ctx, weights, options, jitter)
 
   // Hard stamina rule: anyone who already played `maxConsecutive` rounds in a
@@ -1078,8 +1080,6 @@ export function fillRound({ round, players, courts, rounds, weights, options }) 
 
 /* ------------------------------------------------------ how many rounds */
 
-const gcd = (a, b) => (b ? gcd(b, a % b) : a)
-
 /**
  * Rounds worth suggesting before a session starts. `seats` is what a round
  * typically puts on court once the rest mode has had its say (the long-run
@@ -1090,29 +1090,80 @@ const gcd = (a, b) => (b ? gcd(b, a % b) : a)
  *              rounded up to an even-games count when that costs little
  *   gamesEach – roughly how many games everyone gets in that many rounds
  */
-export function suggestRounds({ players, courts, options }) {
-  const { opts } = resolve(options)
+export function suggestRounds({ players, courts, options, weights }) {
+  const { opts, w } = resolve({ ...options, selectionJitter: 0 }, weights)
   const n = players.filter(isAvailable).length
   const enabled = courts.filter((c) => c.enabled !== false)
   if (n < 2 || !enabled.length) return null
 
-  let seats = Math.min(totalCapacity(enabled), n)
-  if (opts.enforceStamina && opts.restMode !== 'fill') {
-    const limit = Math.max(1, opts.maxConsecutive)
-    seats = Math.min(seats, Math.max(2, Math.floor((n * limit) / (limit + 1))))
-  }
-  const doublesCourts = enabled.filter((c) => courtSize(c) === 4).length
-  const teams = 2 * Math.min(doublesCourts, Math.floor(seats / 4))
-  if (!teams) return { seats, coverAll: null, gamesEach: null }
-
+  // Play the session forward with the real court planner — rest mode,
+  // lookahead, singles splitting and all — on stand-in players, counting the
+  // doubles pairs each round produces. No pairing is done, so it is quick.
+  const limit = Math.max(1, opts.maxConsecutive)
+  const staminaOn = opts.enforceStamina && opts.mode !== 'random'
+  const sustainable = Math.max(2, Math.floor((n * limit) / (limit + 1)))
+  const pool = Array.from({ length: n }, (_, i) => ({ id: `s${i}` }))
+  const stats = Object.fromEntries(
+    pool.map((p) => [p.id, { games: 0, share: 0, load: 0, streak: 0, rest: 0 }])
+  )
+  const ctx = { stats }
   const pairs = (n * (n - 1)) / 2
-  let coverAll = Math.ceil(pairs / teams)
-  // every `step` rounds the games come out exactly even
-  const step = n / gcd(n, seats)
-  const even = Math.ceil(coverAll / step) * step
-  if (even - coverAll <= Math.max(2, coverAll * 0.25)) coverAll = even
-  return { seats, coverAll, gamesEach: Math.round((coverAll * seats) / n) }
+  const timeline = [] // per round: seats, partner slots so far, games spread
+  let slots = 0
+  let coverAt = null
+  for (let r = 0; r < SUGGEST_MAX; r++) {
+    const { plan, selected } = planRound(
+      pool,
+      enabled,
+      ctx,
+      w,
+      opts,
+      limit,
+      staminaOn,
+      sustainable
+    )
+    if (!plan.length) break
+    const seats = plan.reduce((s, p) => s + p.size, 0)
+    slots += 2 * plan.filter((p) => p.size === 4).length
+    const on = new Set(selected.slice(0, seats).map((p) => p.id))
+    for (const p of pool) {
+      const s = stats[p.id]
+      s.share += seats / n
+      if (on.has(p.id)) {
+        s.games++
+        s.streak++
+        s.rest = 0
+      } else {
+        s.streak = 0
+        s.rest++
+      }
+      s.load = s.games - s.share
+    }
+    const games = pool.map((p) => stats[p.id].games)
+    timeline.push({ seats, spread: Math.max(...games) - Math.min(...games), games })
+    // big groups leave the search almost no slack at the exact minimum
+    // (20 players on 4 courts missed a pair or two), so ask for a few % more
+    if (coverAt == null && slots >= pairs * (pairs >= 100 ? 1.06 : 1)) coverAt = r + 1
+    if (coverAt != null && r + 1 >= coverAt + Math.max(2, Math.ceil(coverAt * 0.25))) break
+  }
+  const avgSeats = timeline.length
+    ? Math.round(timeline.reduce((s, t) => s + t.seats, 0) / timeline.length)
+    : 0
+  if (coverAt == null) return { seats: avgSeats, coverAll: null, gamesEach: null }
+
+  // a few rounds more is worth it when it makes everyone's games come out even
+  let best = coverAt
+  for (let R = coverAt; R <= timeline.length; R++)
+    if (timeline[R - 1].spread < timeline[best - 1].spread) best = R
+  const games = timeline[best - 1].games
+  return {
+    seats: avgSeats,
+    coverAll: best,
+    gamesEach: Math.round(games.reduce((a, b) => a + b, 0) / n),
+  }
 }
+
+const SUGGEST_MAX = 100
 
 /** Rounds that fit a court booking: rounds run side by side on every court. */
 export const roundsForTime = (hours, minutesPerGame) =>
