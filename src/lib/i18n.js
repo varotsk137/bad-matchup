@@ -216,6 +216,7 @@ const dict = {
   howManyRounds: { th: 'จะเล่นกี่รอบ?', en: 'How many rounds?' },
   customRounds: { th: 'กำหนดเอง (1-100)', en: 'Custom (1-100)' },
   generating: { th: 'กำลังจัด…', en: 'Working…' },
+  planningAhead: { th: 'กำลังวางแผนล่วงหน้า…', en: 'Planning ahead…' },
   adviseCover: {
     th: '{n} รอบ ทุกคนได้คู่กันครบ (คนละประมาณ {g} เกม)',
     en: '{n} rounds for everyone to partner everyone (about {g} games each)',

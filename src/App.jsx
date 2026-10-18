@@ -13,12 +13,14 @@ import {
   fillRound as fillRoundFn,
   generateRoundsAsync,
   playedRounds,
+  suggestRounds,
   makeContext,
   swapSlots,
   uid,
   DEFAULT_OPTIONS,
   DEFAULT_WEIGHTS,
 } from './lib/matchmaker'
+import { PLAN_MAX, PLAN_MIN, planKey } from './lib/plan'
 import { clearShareHash, decodeShare, readShareHash } from './lib/share'
 import { clearState, defaultState, loadState, saveState } from './lib/storage'
 
@@ -160,6 +162,9 @@ export default function App() {
   const stateRef = useRef(state)
   stateRef.current = state
   const cancelRef = useRef(false)
+  // the rest of the session, planned in one go and revealed a round at a time
+  // (see lib/plan.js); in memory only — after a reload it is simply rebuilt
+  const planRef = useRef(null)
 
   /* ----------------------------------------------------------- persistence */
   useEffect(() => {
@@ -404,17 +409,52 @@ export default function App() {
         })),
 
       /* ---- rounds ---- */
+      /**
+       * Adds `count` rounds. A few at a time (the usual "one more round" tap)
+       * comes out of a plan for the rest of the session, built once with the
+       * whole-schedule polish — a round built on its own can only look back.
+       * The plan survives ticks and scores, and is rebuilt as soon as anything
+       * it depended on changes.
+       */
       generate: async (count, onProgress) => {
         const s = stateRef.current
-        cancelRef.current = false
-        const res = await generateRoundsAsync({
+        const situation = {
           players: s.players,
           courts: s.courts,
-          rounds: s.rounds,
-          weights: s.weights,
           options: s.options,
-          count,
-          onProgress,
+          weights: s.weights,
+        }
+        const balanced = (s.options.mode ?? 'balanced') === 'balanced'
+        const plan = planRef.current
+        if (
+          balanced &&
+          plan &&
+          plan.rounds.length >= count &&
+          plan.key === planKey({ ...situation, rounds: s.rounds })
+        ) {
+          const taken = plan.rounds.slice(0, count)
+          const rest = plan.rounds.slice(count)
+          const rounds = [...s.rounds, ...taken]
+          planRef.current = rest.length
+            ? { key: planKey({ ...situation, rounds }), rounds: rest }
+            : null
+          setState((prev) => ({ ...prev, rounds: [...prev.rounds, ...taken] }))
+          return
+        }
+
+        const cover = balanced ? (suggestRounds(s)?.coverAll ?? 0) : 0
+        const ahead = balanced
+          ? Math.min(PLAN_MAX, Math.max(PLAN_MIN, cover - s.rounds.length))
+          : 0
+        const build = Math.max(count, ahead)
+        cancelRef.current = false
+        const res = await generateRoundsAsync({
+          ...situation,
+          rounds: s.rounds,
+          count: build,
+          // building more than was asked for is planning ahead — say so
+          onProgress: (done, total, phase, ...rest) =>
+            onProgress?.(done, total, phase ?? (build > count ? 'plan' : undefined), ...rest),
           shouldCancel: () => cancelRef.current,
         })
         if (res.error && !res.created.length) {
@@ -422,9 +462,14 @@ export default function App() {
           return
         }
         if (!res.created.length) return
+        const taken = res.created.slice(0, count)
+        const rest = res.cancelled ? [] : res.created.slice(count)
+        planRef.current = rest.length
+          ? { key: planKey({ ...situation, rounds: [...s.rounds, ...taken] }), rounds: rest }
+          : null
         setState((prev) => ({
           ...prev,
-          rounds: [...prev.rounds, ...res.created],
+          rounds: [...prev.rounds, ...taken],
         }))
       },
 

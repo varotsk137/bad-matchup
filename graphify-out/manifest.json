@@ -1,7 +1,7 @@
 {
   ".claude/launch.json": {
-    "mtime": 1792304936.1108048,
-    "seen": 1792304941.7658336,
+    "mtime": 1792308001.6100059,
+    "seen": 1792308049.5070646,
     "ast_hash": "30b3da5575cfcca2c14600c4fb988cec",
     "semantic_hash": ""
   },
@@ -18,9 +18,9 @@
     "semantic_hash": ""
   },
   "src/App.jsx": {
-    "mtime": 1792304536.952847,
-    "seen": 1792304645.128607,
-    "ast_hash": "9edc5343998cd4065e0f7253da306ceb",
+    "mtime": 1792307974.0609882,
+    "seen": 1792308049.5070746,
+    "ast_hash": "f001353b929d324524542ef1ed4bd133",
     "semantic_hash": ""
   },
   "src/components/CourtsTab.jsx": {
@@ -42,9 +42,9 @@
     "semantic_hash": ""
   },
   "src/components/PlayTab.jsx": {
-    "mtime": 1792304851.894802,
-    "seen": 1792304941.765855,
-    "ast_hash": "2237d37524c1404e21c269df50a3fab8",
+    "mtime": 1792307975.8424807,
+    "seen": 1792308049.507083,
+    "ast_hash": "f5a3aff22a80a65a284b8024ca698877",
     "semantic_hash": ""
   },
   "src/components/PlayerBits.jsx": {
@@ -102,9 +102,9 @@
     "semantic_hash": ""
   },
   "src/lib/i18n.js": {
-    "mtime": 1792304851.912844,
-    "seen": 1792304941.7658696,
-    "ast_hash": "c4d1173059c03d8534f1a79181062327",
+    "mtime": 1792307974.0620093,
+    "seen": 1792308049.5070972,
+    "ast_hash": "52570566f1d40a11e67abf13b60c5a3f",
     "semantic_hash": ""
   },
   "src/lib/matchmaker.js": {
@@ -219,6 +219,18 @@
     "mtime": 1792304749.3928087,
     "seen": 1792304812.856624,
     "ast_hash": "c494543958ab7a2ade11bf613628ddf8",
+    "semantic_hash": ""
+  },
+  "src/lib/plan.js": {
+    "mtime": 1792307878.202146,
+    "seen": 1792308049.5071018,
+    "ast_hash": "cc343597296f8297ff5694e155d39a31",
+    "semantic_hash": ""
+  },
+  "src/lib/plan.test.js": {
+    "mtime": 1792307882.3239174,
+    "seen": 1792308049.5071027,
+    "ast_hash": "c9ce5df2980e6e1656ee861b7894e98d",
     "semantic_hash": ""
   }
 }

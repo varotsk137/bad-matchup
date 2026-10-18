@@ -225,9 +225,11 @@ export default function PlayTab({
   const buttonLabel = busy
     ? (progress?.phase === 'polish'
         ? t('polishing')
-        : progress
-          ? `${t('generating')} ${progress.done}/${progress.total}`
-          : t('generating')) +
+        : progress?.phase === 'plan'
+          ? `${t('planningAhead')} ${progress.done}/${progress.total}`
+          : progress
+            ? `${t('generating')} ${progress.done}/${progress.total}`
+            : t('generating')) +
       (progress?.attempts > 1
         ? ` · ${t('attemptN', { n: progress.attempt, of: progress.attempts })}`
         : '')
