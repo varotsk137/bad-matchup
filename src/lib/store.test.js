@@ -64,3 +64,34 @@ describe('local store', () => {
     expect(again.getState().players.map((p) => p.name)).toEqual(['Ann', 'Bee'])
   })
 })
+
+describe('local store across tabs', () => {
+  let storage
+  beforeEach(() => {
+    storage = memoryStorage()
+    vi.stubGlobal('localStorage', storage)
+  })
+  afterEach(() => vi.unstubAllGlobals())
+
+  it('takes on what another tab saved, and tells subscribers', () => {
+    const events = new EventTarget()
+    const store = createLocalStore(defaultState(), events)
+    const seen = vi.fn()
+    store.subscribe(seen)
+
+    const other = { ...defaultState(), players: [{ id: 'x', name: 'Zed' }] }
+    storage.setItem('bad-matchup:v1', JSON.stringify(other))
+    events.dispatchEvent(Object.assign(new Event('storage'), { key: 'bad-matchup:v1' }))
+
+    expect(store.getState().players.map((p) => p.name)).toEqual(['Zed'])
+    expect(seen).toHaveBeenCalledTimes(1)
+  })
+
+  it('ignores other keys', () => {
+    const events = new EventTarget()
+    const store = createLocalStore(defaultState(), events)
+    const before = store.getState()
+    events.dispatchEvent(Object.assign(new Event('storage'), { key: 'something-else' }))
+    expect(store.getState()).toBe(before)
+  })
+})

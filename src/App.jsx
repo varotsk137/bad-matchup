@@ -3,7 +3,8 @@ import CourtsTab from './components/CourtsTab'
 import PlayTab, { DEFAULT_COUNTS } from './components/PlayTab'
 import PlayersTab from './components/PlayersTab'
 import SettingsTab from './components/SettingsTab'
-import ShareSheet, { RoomStatus } from './components/ShareSheet'
+import LiveRoomSheet, { RoomStatus } from './components/LiveRoomSheet'
+import ShareSheet from './components/ShareSheet'
 import StatsTab from './components/StatsTab'
 import { Button, Toast, cx } from './components/ui'
 import { makeT } from './lib/i18n'
@@ -16,7 +17,17 @@ import {
   makeContext,
 } from './lib/matchmaker'
 import { PLAN_MAX, PLAN_MIN, planKey } from './lib/plan'
-import { OWN_KEY, createPublisher, loadOwnRoom, readRoomHash, saveOwnRoom } from './lib/room'
+import {
+  OWN_KEY,
+  ROOM_IDLE_MS,
+  createPublisher,
+  isRoomClosed,
+  loadOwnRoom,
+  makeEditKey,
+  readRoomHash,
+  resultOf,
+  saveOwnRoom,
+} from './lib/room'
 import { clearShareHash, decodeShare, readShareHash } from './lib/share'
 import { loadSkinFont, skinById } from './lib/skins'
 import { clearState, defaultState } from './lib/storage'
@@ -115,6 +126,7 @@ function Header({
   roundCount,
   shared = false,
   roomStatus = null,
+  onRoomClick,
 }) {
   return (
     <header className="sticky top-0 z-40 border-b-(length:--line-w) border-chrome-edge bg-chrome/95 backdrop-blur-md dark:bg-chrome-dark/95">
@@ -131,7 +143,9 @@ function Header({
               {roomStatus && (
                 <>
                   {' · '}
-                  <RoomStatus status={roomStatus} t={t} />
+                  <button onClick={onRoomClick} className="underline-offset-2 hover:underline">
+                    <RoomStatus status={roomStatus} t={t} />
+                  </button>
                 </>
               )}
             </p>
@@ -161,12 +175,13 @@ function Header({
 
 export default function App() {
   // one store for the life of the page; see lib/store.js
-  const [store] = useState(() => createLocalStore())
+  const [store] = useState(() => createLocalStore(undefined, window))
   const state = useSyncExternalStore(store.subscribe, store.getState)
   const [tab, setTab] = useState('play')
   const [toast, setToastState] = useState(null)
   const toastTimer = useRef(null)
   const [shareOpen, setShareOpen] = useState(false)
+  const [liveOpen, setLiveOpen] = useState(false)
   // lives here, not in PlayTab, so the round count survives a tab switch
   const roundCounts = useState(DEFAULT_COUNTS)
   // a session that arrived through a link — held apart from the user's own data
@@ -175,8 +190,12 @@ export default function App() {
   // the live room this device publishes to, and how that is going
   const [ownRoom, setOwnRoom] = useState(loadOwnRoom)
   const [roomStatus, setRoomStatus] = useState(null)
-  // a live room being watched: { id, session?, offline?, updatedAt? }
+  // a live room being watched: { id, key, member, session?, offline?, updatedAt? }
   const [live, setLive] = useState(null)
+  // set while this device runs a room: sends one match's result to it
+  const resultSink = useRef(null)
+  // set while watching a room: the Firestore helpers, for an edit link's ticks
+  const liveRemote = useRef(null)
 
   const t = useMemo(() => makeT(state.lang), [state.lang])
 
@@ -212,50 +231,123 @@ export default function App() {
   }, [store])
 
   /* ------------------------------------------------------- own live room */
-  // a room opened or closed in another tab of this browser applies here too,
-  // so two tabs never keep writing to a room only one of them still runs
+  // A room closed (or its edit key replaced) in another tab applies here too,
+  // so no tab keeps writing to a room it no longer runs. A room *opened* in
+  // another tab is left to that tab: this one only starts publishing after a
+  // reload, when its copy of the schedule is certainly current.
   useEffect(() => {
-    const sync = (e) => e.key === OWN_KEY && setOwnRoom(loadOwnRoom())
+    const sync = (e) => {
+      if (e.key !== OWN_KEY) return
+      const next = loadOwnRoom()
+      setOwnRoom((cur) => (cur && next?.id === cur.id ? next : null))
+    }
     window.addEventListener('storage', sync)
     return () => window.removeEventListener('storage', sync)
   }, [])
 
+  // the room itself, not its edit key: handing out a new key changes nothing here
+  const ownRoomId = ownRoom?.id
   useEffect(() => {
-    if (!ownRoom) {
+    if (!ownRoomId) {
       setRoomStatus(null)
       return
     }
+    const id = ownRoomId
     let alive = true
-    let stop = () => {}
+    let stopPublishing = () => {}
+    let stopWatching = () => {}
+    let timer = null
+    const stop = () => {
+      alive = false
+      clearInterval(timer)
+      resultSink.current = null
+      stopPublishing()
+      stopWatching()
+    }
+
+    // No server runs on a timer, so the 12-hour close happens here (and in
+    // firestore.rules, which refuses writes to an idle room either way).
+    const autoClose = (remote) => {
+      stop()
+      remote.closeRoom(id).catch(() => {})
+      saveOwnRoom(null)
+      setOwnRoom(null)
+      setToastState({ message: makeT(store.getState().lang)('roomAutoClosed'), tone: 'info' })
+    }
+
     setRoomStatus('sending')
     loadRemote()
-      .then((remote) => {
+      .then(async (remote) => {
         if (!alive) return
-        stop = createPublisher({
+        // the app may have been shut for days: look before writing anything
+        let times
+        try {
+          times = await remote.roomTimes(id)
+        } catch {
+          times = undefined // offline with nothing cached — carry on, the timer still watches
+        }
+        if (!alive) return
+        if (times === null) {
+          // gone from the server altogether
+          saveOwnRoom(null)
+          setOwnRoom(null)
+          return
+        }
+        if (times && isRoomClosed(times)) return autoClose(remote)
+
+        let lastUpdate = times?.updatedAt ?? Date.now()
+        timer = setInterval(() => {
+          if (Date.now() - lastUpdate > ROOM_IDLE_MS) autoClose(remote)
+        }, 60 * 1000)
+
+        stopPublishing = createPublisher({
           store,
-          write: (json) => remote.publishRoom(ownRoom.id, json),
-          onStatus: setRoomStatus,
+          write: async (json) => {
+            await remote.publishRoom(id, json)
+            lastUpdate = Date.now()
+          },
+          onStatus: (s) => alive && setRoomStatus(s),
         })
+        // ticks and scores from edit links come back into this device's copy,
+        // so stats, the image and the next round all see them
+        stopWatching = remote.watchResults(id, (results) =>
+          store.dispatch('applyResults', results)
+        )
+        // and this device's own ticks go out as results too, or an older
+        // result from someone else would keep overriding them for viewers
+        resultSink.current = (matchId) => {
+          const match = store
+            .getState()
+            .rounds.flatMap((r) => r.matches)
+            .find((m) => m.id === matchId)
+          if (match)
+            remote.writeResult(id, matchId, resultOf(match)).catch(() => {
+              setRoomStatus('error')
+            })
+        }
       })
       .catch(() => alive && setRoomStatus('error'))
-    return () => {
-      alive = false
-      stop()
-    }
-  }, [store, ownRoom])
+    return stop
+  }, [store, ownRoomId])
 
   /* --------------------------------------------------- watching a room */
   useEffect(() => {
     const open = () => {
-      const id = readRoomHash()
-      if (id && id === loadOwnRoom()?.id) {
+      const link = readRoomHash()
+      if (link && link.id === loadOwnRoom()?.id) {
         // the organiser tapped their own link — their app already is the room
         clearShareHash()
         setLive(null)
         setToastState({ message: makeT(store.getState().lang)('roomIsYours'), tone: 'info' })
         return
       }
-      setLive((cur) => (id ? (cur?.id === id ? cur : { id }) : null))
+      setLive((cur) =>
+        link
+          ? cur?.id === link.id && cur.key === link.key
+            ? cur
+            : { id: link.id, key: link.key, member: false }
+          : null
+      )
     }
     open()
     window.addEventListener('hashchange', open)
@@ -263,15 +355,28 @@ export default function App() {
   }, [store])
 
   const liveId = live?.id
+  const liveKey = live?.key
+
+  // a watched room can go idle with nothing arriving to say so — look again
+  // every minute, so it shows as closed once 12 hours have passed
+  const [, setClock] = useState(0)
+  useEffect(() => {
+    if (!liveId) return
+    const timer = setInterval(() => setClock(Date.now()), 60 * 1000)
+    return () => clearInterval(timer)
+  }, [liveId])
+
   useEffect(() => {
     if (!liveId) return
     let alive = true
     let off = () => {}
+    const say = (key, tone) =>
+      setToastState({ message: makeT(store.getState().lang)(key), tone })
     const fail = (key) => {
       if (!alive) return
       clearShareHash()
       setLive(null)
-      setToastState({ message: makeT(store.getState().lang)(key), tone: 'error' })
+      say(key, 'error')
     }
     loadRemote()
       .then((remote) => {
@@ -282,13 +387,24 @@ export default function App() {
           onMissing: () => fail('roomGone'),
           onError: () => fail('roomFailed'),
         })
+        liveRemote.current = remote
+        // an edit link: join, and tick and score once the room says yes
+        if (liveKey)
+          remote
+            .joinRoom(liveId, liveKey)
+            .then(
+              () =>
+                alive && setLive((cur) => (cur?.id === liveId ? { ...cur, member: true } : cur))
+            )
+            .catch(() => alive && say('editLinkExpired', 'info'))
       })
       .catch(() => fail('roomFailed'))
     return () => {
       alive = false
+      liveRemote.current = null
       off()
     }
-  }, [store, liveId])
+  }, [store, liveId, liveKey])
 
   /* ----------------------------------------------------------------- theme */
   useEffect(() => {
@@ -512,8 +628,15 @@ export default function App() {
 
       swapInRound: run('swapInRound'),
       restoreLineup: run('restoreLineup'),
-      updateMatch: run('updateMatch'),
-      toggleMatchDone: run('toggleMatchDone'),
+      // in a live room these also go out as results (see the room effect)
+      updateMatch: (roundId, matchId, patch) => {
+        store.dispatch('updateMatch', roundId, matchId, patch)
+        resultSink.current?.(matchId)
+      },
+      toggleMatchDone: (roundId, matchId) => {
+        store.dispatch('toggleMatchDone', roundId, matchId)
+        resultSink.current?.(matchId)
+      },
       deleteRound: run('deleteRound'),
       clearRounds: run('clearRounds'),
 
@@ -541,15 +664,30 @@ export default function App() {
     setOwnRoom(room)
   }
 
+  /**
+   * Lets edit links tick and score (with a fresh key, so it also replaces a
+   * leaked link) or stops them; either way, links sent before stop working.
+   */
+  const setScoring = async (on) => {
+    if (!ownRoom) return
+    const key = on ? makeEditKey() : null
+    await (await loadRemote()).setEditKey(ownRoom.id, key)
+    const room = { ...ownRoom, key }
+    saveOwnRoom(room)
+    setOwnRoom(room)
+  }
+
+  /** Closes the room; it is kept as it ended, so the links still show the results. */
   const closeRoom = async () => {
     if (!ownRoom || !confirm(t('roomCloseConfirm'))) return
     const { id } = ownRoom
     saveOwnRoom(null)
     setOwnRoom(null)
+    setLiveOpen(false)
     try {
-      await (await loadRemote()).deleteRoom(id)
+      await (await loadRemote()).closeRoom(id)
     } catch {
-      // the room just stops updating; nobody can write to it but this device
+      // offline: the room is idle from now on and closes itself within 12 hours
     }
   }
 
@@ -593,6 +731,35 @@ export default function App() {
           minute: '2-digit',
         })
       : null
+    // closed by its owner, or idle past 12 hours: the final results, read-only
+    const closed = session ? isRoomClosed(live) : false
+    const canScore = live.member && !closed
+
+    // an edit link's ticks and scores go to the room, never to this device's data
+    const findMatch = (matchId) =>
+      session?.rounds.flatMap((r) => r.matches).find((m) => m.id === matchId)
+    const sendResult = (matchId, change) => {
+      const match = findMatch(matchId)
+      const remote = liveRemote.current
+      if (!match || !remote) return
+      remote
+        .writeResult(live.id, matchId, { ...resultOf(match), ...change(match) })
+        .catch(() => setToast(t('resultFailed'), 'error'))
+    }
+    const liveActions = canScore
+      ? {
+          ...actions,
+          toggleMatchDone: (_roundId, matchId) =>
+            sendResult(matchId, (m) => ({ done: !m.done })),
+          updateMatch: (_roundId, matchId, patch) =>
+            sendResult(matchId, () => {
+              const out = {}
+              if ('scoreA' in patch) out.scoreA = patch.scoreA ?? null
+              if ('scoreB' in patch) out.scoreB = patch.scoreB ?? null
+              return out
+            }),
+        }
+      : actions
 
     return (
       <div className="min-h-dvh">
@@ -605,15 +772,16 @@ export default function App() {
                 <span
                   className={cx(
                     'inline-block h-2 w-2 rounded-full',
-                    live.offline ? 'bg-slate-400' : 'animate-pulse bg-rose-500'
+                    live.offline || closed ? 'bg-slate-400' : 'animate-pulse bg-rose-500'
                   )}
                   aria-hidden
                 />
-                {t('liveView')}
+                {t(closed ? 'liveClosed' : 'liveView')}
               </p>
               <p className="text-xs text-accent-800/80 dark:text-accent-200/80">
-                {t(live.offline ? 'liveOffline' : 'liveUpdating')}
-                {time ? ` · ${t('liveUpdated', { time })}` : ''}
+                {!closed &&
+                  t(live.offline ? 'liveOffline' : canScore ? 'liveMember' : 'liveUpdating')}
+                {time ? `${closed ? '' : ' · '}${t('liveUpdated', { time })}` : ''}
               </p>
             </div>
             {session && (
@@ -631,10 +799,11 @@ export default function App() {
           {liveState ? (
             <PlayTab
               readOnly
+              canScore={canScore}
               state={liveState}
               playersById={liveById}
               t={t}
-              actions={actions}
+              actions={liveActions}
               goTo={goTo}
               setToast={setToast}
             />
@@ -727,6 +896,7 @@ export default function App() {
         readyCount={readyCount}
         roundCount={roundCount}
         roomStatus={ownRoom ? roomStatus : null}
+        onRoomClick={() => setLiveOpen(true)}
       />
 
       {/* --------------------------------------------------------- tabs */}
@@ -776,6 +946,12 @@ export default function App() {
             onShare={() =>
               state.rounds.length ? setShareOpen(true) : setToast(t('shareEmpty'), 'error')
             }
+            onLive={() =>
+              ownRoom || state.rounds.length
+                ? setLiveOpen(true)
+                : setToast(t('shareEmpty'), 'error')
+            }
+            liveOn={Boolean(ownRoom)}
             counts={roundCounts}
           />
         )}
@@ -811,10 +987,19 @@ export default function App() {
         state={state}
         t={t}
         setToast={setToast}
+      />
+
+      <LiveRoomSheet
+        open={liveOpen}
+        onClose={() => setLiveOpen(false)}
+        t={t}
+        lang={state.lang}
+        setToast={setToast}
         room={ownRoom}
         roomStatus={roomStatus}
         onOpenRoom={openRoom}
         onCloseRoom={closeRoom}
+        onSetScoring={setScoring}
       />
 
       <Toast

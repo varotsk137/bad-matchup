@@ -1,15 +1,38 @@
 rules_version = '2';
 
-// Live rooms (src/lib/roomRemote.js). One document per room: anyone holding
-// the link may read it, only the device that opened it may change it.
+// Live rooms (src/lib/roomRemote.js). Anyone holding the link may watch a
+// room; only the device that opened it may change the schedule; holders of
+// the current edit key may tick matches and enter scores.
+//
+// A room closes when its owner closes it, or by itself after 12 hours with no
+// change to the schedule. A closed room is kept as it ended — still readable,
+// never writable again. Nothing has to run on a timer for that: every write
+// simply checks the room is still open.
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    match /rooms/{roomId} {
-      function signedIn() {
-        return request.auth != null;
-      }
+    function signedIn() {
+      return request.auth != null;
+    }
 
+    function roomData(roomId) {
+      return get(/databases/$(database)/documents/rooms/$(roomId)).data;
+    }
+
+    function ownsRoom(roomId) {
+      return signedIn() && roomData(roomId).ownerUid == request.auth.uid;
+    }
+
+    // keep in step with ROOM_IDLE_MS in src/lib/room.js
+    function isOpen(room) {
+      return !('closedAt' in room) && room.updatedAt > request.time - duration.value(12, 'h');
+    }
+
+    function roomOpen(roomId) {
+      return isOpen(roomData(roomId));
+    }
+
+    match /rooms/{roomId} {
       // the whole shape, so a room can never grow fields the app does not know
       function wellFormed() {
         let d = request.resource.data;
@@ -29,13 +52,86 @@ service cloud.firestore {
         && request.resource.data.ownerUid == request.auth.uid
         && request.resource.data.createdAt == request.time;
 
+      // a new schedule, while the room is open
       allow update: if signedIn()
         && resource.data.ownerUid == request.auth.uid
+        && isOpen(resource.data)
         && wellFormed()
         && request.resource.data.ownerUid == resource.data.ownerUid
         && request.resource.data.createdAt == resource.data.createdAt;
 
+      // closing it: only the close time changes, open or already idle
+      allow update: if signedIn()
+        && resource.data.ownerUid == request.auth.uid
+        && !('closedAt' in resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['closedAt'])
+        && request.resource.data.closedAt == request.time;
+
       allow delete: if signedIn() && resource.data.ownerUid == request.auth.uid;
+
+      /* ---- edit-link holders ---- */
+
+      function currentKey() {
+        return get(/databases/$(database)/documents/roomKeys/$(roomId)).data.key;
+      }
+
+      // joined with the key that is still the room's key — a new key locks
+      // every earlier edit link out without having to find its holders
+      function isMember() {
+        let path = /databases/$(database)/documents/rooms/$(roomId)/members/$(request.auth.uid);
+        return signedIn()
+          && exists(/databases/$(database)/documents/roomKeys/$(roomId))
+          && exists(path)
+          && get(path).data.key == currentKey();
+      }
+
+      match /members/{uid} {
+        allow get: if signedIn() && request.auth.uid == uid;
+        allow list: if ownsRoom(roomId);
+        allow create, update: if signedIn()
+          && request.auth.uid == uid
+          && roomOpen(roomId)
+          && request.resource.data.keys().hasOnly(['key', 'joinedAt'])
+          && request.resource.data.key is string
+          && exists(/databases/$(database)/documents/roomKeys/$(roomId))
+          && request.resource.data.key == currentKey()
+          && request.resource.data.joinedAt == request.time;
+        allow delete: if ownsRoom(roomId) || (signedIn() && request.auth.uid == uid);
+      }
+
+      /* ---- one match's tick and score ---- */
+
+      function validResult() {
+        let d = request.resource.data;
+        return d.keys().hasOnly(['done', 'scoreA', 'scoreB', 'by', 'at'])
+          && d.keys().hasAll(['done', 'scoreA', 'scoreB', 'by', 'at'])
+          && d.done is bool
+          && (d.scoreA == null || (d.scoreA is int && d.scoreA >= 0 && d.scoreA <= 99))
+          && (d.scoreB == null || (d.scoreB is int && d.scoreB >= 0 && d.scoreB <= 99))
+          && d.by == request.auth.uid
+          && d.at == request.time;
+      }
+
+      match /results/{matchId} {
+        allow read: if true;
+        allow create, update: if (ownsRoom(roomId) || isMember())
+          && roomOpen(roomId)
+          && validResult();
+        allow delete: if ownsRoom(roomId);
+      }
+    }
+
+    // the edit key, so that only the owner can ever read it back
+    match /roomKeys/{roomId} {
+      allow get: if ownsRoom(roomId);
+      allow create, update: if ownsRoom(roomId)
+        && roomOpen(roomId)
+        && request.resource.data.keys().hasOnly(['key', 'at'])
+        && request.resource.data.key is string
+        && request.resource.data.key.size() >= 16
+        && request.resource.data.key.size() <= 64
+        && request.resource.data.at == request.time;
+      allow delete: if ownsRoom(roomId);
     }
   }
 }

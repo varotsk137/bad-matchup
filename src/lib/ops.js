@@ -14,6 +14,7 @@
  */
 
 import { DEFAULT_LEVEL, DEFAULT_OPTIONS, DEFAULT_WEIGHTS, swapSlots, uid } from './matchmaker'
+import { mergeResults } from './room'
 
 const newPlayer = (name, level = DEFAULT_LEVEL, gender = '-') => ({
   id: uid(),
@@ -202,6 +203,16 @@ export const ops = {
       ...r,
       matches: r.matches.map((m) => (m.id === matchId ? { ...m, done: !m.done } : m)),
     })),
+
+  /**
+   * Ticks and scores that arrived from a live room's edit links, as
+   * { [matchId]: {done, scoreA, scoreB} }. Same state back when they agree
+   * with what is here already.
+   */
+  applyResults: (s, results) => {
+    const rounds = mergeResults(s.rounds, results)
+    return rounds === s.rounds ? s : { ...s, rounds }
+  },
 
   deleteRound: (s, roundId) => ({ ...s, rounds: s.rounds.filter((r) => r.id !== roundId) }),
 

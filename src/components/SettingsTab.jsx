@@ -101,8 +101,6 @@ export default function SettingsTab({ state, t, actions, setToast }) {
         </div>
       </Card>
 
-      <PresetCard state={state} t={t} actions={actions} setToast={setToast} />
-
       {/* --------------------------------------------------- stamina */}
       <div>
         <SectionTitle>{t('staminaTitle')}</SectionTitle>
@@ -274,6 +272,9 @@ export default function SettingsTab({ state, t, actions, setToast }) {
           </div>
         </Card>
       </div>
+
+      {/* saving a setup comes after every setting it would save */}
+      <PresetCard state={state} t={t} actions={actions} setToast={setToast} />
 
       {/* --------------------------------------------------- data */}
       <div>

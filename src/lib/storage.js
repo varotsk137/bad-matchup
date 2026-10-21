@@ -1,7 +1,8 @@
 import { DEFAULT_OPTIONS, DEFAULT_WEIGHTS, uid } from './matchmaker'
 import { DEFAULT_SKIN, isSkin } from './skins'
 
-const KEY = 'bad-matchup:v1'
+export const STATE_KEY = 'bad-matchup:v1'
+const KEY = STATE_KEY
 
 /**
  * Shape of the saved data. Bump it together with an entry in MIGRATIONS

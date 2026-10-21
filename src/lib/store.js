@@ -9,9 +9,14 @@
  */
 
 import { ops } from './ops'
-import { loadState, saveState } from './storage'
+import { STATE_KEY, loadState, saveState } from './storage'
 
-export function createLocalStore(initial = loadState()) {
+/**
+ * @param {object} [initial]
+ * @param {EventTarget} [events] where another tab's saves are announced
+ *   (`window`'s `storage` events in the app; leave it out to ignore them)
+ */
+export function createLocalStore(initial = loadState(), events = null) {
   let state = initial
   let saveQueued = false
   const listeners = new Set()
@@ -22,6 +27,16 @@ export function createLocalStore(initial = loadState()) {
     saveQueued = false
     saveState(state)
   }
+
+  // The app open in two tabs shares one localStorage but would otherwise keep
+  // two copies in memory, and the staler one would win the next save — or,
+  // running a live room, push an old schedule over the new one. So a save in
+  // another tab becomes this tab's state too.
+  events?.addEventListener('storage', (e) => {
+    if (e.key !== STATE_KEY) return
+    state = loadState()
+    for (const listener of listeners) listener()
+  })
 
   return {
     getState: () => state,

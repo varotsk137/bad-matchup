@@ -35,7 +35,13 @@ export default function PlayTab({
   goTo,
   setToast,
   readOnly = false,
+  // with readOnly: still lets this person tick matches done and enter scores
+  // (an edit link to a live room) while the schedule itself stays locked
+  canScore = false,
   onShare,
+  // the live room: open its sheet, and whether one is running
+  onLive,
+  liveOn = false,
   counts: liftedCounts,
 }) {
   const [sel, setSel] = useState(null)
@@ -125,19 +131,18 @@ export default function PlayTab({
     actions.swapInRound(roundId, a, b)
     setSel(null)
     if (before)
-      setToast(
-        t('swapped', { a: slotName(before, a), b: slotName(before, b) }),
-        'info',
-        { label: t('undo'), run: () => actions.restoreLineup(roundId, before) }
-      )
+      setToast(t('swapped', { a: slotName(before, a), b: slotName(before, b) }), 'info', {
+        label: t('undo'),
+        run: () => actions.restoreLineup(roundId, before),
+      })
   }
 
   const slotName = (round, slot) => {
     const id = slot.bench
       ? slot.playerId
-      : round.matches.find((m) => m.id === slot.matchId)?.[slot.team === 'A' ? 'teamA' : 'teamB'][
-          slot.idx
-        ]
+      : round.matches.find((m) => m.id === slot.matchId)?.[
+          slot.team === 'A' ? 'teamA' : 'teamB'
+        ][slot.idx]
     return (id && playersById.get(id)?.name) || t('emptySlot')
   }
 
@@ -266,6 +271,7 @@ export default function PlayTab({
     actions,
     onMatchDone,
     readOnly,
+    canScore,
     sel: sel?.roundId === round.id ? sel.slot : null,
     onTap: onSlotTap(round.id),
     courtOrder,
@@ -616,6 +622,26 @@ export default function PlayTab({
             </div>
             {!readOnly && (
               <>
+                {onLive && (
+                  <button
+                    onClick={onLive}
+                    className={cx(
+                      'press inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl border-(length:--line-w) px-3 text-sm',
+                      liveOn
+                        ? 'border-rose-400 bg-rose-50 text-rose-800 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-100'
+                        : 'border-edge-strong bg-slate-50 text-slate-900 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-100'
+                    )}
+                  >
+                    <span
+                      className={cx(
+                        'inline-block h-2 w-2 rounded-full',
+                        liveOn ? 'animate-pulse bg-rose-500' : 'bg-rose-400/70'
+                      )}
+                      aria-hidden
+                    />
+                    {t('liveButton')}
+                  </button>
+                )}
                 <button
                   onClick={onShare}
                   className="press inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl border-(length:--line-w) border-edge-strong bg-slate-50 px-3 text-sm text-slate-900 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-100"
@@ -670,7 +696,7 @@ export default function PlayTab({
               t={t}
               setToast={setToast}
               staminaLimit={state.options.maxConsecutive}
-              onToggleDone={readOnly ? undefined : onMatchDone}
+              onToggleDone={readOnly && !canScore ? undefined : onMatchDone}
             />
           ) : (
             <>
@@ -805,6 +831,7 @@ function RoundCard({
   onTap,
   archived = false,
   readOnly = false,
+  canScore = false,
   courtOrder = new Map(),
 }) {
   const quality = useMemo(
@@ -865,7 +892,7 @@ function RoundCard({
                 onScore={(matchId, patch) => actions.updateMatch(round.id, matchId, patch)}
                 onToggleDone={(matchId) => onMatchDone(round, matchId)}
                 editable={!m.done && !readOnly}
-                readOnly={readOnly}
+                readOnly={readOnly && !canScore}
                 courtIndex={courtOrder.get(m.courtId) ?? 0}
               />
             ))}

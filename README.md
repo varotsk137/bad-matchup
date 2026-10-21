@@ -80,6 +80,20 @@ The interface is available in Thai and English.
   the group chat. Levels, stamina, scores and ticks stay on the organiser's screen. On phones the
   image can be saved with a long press, downloaded, or sent through the share sheet.
 
+### Live rooms (optional, online)
+- **● Live** next to Share opens a live room: everyone holding the link watches the schedule
+  change as the organiser edits or ticks matches, instead of waiting for a new image.
+- Two kinds of link: 👀 *watch only*, and ✍️ *tick & score* — which can tick games done and enter
+  scores but never change rounds, swap people or edit the list. The tick link can be switched off
+  or replaced at any time, which locks every earlier copy out.
+- The organiser's device keeps working from `localStorage` (offline included) and catches the
+  room up when the signal returns. Firebase is only downloaded once a room is opened or watched.
+- A room closes when the organiser closes it, or by itself after 12 hours without an update. It is
+  kept as it ended, so the link still shows the final results.
+- Backed by Firestore with anonymous sign-in; see `firestore.rules`, tested on the emulator with
+  `npm run test:rules`. `npm run emulators` + `npm run dev:emulator` run the app against local
+  emulators.
+
 ### Everything else
 - Thai and English, light and dark themes. The first visit follows the system; afterwards the
   user's choice sticks.
@@ -160,7 +174,7 @@ The workflow's `GITHUB_TOKEN` cannot enable Pages by itself.
 ### Versions
 
 Releases are tagged (`v1.0.0`, …). `main` is what the live site runs; new work happens on a
-version branch (currently `v2.2`) and reaches the site when it is merged into `main`. The running
+version branch (currently `v3`) and reaches the site when it is merged into `main`. The running
 version is shown at the bottom of the Settings page.
 
 ---
@@ -282,7 +296,10 @@ e2e/                   Playwright end-to-end checks
 
 ## Data and privacy
 
-Everything is stored under the `localStorage` key `bad-matchup:v1` and never leaves the device.
+Everything is stored under the `localStorage` key `bad-matchup:v1` and never leaves the device —
+unless the organiser opens a **live room**. Then the players, courts and schedule (not rosters,
+setups or settings) are kept in Firestore under a random room id, readable by anyone holding the
+link, and stay there after the room closes so the link keeps showing the final results.
 Rosters, setups and settings live in the same state, so a backup file carries all of them.
 To move to another device, use **Settings → Export backup** and import the file there.
 

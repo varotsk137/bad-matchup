@@ -3,7 +3,7 @@
   "private": true,
   "version": "2.2.0",
   "type": "module",
-  "description": "Badminton session matchmaker - offline, localStorage only",
+  "description": "Badminton session matchmaker - offline first, with optional live rooms",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

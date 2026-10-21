@@ -287,14 +287,23 @@ const dict = {
   shareEmpty: { th: 'ยังไม่มีตารางให้แชร์', en: 'No schedule to share yet' },
 
   /* live rooms */
-  shareModeLive: { th: 'ดูสด', en: 'Live' },
-  roomHint: {
-    th: 'ทุกคนที่มีลิงก์จะเห็นตารางเปลี่ยนตามทันทีที่คุณแก้หรือติ๊กจบ ไม่ต้องส่งรูปใหม่ — ส่งลิงก์ครั้งเดียวพอ',
-    en: 'Everyone with the link sees the schedule change as you edit or tick matches off — send the link once, no new images.',
+  liveButton: { th: 'ดูสด', en: 'Live' },
+  liveTitle: { th: 'ห้องดูสด', en: 'Live room' },
+  liveIntro1: {
+    th: '📡 ทุกคนเห็นตารางเปลี่ยนตามทันที ไม่ต้องส่งรูปใหม่ — ส่งลิงก์ครั้งเดียวพอ',
+    en: '📡 Everyone sees the schedule change as it happens — send the link once, no new images.',
+  },
+  liveIntro2: {
+    th: '✍️ เลือกให้บางคนช่วยติ๊กจบเกมและใส่คะแนนได้',
+    en: '✍️ Let a few people tick games done and enter scores.',
+  },
+  liveIntro3: {
+    th: '⏱ ห้องปิดเองเมื่อไม่มีอัปเดต 12 ชั่วโมง ผลสุดท้ายเก็บไว้ดูย้อนหลังได้',
+    en: '⏱ The room closes itself after 12 hours without updates; the final results stay viewable.',
   },
   roomNote: {
-    th: 'รายชื่อและตารางจะถูกเก็บบนเซิร์ฟเวอร์จนกว่าคุณจะปิดห้อง แอปในเครื่องนี้ยังใช้ได้แม้ไม่มีเน็ต แล้วค่อยส่งตามไปเมื่อเน็ตกลับมา',
-    en: 'Names and the schedule are kept on a server until you close the room. This device keeps working offline and catches the room up when the signal returns.',
+    th: 'รายชื่อและตารางเก็บบนเซิร์ฟเวอร์ แอปในเครื่องนี้ยังใช้ได้แม้ไม่มีเน็ต แล้วค่อยส่งตามไปเมื่อเน็ตกลับมา',
+    en: 'Names and the schedule are kept on a server. This device keeps working offline and catches the room up when the signal returns.',
   },
   roomOpen: { th: 'เปิดห้องดูสด', en: 'Open a live room' },
   roomOpening: { th: 'กำลังเปิดห้อง…', en: 'Opening…' },
@@ -302,10 +311,40 @@ const dict = {
     th: 'เชื่อมต่อห้องไม่ได้ ลองใหม่เมื่อมีเน็ต',
     en: 'Could not reach the room — try again with a signal.',
   },
-  roomClose: { th: 'ปิดห้อง', en: 'Close the room' },
+  roomOpenedAt: { th: 'เปิดเมื่อ {time}', en: 'opened {time}' },
+  roomWho: { th: 'ใครทำอะไรได้บ้าง', en: 'Who can do what' },
+  roomWatchTitle: { th: 'ดูอย่างเดียว', en: 'Watch only' },
+  roomWatchHint: {
+    th: 'สำหรับทุกคนในก๊วน · เห็นตารางสด แก้อะไรไม่ได้',
+    en: 'For the whole group · sees the live schedule, changes nothing',
+  },
+  roomScoreTitle: { th: 'ช่วยติ๊กจบ + ใส่คะแนน', en: 'Tick games & enter scores' },
+  roomScoreHint: {
+    th: 'สำหรับคนที่ไว้ใจ · ติ๊กจบเกมและใส่คะแนนได้ แต่จัดรอบ สลับคน หรือแก้รายชื่อไม่ได้',
+    en: 'For people you trust · can tick games and enter scores, but not change rounds, swap people or edit the list',
+  },
+  roomScoreOff: {
+    th: '⏸ ปิดอยู่ · กดสวิตช์เพื่อสร้างลิงก์ (ลิงก์ที่เคยส่งไปจะติ๊กไม่ได้)',
+    en: '⏸ Off · flip the switch to make a link (links sent before cannot tick)',
+  },
+  roomScoreAllow: { th: 'อนุญาต', en: 'Allow' },
+  roomNewKey: { th: '🔄 เปลี่ยนเป็นลิงก์ใหม่', en: '🔄 Replace the link' },
+  roomNewKeyConfirm: {
+    th: 'สร้างลิงก์ใหม่? ลิงก์ติ๊กจบที่ส่งไปก่อนหน้าจะใช้ติ๊กไม่ได้อีก (ยังดูได้)',
+    en: 'Make a new link? Tick links sent before stop working for ticking (they can still watch).',
+  },
+  roomClose: { th: '⏹ ปิดห้อง', en: '⏹ Close the room' },
+  roomCloseHint: {
+    th: 'ผลสุดท้ายถูกเก็บไว้ คนที่มีลิงก์ยังเปิดดูได้ แต่แก้ไม่ได้แล้ว',
+    en: 'The final results are kept: anyone with the link can still look, but nothing changes any more.',
+  },
   roomCloseConfirm: {
-    th: 'ปิดห้องดูสด? คนที่เปิดลิงก์อยู่จะดูต่อไม่ได้ ส่วนตารางในเครื่องนี้ยังอยู่ครบ',
-    en: 'Close the live room? People holding the link can no longer watch. The schedule on this device stays.',
+    th: 'ปิดห้องดูสด? ตารางจะหยุดอัปเดต (ผลสุดท้ายยังเปิดดูได้) ส่วนข้อมูลในเครื่องนี้ยังอยู่ครบ',
+    en: 'Close the live room? It stops updating (the final results stay viewable). The data on this device stays.',
+  },
+  roomAutoClosed: {
+    th: 'ห้องดูสดปิดเองแล้ว เพราะไม่มีอัปเดตเกิน 12 ชั่วโมง — ผลสุดท้ายยังเปิดดูได้',
+    en: 'The live room closed itself after 12 hours without updates — the final results stay viewable.',
   },
   roomSynced: { th: 'สด', en: 'Live' },
   roomSending: { th: 'กำลังส่ง…', en: 'Sending…' },
@@ -316,15 +355,25 @@ const dict = {
   },
   liveView: { th: 'ดูสด', en: 'Watching live' },
   liveUpdating: { th: 'อัปเดตเองอัตโนมัติ', en: 'Updates by itself' },
+  liveMember: {
+    th: 'ติ๊กจบเกมและกรอกคะแนนได้',
+    en: 'You can tick games done and enter scores',
+  },
   liveOffline: {
     th: 'ไม่มีเน็ต — แสดงข้อมูลล่าสุดที่โหลดไว้',
     en: 'Offline — showing the last update',
   },
+  liveClosed: { th: 'ห้องปิดแล้ว · ผลสุดท้าย', en: 'Room closed · final results' },
   liveLoading: { th: 'กำลังโหลดตาราง…', en: 'Loading the schedule…' },
   liveUpdated: { th: 'อัปเดต {time}', en: 'updated {time}' },
+  editLinkExpired: {
+    th: 'ลิงก์ติ๊กจบนี้ถูกปิดหรือเปลี่ยนแล้ว ดูได้อย่างเดียว',
+    en: 'This tick link was turned off or replaced — watching only.',
+  },
+  resultFailed: { th: 'บันทึกผลไม่สำเร็จ', en: 'Could not save that result' },
   roomGone: {
-    th: 'ห้องนี้ปิดไปแล้ว หรือลิงก์ไม่ถูกต้อง',
-    en: 'This room has closed, or the link is wrong.',
+    th: 'ไม่พบห้องนี้ ลิงก์อาจไม่ถูกต้อง',
+    en: 'No such room — the link may be wrong.',
   },
   sharedView: { th: 'ตารางที่แชร์มา', en: 'Shared schedule' },
   sharedViewHint: { th: 'ดูอย่างเดียว', en: 'Read only' },
