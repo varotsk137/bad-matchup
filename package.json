@@ -1,7 +1,7 @@
 {
   "name": "bad-matchup",
   "private": true,
-  "version": "2.2.0",
+  "version": "3.0.0",
   "type": "module",
   "description": "Badminton session matchmaker - offline first, with optional live rooms",
   "scripts": {
