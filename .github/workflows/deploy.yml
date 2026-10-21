@@ -30,7 +30,18 @@ jobs:
       - run: npm ci
       # a schedule that breaks the pairing rules never goes live
       - run: npm test
+      # The Firebase web config for live rooms lives in the repository's
+      # Actions secrets, not in the code (see .env.example). The values end
+      # up in the public bundle anyway; without them the site still works,
+      # only live rooms cannot connect.
       - run: npm run build
+        env:
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
 
       # vite.config.js sets `base: './'`, so the bundle works from any
       # sub-path — no need to hard-code the repository name here.

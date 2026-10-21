@@ -1,17 +1,17 @@
 # Graph Report - bad-matchup  (2026-10-22)
 
 ## Corpus Check
-- 228 files · ~157,575 words
+- 229 files · ~162,162 words
 - Verdict: corpus is large enough that graph structure adds value.
-- Unclassified: 9 file(s) not represented in the graph (top: (none) 5, .resolved 2, .rules 1)
+- Unclassified: 10 file(s) not represented in the graph (top: (none) 5, .resolved 2, .example 1)
 
 ## Summary
-- 1292 nodes · 1958 edges · 85 communities (81 shown, 4 thin omitted)
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 12 edges (avg confidence: 0.89)
+- 1317 nodes · 2029 edges · 83 communities (79 shown, 4 thin omitted)
+- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 13 edges (avg confidence: 0.9)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `f1b46b73`
+- Built from commit: `176fe293`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -54,8 +54,8 @@
 - Cloud Functions Integration Reference
 - 1. Local Prototyping: Data Seeding
 - Templates
-- Cloud Firestore (Enterprise edition) - Android Setup Guide (Kotlin)
 - roomRemote.js
+- room.js
 - Firebase Authentication - Android Setup Guide (Kotlin)
 - Flutter & Firebase Setup Guide
 - Realtime Reference
@@ -67,15 +67,15 @@
 - ⛔️ CRITICAL RULE: NO INLINE INITIALIZATION ⛔️
 - ⛔️ CRITICAL RULE: INITIALIZATION ORDER ⛔️
 - Admin Node SDK
-- session.spec.js
+- App.jsx
 - Firebase Functions V1 vs V2 Signature Mapping
 - ⛔️ CRITICAL RULE: NO INLINE INITIALIZATION ⛔️
 - Native SQL Operations
 - Document Data Model
 - Firestore Indexes Reference
 - Web SDK Usage (Enterprise Native Mode)
-- devDependencies
-- scripts
+- SettingsTab.jsx
+- ops.js
 - firebase-auth-basics/SKILL.md
 - Firebase Auth & Google Sign-In for Flutter
 - Basic Checks
@@ -95,55 +95,53 @@
 - Antigravity Setup
 - Recommended Method: Using Plugins
 - Cursor Setup
-- rooms.rules.test.js
 - Android Studio Setup
-- dependencies
 - Package.swift
 
 ## God Nodes (most connected - your core abstractions)
-1. `cx()` - 60 edges
-2. `App()` - 36 edges
-3. `PlayTab()` - 22 edges
-4. `Button()` - 22 edges
+1. `cx()` - 62 edges
+2. `App()` - 40 edges
+3. `Button()` - 25 edges
+4. `PlayTab()` - 22 edges
 5. `Card()` - 20 edges
-6. `SettingsTab()` - 18 edges
-7. `Sheet()` - 18 edges
+6. `Sheet()` - 20 edges
+7. `SettingsTab()` - 18 edges
 8. `PlayersTab()` - 17 edges
-9. `react` - 15 edges
+9. `react` - 16 edges
 10. `Firebase Authentication Web SDK` - 15 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Users` --references--> `uid()`  [INFERRED]
   .claude/skills/firebase-auth-basics/SKILL.md → src/lib/matchmaker.js
+- `1. `google_sign_in` 7.2.0 API Changes` --references--> `signIn()`  [INFERRED]
+  .claude/skills/firebase-auth-basics/references/flutter_setup.md → src/lib/roomRemote.js
 - `3. Initialization` --references--> `App()`  [INFERRED]
   .claude/skills/firebase-basics/references/ios_setup.md → src/App.jsx
 - `⛔️ CRITICAL RULE: INITIALIZATION ORDER ⛔️` --references--> `App()`  [INFERRED]
   .claude/skills/firebase-basics/references/ios_setup.md → src/App.jsx
 - `@table` --references--> `key()`  [INFERRED]
   .claude/skills/firebase-data-connect/reference/schema.md → src/lib/testkit.js
-- `Relational joins pattern` --references--> `as()`  [INFERRED]
-  .claude/skills/firebase-firestore/references/enterprise/android_sdk_usage.md → rules-tests/rooms.rules.test.js
 
 ## Import Cycles
 - None detected.
 
-## Communities (85 total, 4 thin omitted)
+## Communities (83 total, 4 thin omitted)
 
 ### Community 0 - "matchmaker.js"
 Cohesion: 0.08
-Nodes (54): vitest, attempts(), buildOnce(), buildOnceAsync(), compareKeys(), cost(), createRefiner(), DEFAULT_LEVEL (+46 more)
+Nodes (56): vitest, HOURS, MINUTES, Pick(), RoundAdvisor(), Row(), attempts(), buildOnce() (+48 more)
 
 ### Community 1 - "App.jsx"
-Cohesion: 0.17
-Nodes (17): ops, player(), sample(), isSkin(), defaultState(), DEVICE_KEYS, hydrate(), importState() (+9 more)
+Cohesion: 0.24
+Nodes (13): defaultState(), DEVICE_KEYS, hydrate(), loadState(), migrate(), migrateOptions(), MIGRATIONS, saveState() (+5 more)
 
 ### Community 2 - "package.json"
-Cohesion: 0.18
-Nodes (11): description, name, private, type, version, firebase-tools, react-dom, tailwindcss (+3 more)
+Cohesion: 0.05
+Nodes (39): players(), savedState(), seed(), shareHash(), STORAGE_KEY, EIGHT, dependencies, firebase (+31 more)
 
 ### Community 3 - "ui.jsx"
-Cohesion: 0.06
-Nodes (107): react, App(), Header(), Icon(), ICONS, loadRemote(), TABS, CourtIcon() (+99 more)
+Cohesion: 0.10
+Nodes (63): react, CourtIcon(), CourtsTab(), analyse(), FairnessReport(), MeetGrid(), MatchCard(), SCORE_TONE (+55 more)
 
 ### Community 4 - "exportImage.js"
 Cohesion: 0.20
@@ -151,7 +149,7 @@ Nodes (15): ImageSheet(), asFile(), canSharePng(), downloadPng(), drawSchedule()
 
 ### Community 5 - "🏸 Bad Matchup"
 Cohesion: 0.09
-Nodes (21): 🏸 Bad Matchup, Data and privacy, Deployment, During the session, Everything else, Features, Getting started, Highlights (+13 more)
+Nodes (22): 🏸 Bad Matchup, Data and privacy, Deployment, During the session, Everything else, Features, Getting started, Highlights (+14 more)
 
 ### Community 6 - "HelpSheet.jsx"
 Cohesion: 0.12
@@ -162,8 +160,8 @@ Cohesion: 0.05
 Nodes (39): App Check Debug Provider, Chat Session, Flutter Setup for Firebase AI Logic, Initialization, Installation, Text Generation, Usage, 1. Import and Initialize (+31 more)
 
 ### Community 8 - "share.js"
-Cohesion: 0.33
-Nodes (10): buildShareUrl(), canCompress(), decodeShare(), deflate(), encodeShare(), fromB64Url(), inflate(), packSession() (+2 more)
+Cohesion: 0.27
+Nodes (11): canCompress(), clearShareHash(), decodeShare(), deflate(), encodeShare(), fromB64Url(), inflate(), packSession() (+3 more)
 
 ### Community 9 - "App Hosting CLI Commands"
 Cohesion: 0.06
@@ -277,13 +275,13 @@ Nodes (12): 1. Local Prototyping: Data Seeding, 2. Production: Admin SDK Bulk Op
 Cohesion: 0.15
 Nodes (12): Basic CRUD Schema, Client Subscribe (Web), connector.yaml Template, dataconnect.yaml Template, Event-Driven Refresh, Firebase Init Commands, Many-to-Many Relationship, Realtime Query Templates (+4 more)
 
-### Community 38 - "Cloud Firestore (Enterprise edition) - Android Setup Guide (Kotlin)"
-Cohesion: 0.15
-Nodes (12): 1. Provision Firestore, 2. Add dependencies to Gradle build files, 3. Initialize Firestore, 4. Decision framework: Mandatory pipeline architecture, 5. Pipeline examples, 6. Real-time listener & document operations, Cloud Firestore (Enterprise edition) - Android Setup Guide (Kotlin), Full-text search (+4 more)
+### Community 38 - "roomRemote.js"
+Cohesion: 0.07
+Nodes (34): 1. Provision Firestore, 2. Add dependencies to Gradle build files, 3. Initialize Firestore, 4. Decision framework: Mandatory pipeline architecture, 5. Pipeline examples, 6. Real-time listener & document operations, Cloud Firestore (Enterprise edition) - Android Setup Guide (Kotlin), Full-text search (+26 more)
 
-### Community 39 - "roomRemote.js"
-Cohesion: 0.26
-Nodes (11): firebase, app, auth, db, packRoom(), unpackRoom(), createRoom(), deleteRoom() (+3 more)
+### Community 39 - "room.js"
+Cohesion: 0.20
+Nodes (15): createPublisher(), isRoomClosed(), loadOwnRoom(), makeEditKey(), mergeResults(), OWN_KEY, packRoom(), readRoomHash() (+7 more)
 
 ### Community 40 - "Firebase Authentication - Android Setup Guide (Kotlin)"
 Cohesion: 0.17
@@ -329,9 +327,9 @@ Nodes (9): 1. Create a Firebase Project and App (Automated), 2. Installation (Au
 Cohesion: 0.20
 Nodes (9): 1. Impersonating an Unauthenticated User, 2. Impersonating a Specific User (Cloud Functions), 3. Impersonating a Specific User (Plain HTTP), 4. Running with Unrestricted Access, Admin Node SDK, Best Practices for Agents, Configuration in `connector.yaml`, Generation (+1 more)
 
-### Community 51 - "session.spec.js"
-Cohesion: 0.29
-Nodes (7): players(), savedState(), seed(), shareHash(), STORAGE_KEY, EIGHT, @playwright/test
+### Community 51 - "App.jsx"
+Cohesion: 0.13
+Nodes (23): react-dom, App(), Header(), Icon(), ICONS, loadRemote(), TABS, LinkCard() (+15 more)
 
 ### Community 52 - "Firebase Functions V1 vs V2 Signature Mapping"
 Cohesion: 0.22
@@ -357,13 +355,13 @@ Nodes (9): CLI Commands, Config files, Firestore Indexes Reference, Index Densit
 Cohesion: 0.22
 Nodes (8): 1. Initialization, 2. Decision Framework: Pipelines vs. Standard Queries, 3. Pipeline Examples, 4. Real-Time Listener & Document Operations, Full-Text Search, Relational Joins Pattern, Rules & Accountability, Web SDK Usage (Enterprise Native Mode)
 
-### Community 58 - "devDependencies"
-Cohesion: 0.22
-Nodes (9): devDependencies, @firebase/rules-unit-testing, firebase-tools, @playwright/test, tailwindcss, @tailwindcss/vite, vite, @vitejs/plugin-react (+1 more)
+### Community 58 - "SettingsTab.jsx"
+Cohesion: 0.29
+Nodes (12): pickTuning(), SettingsTab(), SkinSwatch(), Slider(), Toggle(), DEFAULT_SKIN, isSkin(), loadSkinFont() (+4 more)
 
-### Community 59 - "scripts"
-Cohesion: 0.22
-Nodes (9): scripts, build, dev, dev:emulator, e2e, emulators, preview, test (+1 more)
+### Community 59 - "ops.js"
+Cohesion: 0.21
+Nodes (9): createEmptyRound(), DEFAULT_LEVEL, DEFAULT_OPTIONS, DEFAULT_WEIGHTS, uid(), newPlayer(), ops, player() (+1 more)
 
 ### Community 60 - "firebase-auth-basics/SKILL.md"
 Cohesion: 0.25
@@ -441,37 +439,29 @@ Nodes (4): 1. Install and Verify Plugins, 2. Restart and Verify Connection, Clau
 Cohesion: 0.40
 Nodes (4): 1. Install and Verify Firebase Skills, 2. Configure and Verify Firebase MCP Server, 3. Restart and Verify Connection, Cursor Setup
 
-### Community 81 - "rooms.rules.test.js"
-Cohesion: 0.50
-Nodes (3): @firebase/rules-unit-testing, room(), seed()
-
 ### Community 82 - "Android Studio Setup"
 Cohesion: 0.50
 Nodes (3): Android Studio Setup, MCP Setup, Skills Installation
 
-### Community 83 - "dependencies"
-Cohesion: 0.50
-Nodes (4): dependencies, firebase, react, react-dom
-
 ## Knowledge Gaps
 - **5 isolated node(s):** `PackageDescription`, `Foundation`, `PathKit`, `firebase-tools`, `tailwindcss`
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 683 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 687 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **4 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Schema Reference` connect `Schema Reference` to `Core Directives`?**
-  _High betweenness centrality (0.216) - this node is a cross-community bridge._
+- **Why does `Core Directives` connect `Core Directives` to `Schema Reference`?**
+  _High betweenness centrality (0.185) - this node is a cross-community bridge._
 - **Are the 2 inferred relationships involving `App()` (e.g. with `3. Initialization` and `⛔️ CRITICAL RULE: INITIALIZATION ORDER ⛔️`) actually correct?**
   _`App()` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `PackageDescription`, `Foundation`, `PathKit` to the rest of the system?**
   _5 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `matchmaker.js` be split into smaller, more focused modules?**
   _Cohesion score 0.08294930875576037 - nodes in this community are weakly interconnected._
-- **Why does `Core Directives` connect `Core Directives` to `Schema Reference`?**
-  _High betweenness centrality (0.215) - this node is a cross-community bridge._
-- **Should `ui.jsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.05535368217054264 - nodes in this community are weakly interconnected._
 - **Why does `key()` connect `matchmaker.js` to `Core Directives`?**
-  _High betweenness centrality (0.215) - this node is a cross-community bridge._
+  _High betweenness centrality (0.184) - this node is a cross-community bridge._
+- **Should `package.json` be split into smaller, more focused modules?**
+  _Cohesion score 0.05179704016913319 - nodes in this community are weakly interconnected._
+- **Why does `@table` connect `Core Directives` to `matchmaker.js`?**
+  _High betweenness centrality (0.184) - this node is a cross-community bridge._

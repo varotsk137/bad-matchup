@@ -93,6 +93,9 @@ The interface is available in Thai and English.
 - Backed by Firestore with anonymous sign-in; see `firestore.rules`, tested on the emulator with
   `npm run test:rules`. `npm run emulators` + `npm run dev:emulator` run the app against local
   emulators.
+- The Firebase web config is not in the code: copy `.env.example` to `.env.local` for
+  `npm run dev`, and set the same `VITE_FIREBASE_*` names as Actions **secrets** for the deploy
+  workflow. Without them the app builds and works as before; only live rooms cannot connect.
 
 ### Everything else
 - Thai and English, light and dark themes. The first visit follows the system; afterwards the
