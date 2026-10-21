@@ -285,6 +285,47 @@ const dict = {
     en: 'The link carries the whole schedule inside it. Nothing is stored on a server and it keeps working after you close the app — but anyone holding the link can read every name.',
   },
   shareEmpty: { th: 'ยังไม่มีตารางให้แชร์', en: 'No schedule to share yet' },
+
+  /* live rooms */
+  shareModeLive: { th: 'ดูสด', en: 'Live' },
+  roomHint: {
+    th: 'ทุกคนที่มีลิงก์จะเห็นตารางเปลี่ยนตามทันทีที่คุณแก้หรือติ๊กจบ ไม่ต้องส่งรูปใหม่ — ส่งลิงก์ครั้งเดียวพอ',
+    en: 'Everyone with the link sees the schedule change as you edit or tick matches off — send the link once, no new images.',
+  },
+  roomNote: {
+    th: 'รายชื่อและตารางจะถูกเก็บบนเซิร์ฟเวอร์จนกว่าคุณจะปิดห้อง แอปในเครื่องนี้ยังใช้ได้แม้ไม่มีเน็ต แล้วค่อยส่งตามไปเมื่อเน็ตกลับมา',
+    en: 'Names and the schedule are kept on a server until you close the room. This device keeps working offline and catches the room up when the signal returns.',
+  },
+  roomOpen: { th: 'เปิดห้องดูสด', en: 'Open a live room' },
+  roomOpening: { th: 'กำลังเปิดห้อง…', en: 'Opening…' },
+  roomFailed: {
+    th: 'เชื่อมต่อห้องไม่ได้ ลองใหม่เมื่อมีเน็ต',
+    en: 'Could not reach the room — try again with a signal.',
+  },
+  roomClose: { th: 'ปิดห้อง', en: 'Close the room' },
+  roomCloseConfirm: {
+    th: 'ปิดห้องดูสด? คนที่เปิดลิงก์อยู่จะดูต่อไม่ได้ ส่วนตารางในเครื่องนี้ยังอยู่ครบ',
+    en: 'Close the live room? People holding the link can no longer watch. The schedule on this device stays.',
+  },
+  roomSynced: { th: 'สด', en: 'Live' },
+  roomSending: { th: 'กำลังส่ง…', en: 'Sending…' },
+  roomError: { th: 'ส่งไม่ได้', en: 'Not sending' },
+  roomIsYours: {
+    th: 'นี่คือห้องของคุณเอง — แก้ในแอปได้เลย',
+    en: 'This is your own room — just edit in the app.',
+  },
+  liveView: { th: 'ดูสด', en: 'Watching live' },
+  liveUpdating: { th: 'อัปเดตเองอัตโนมัติ', en: 'Updates by itself' },
+  liveOffline: {
+    th: 'ไม่มีเน็ต — แสดงข้อมูลล่าสุดที่โหลดไว้',
+    en: 'Offline — showing the last update',
+  },
+  liveLoading: { th: 'กำลังโหลดตาราง…', en: 'Loading the schedule…' },
+  liveUpdated: { th: 'อัปเดต {time}', en: 'updated {time}' },
+  roomGone: {
+    th: 'ห้องนี้ปิดไปแล้ว หรือลิงก์ไม่ถูกต้อง',
+    en: 'This room has closed, or the link is wrong.',
+  },
   sharedView: { th: 'ตารางที่แชร์มา', en: 'Shared schedule' },
   sharedViewHint: { th: 'ดูอย่างเดียว', en: 'Read only' },
   sharedEditHint: {

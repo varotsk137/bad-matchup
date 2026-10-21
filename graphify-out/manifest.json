@@ -1,8 +1,8 @@
 {
   ".claude/launch.json": {
-    "mtime": 1792342143.772748,
-    "seen": 1792342213.202877,
-    "ast_hash": "30b3da5575cfcca2c14600c4fb988cec",
+    "mtime": 1792603267.7899075,
+    "seen": 1792603478.5738263,
+    "ast_hash": "d2156282264bfb999f869a8256fb8a1d",
     "semantic_hash": ""
   },
   ".claude/settings.json": {
@@ -12,15 +12,15 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1792587868.9434648,
-    "seen": 1792588178.0295835,
-    "ast_hash": "684bde676cb9d85a7a913b91f5be2bd1",
+    "mtime": 1792603262.955912,
+    "seen": 1792603478.5738404,
+    "ast_hash": "cb4adbb37cc04ce115923913b87bba63",
     "semantic_hash": ""
   },
   "src/App.jsx": {
-    "mtime": 1792588189.7126532,
-    "seen": 1792588211.154204,
-    "ast_hash": "1bffcb567ac8605a3f3ae2681bef6f8b",
+    "mtime": 1792603371.896921,
+    "seen": 1792603478.5738444,
+    "ast_hash": "25d67062a4bc2d9d5f07558cab871c83",
     "semantic_hash": ""
   },
   "src/components/CourtsTab.jsx": {
@@ -78,9 +78,9 @@
     "semantic_hash": ""
   },
   "src/components/ShareSheet.jsx": {
-    "mtime": 1789821921.5222116,
-    "seen": 1792263352.5348263,
-    "ast_hash": "cc0a423dc8011247f9c5ac2faf75d011",
+    "mtime": 1792603099.5758197,
+    "seen": 1792603478.5738626,
+    "ast_hash": "9437c8e442adf20ba2ec0a370dd9614f",
     "semantic_hash": ""
   },
   "src/components/StatsTab.jsx": {
@@ -102,9 +102,9 @@
     "semantic_hash": ""
   },
   "src/lib/i18n.js": {
-    "mtime": 1792355052.9637196,
-    "seen": 1792355161.7103775,
-    "ast_hash": "e9ebbc7e088081954116e087ea0fe077",
+    "mtime": 1792603075.9697125,
+    "seen": 1792603478.5738692,
+    "ast_hash": "69ea65ca7f33768fc7e9244f13b48109",
     "semantic_hash": ""
   },
   "src/lib/matchmaker.js": {
@@ -132,9 +132,9 @@
     "semantic_hash": ""
   },
   "vite.config.js": {
-    "mtime": 1792587868.9434648,
-    "seen": 1792588178.0296266,
-    "ast_hash": "12931e1f70dbcb28acc58fcb09c9ccaa",
+    "mtime": 1792603031.3991458,
+    "seen": 1792603478.5738924,
+    "ast_hash": "add8e16124dad2d2663516b0e77856d9",
     "semantic_hash": ""
   },
   ".github/workflows/deploy.yml": {
@@ -303,6 +303,1086 @@
     "mtime": 1792588044.817451,
     "seen": 1792588178.0296235,
     "ast_hash": "1b0ca98f77750b66bce68e079011583e",
+    "semantic_hash": ""
+  },
+  ".agents/skills/xcode-project-setup/scripts/xcode_spm_setup/Package.swift": {
+    "mtime": 1792593028.831524,
+    "seen": 1792603478.573816,
+    "ast_hash": "d15b636f209428a352e37117be8ba6c6",
+    "semantic_hash": ""
+  },
+  ".agents/skills/xcode-project-setup/scripts/xcode_spm_setup/Sources/main.swift": {
+    "mtime": 1792593028.8325486,
+    "seen": 1792603478.5738223,
+    "ast_hash": "0ff69e9fd116aea10e023248a2c18bd2",
+    "semantic_hash": ""
+  },
+  ".claude/skills/xcode-project-setup/scripts/xcode_spm_setup/Package.swift": {
+    "mtime": 1792593028.831524,
+    "seen": 1792603478.5738323,
+    "ast_hash": "d15b636f209428a352e37117be8ba6c6",
+    "semantic_hash": ""
+  },
+  ".claude/skills/xcode-project-setup/scripts/xcode_spm_setup/Sources/main.swift": {
+    "mtime": 1792593028.8325486,
+    "seen": 1792603478.5738335,
+    "ast_hash": "0ff69e9fd116aea10e023248a2c18bd2",
+    "semantic_hash": ""
+  },
+  "firebase.json": {
+    "mtime": 1792593023.7973573,
+    "seen": 1792603478.573838,
+    "ast_hash": "67d30e9d551920114e7a646fb4e022bd",
+    "semantic_hash": ""
+  },
+  "firestore.indexes.json": {
+    "mtime": 1792592431.6184323,
+    "seen": 1792603478.5738392,
+    "ast_hash": "9cc6bb1415b3e7b40374ed48c6b24323",
+    "semantic_hash": ""
+  },
+  "rules-tests/rooms.rules.test.js": {
+    "mtime": 1792603172.2461402,
+    "seen": 1792603478.5738428,
+    "ast_hash": "4f5a328fe720ad4fa84d2d5d519387c8",
+    "semantic_hash": ""
+  },
+  "skills-lock.json": {
+    "mtime": 1792593031.3113153,
+    "seen": 1792603478.5738437,
+    "ast_hash": "929cca7f6733df78eadae6df33c70ef8",
+    "semantic_hash": ""
+  },
+  "src/lib/firebase.js": {
+    "mtime": 1792602975.4686482,
+    "seen": 1792603478.5738683,
+    "ast_hash": "387d1c29704e876cafd9ddabd36cae5f",
+    "semantic_hash": ""
+  },
+  "src/lib/room.js": {
+    "mtime": 1792603371.7608316,
+    "seen": 1792603478.573878,
+    "ast_hash": "83e1e754f4d5a973667ffd6bf31bd708",
+    "semantic_hash": ""
+  },
+  "src/lib/room.test.js": {
+    "mtime": 1792603172.2005696,
+    "seen": 1792603478.573879,
+    "ast_hash": "211a24543e07d5dfab3ef15e3147962e",
+    "semantic_hash": ""
+  },
+  "src/lib/roomRemote.js": {
+    "mtime": 1792602985.0732481,
+    "seen": 1792603478.57388,
+    "ast_hash": "138a957dc968b07709da647a0f6e65b8",
+    "semantic_hash": ""
+  },
+  ".agents/skills/extension-to-functions-codebase/SKILL.md": {
+    "mtime": 1792593028.793278,
+    "seen": 1792603478.5738933,
+    "ast_hash": "c8e5f544b04fbfacb9593ab4be6e14b9",
+    "semantic_hash": ""
+  },
+  ".agents/skills/extension-to-functions-codebase/references/configuration-migration.md": {
+    "mtime": 1792593028.7942772,
+    "seen": 1792603478.5738943,
+    "ast_hash": "46af2230df7e6ddc5ea165e1a1da8afc",
+    "semantic_hash": ""
+  },
+  ".agents/skills/extension-to-functions-codebase/references/destructuring-shim.md": {
+    "mtime": 1792593028.7942772,
+    "seen": 1792603478.573895,
+    "ast_hash": "1f922ddc289a9392caa860668f0835dc",
+    "semantic_hash": ""
+  },
+  ".agents/skills/extension-to-functions-codebase/references/signature-mapping.md": {
+    "mtime": 1792593028.7952778,
+    "seen": 1792603478.573896,
+    "ast_hash": "a94c9ba96e4507cdbadd862eb5e833e7",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-ai-logic-basics/SKILL.md": {
+    "mtime": 1792593028.7952778,
+    "seen": 1792603478.5738966,
+    "ast_hash": "100ce899a73b772ca03d210b6da075e5",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-ai-logic-basics/references/flutter_setup.md": {
+    "mtime": 1792593028.7962775,
+    "seen": 1792603478.5738974,
+    "ast_hash": "78f7881fee20cb5b6330ebeba2042e72",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-ai-logic-basics/references/ios_setup.md": {
+    "mtime": 1792593028.7962775,
+    "seen": 1792603478.5738986,
+    "ast_hash": "b6bd0dd41640ccc398d8c0df0852e113",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-ai-logic-basics/references/tts_generation.md": {
+    "mtime": 1792593028.7972772,
+    "seen": 1792603478.5738993,
+    "ast_hash": "0e2bdd245cd9b6c384983c9f593444d3",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-ai-logic-basics/references/usage_patterns_android.md": {
+    "mtime": 1792593028.7972772,
+    "seen": 1792603478.5738997,
+    "ast_hash": "34e857a50e91ccf173408287224f0ea6",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-ai-logic-basics/references/usage_patterns_web.md": {
+    "mtime": 1792593028.798277,
+    "seen": 1792603478.573901,
+    "ast_hash": "66b59c737e47a2cdc56c72b12d3247d8",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-app-hosting-basics/SKILL.md": {
+    "mtime": 1792593028.7986498,
+    "seen": 1792603478.573902,
+    "ast_hash": "993456c356c5d11366177a11d40484f4",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-app-hosting-basics/references/cli_commands.md": {
+    "mtime": 1792593028.7986498,
+    "seen": 1792603478.5739026,
+    "ast_hash": "e362d601a8ff24340fbd3fecc624d26d",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-app-hosting-basics/references/configuration.md": {
+    "mtime": 1792593028.799656,
+    "seen": 1792603478.5739036,
+    "ast_hash": "5b743366d98bff3d0e6d32597a8d978c",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-app-hosting-basics/references/emulation.md": {
+    "mtime": 1792593028.800657,
+    "seen": 1792603478.5739043,
+    "ast_hash": "4226c83e5a93068c583043f5e75e4ed0",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-auth-basics/SKILL.md": {
+    "mtime": 1792593028.800657,
+    "seen": 1792603478.5739052,
+    "ast_hash": "d698019fc0bde803af8afb4fb77c9a48",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-auth-basics/references/client_sdk_android.md": {
+    "mtime": 1792593028.801662,
+    "seen": 1792603478.573906,
+    "ast_hash": "740105f5713a897242fa5b767ba566a7",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-auth-basics/references/client_sdk_web.md": {
+    "mtime": 1792593028.801662,
+    "seen": 1792603478.5739067,
+    "ast_hash": "edf2f3838d187f9fc845d0a1734ff8e1",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-auth-basics/references/flutter_setup.md": {
+    "mtime": 1792593028.8026607,
+    "seen": 1792603478.5739074,
+    "ast_hash": "515f981052ebeb1d54ce062f54db405e",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-auth-basics/references/ios_setup.md": {
+    "mtime": 1792593028.8026607,
+    "seen": 1792603478.5739083,
+    "ast_hash": "77345c72e6f17d8301a9f5cd83d0d8f1",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-auth-basics/references/security_rules.md": {
+    "mtime": 1792593028.8026607,
+    "seen": 1792603478.5739093,
+    "ast_hash": "ddb3dee5873b8189e430f8cbc0b9ba29",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-basics/SKILL.md": {
+    "mtime": 1792593028.8036602,
+    "seen": 1792603478.57391,
+    "ast_hash": "9d4ccf9808a288337aa9692bcad3b031",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-basics/references/android_setup.md": {
+    "mtime": 1792593028.8036602,
+    "seen": 1792603478.5739107,
+    "ast_hash": "04f18d87a9e98dd17bf9eb377c3dbae5",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-basics/references/firebase-cli-guide.md": {
+    "mtime": 1792593028.8046596,
+    "seen": 1792603478.573912,
+    "ast_hash": "cc127c968a5dc13a057fbaf07c34a73d",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-basics/references/firebase-service-init.md": {
+    "mtime": 1792593028.8046596,
+    "seen": 1792603478.5739136,
+    "ast_hash": "dabcaf25db5a5fed677755fef5bd1e61",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-basics/references/flutter_setup.md": {
+    "mtime": 1792593028.805661,
+    "seen": 1792603478.5739145,
+    "ast_hash": "12d4ad820d37e9ef5448bb5c699ee27e",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-basics/references/ios_setup.md": {
+    "mtime": 1792593028.805661,
+    "seen": 1792603478.5739157,
+    "ast_hash": "bb0bc24db0aa22eb58971c973c00e9bf",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-basics/references/local-env-setup.md": {
+    "mtime": 1792593028.805661,
+    "seen": 1792603478.5739164,
+    "ast_hash": "6cb18fea07c02582e48c7366a1bdd559",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-basics/references/refresh/android_studio.md": {
+    "mtime": 1792593028.8066604,
+    "seen": 1792603478.5739174,
+    "ast_hash": "e7c4cc04ec1a52af054ce76a2e20cf86",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-basics/references/refresh/antigravity.md": {
+    "mtime": 1792593028.8066604,
+    "seen": 1792603478.573918,
+    "ast_hash": "7ae370277acf93b42379c96a16ec1775",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-basics/references/refresh/claude.md": {
+    "mtime": 1792593028.8066604,
+    "seen": 1792603478.573919,
+    "ast_hash": "45abe71395e5e27df70b6212841d626f",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-basics/references/refresh/gemini-cli.md": {
+    "mtime": 1792593028.80766,
+    "seen": 1792603478.5739198,
+    "ast_hash": "86cd617f1a0585211a145030e7133b2f",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-basics/references/refresh/other-agents.md": {
+    "mtime": 1792593028.80766,
+    "seen": 1792603478.5739205,
+    "ast_hash": "5a3b6c6d6d00edff7ce290c10e76bbe5",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-basics/references/setup/android_studio.md": {
+    "mtime": 1792593028.808661,
+    "seen": 1792603478.5739212,
+    "ast_hash": "243c30a9545fbf9c37c2fd47f002866a",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-basics/references/setup/antigravity.md": {
+    "mtime": 1792593028.808661,
+    "seen": 1792603478.5739222,
+    "ast_hash": "fd96bbad97a7f0d745dbe463cb5baf40",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-basics/references/setup/claude_code.md": {
+    "mtime": 1792593028.808661,
+    "seen": 1792603478.5739229,
+    "ast_hash": "5f143edb5e2620edf65ed99a5f41b826",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-basics/references/setup/cursor.md": {
+    "mtime": 1792593028.810013,
+    "seen": 1792603478.5739238,
+    "ast_hash": "939228ffa52befa63ac459f418ecbe0e",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-basics/references/setup/gemini_cli.md": {
+    "mtime": 1792593028.810013,
+    "seen": 1792603478.5739245,
+    "ast_hash": "f4fca7b83892d14e1742e23b8b8c3212",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-basics/references/setup/github_copilot.md": {
+    "mtime": 1792593028.810013,
+    "seen": 1792603478.5739255,
+    "ast_hash": "b18aafeb2a3f64dfe29c65819f655356",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-basics/references/setup/other_agents.md": {
+    "mtime": 1792593028.811016,
+    "seen": 1792603478.5739264,
+    "ast_hash": "c6ab7f26eb3e072913d647d6ef2720a3",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-basics/references/web_setup.md": {
+    "mtime": 1792593028.811016,
+    "seen": 1792603478.5739272,
+    "ast_hash": "9a21eadae9d89a3438a868ec356051dd",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-crashlytics/SKILL.md": {
+    "mtime": 1792593028.8120165,
+    "seen": 1792603478.5739279,
+    "ast_hash": "f1d5102a232de4e44cb877606ae70dcf",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-crashlytics/references/android_setup.md": {
+    "mtime": 1792593028.8120165,
+    "seen": 1792603478.573929,
+    "ast_hash": "dc4b42044fb7562d1013938090a3bbec",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-crashlytics/references/ios_setup.md": {
+    "mtime": 1792593028.8120165,
+    "seen": 1792603478.5739298,
+    "ast_hash": "2cbc6d3096d8ad6528124ef40e707917",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-data-connect/SKILL.md": {
+    "mtime": 1792593028.8130162,
+    "seen": 1792603478.5739307,
+    "ast_hash": "ed659ba04a950fb55153c8fc2abfb6ce",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-data-connect/examples.md": {
+    "mtime": 1792593028.8130162,
+    "seen": 1792603478.5739315,
+    "ast_hash": "4b1e1d21c39d5afb599c5e18199c8ba9",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-data-connect/reference/cloud_functions.md": {
+    "mtime": 1792593028.8140159,
+    "seen": 1792603478.5739322,
+    "ast_hash": "d0a23ec9e548a3bc482008423c641b75",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-data-connect/reference/config.md": {
+    "mtime": 1792593028.8140159,
+    "seen": 1792603478.5739334,
+    "ast_hash": "37f43ad076702b562a1395b0b3e29a75",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-data-connect/reference/data_seeding.md": {
+    "mtime": 1792593028.815016,
+    "seen": 1792603478.573934,
+    "ast_hash": "5f40b38f77d3129f2ddbff94aeac8518",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-data-connect/reference/native_sql.md": {
+    "mtime": 1792593028.815016,
+    "seen": 1792603478.5739348,
+    "ast_hash": "ecea48e56509cbc97e863a9da33a6f42",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-data-connect/reference/operations.md": {
+    "mtime": 1792593028.815016,
+    "seen": 1792603478.573936,
+    "ast_hash": "8b4ddd15f32b61d8368f4b2cb66ccfdf",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-data-connect/reference/realtime.md": {
+    "mtime": 1792593028.8165188,
+    "seen": 1792603478.5739367,
+    "ast_hash": "a192e3c718d57e295e48201937a8f3f1",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-data-connect/reference/schema.md": {
+    "mtime": 1792593028.8165188,
+    "seen": 1792603478.5739374,
+    "ast_hash": "5d7d21a5bd79f3ff585343727575ff15",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-data-connect/reference/sdk_admin_node.md": {
+    "mtime": 1792593028.8165188,
+    "seen": 1792603478.5739381,
+    "ast_hash": "03bd3294692c0b76b7f96dcdc8d780f0",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-data-connect/reference/sdk_android.md": {
+    "mtime": 1792593028.8175223,
+    "seen": 1792603478.5739396,
+    "ast_hash": "7c544924866e7353657c5fcf3cb75a7b",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-data-connect/reference/sdk_flutter.md": {
+    "mtime": 1792593028.8175223,
+    "seen": 1792603478.5739403,
+    "ast_hash": "84ba574871911099e8be21f4445ae925",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-data-connect/reference/sdk_ios.md": {
+    "mtime": 1792593028.8175223,
+    "seen": 1792603478.573941,
+    "ast_hash": "f7a9d091bda568ad9094698c0344d5c9",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-data-connect/reference/sdk_web.md": {
+    "mtime": 1792593028.818523,
+    "seen": 1792603478.573942,
+    "ast_hash": "1766fe9e96d8824fa031d1aab945216e",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-data-connect/reference/search.md": {
+    "mtime": 1792593028.818523,
+    "seen": 1792603478.573943,
+    "ast_hash": "ab0fd5df9be2d961a37e4e99565b1282",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-data-connect/reference/security.md": {
+    "mtime": 1792593028.818523,
+    "seen": 1792603478.5739439,
+    "ast_hash": "37da850ccec7397fedb93599875486d7",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-data-connect/templates.md": {
+    "mtime": 1792593028.819523,
+    "seen": 1792603478.5739446,
+    "ast_hash": "fd867ef613a8b37bb3fc6722857dd0ab",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-firestore/SKILL.md": {
+    "mtime": 1792593028.819523,
+    "seen": 1792603478.5739455,
+    "ast_hash": "6534a633eb685169f3a680d6703d2a56",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-firestore/references/enterprise/android_sdk_usage.md": {
+    "mtime": 1792593028.820523,
+    "seen": 1792603478.5739465,
+    "ast_hash": "65188c33cf9595eee7e6823de3e5a7f1",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-firestore/references/enterprise/data_model.md": {
+    "mtime": 1792593028.820523,
+    "seen": 1792603478.5739472,
+    "ast_hash": "a180a21befe75f97daecc6f4a9e47530",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-firestore/references/enterprise/flutter_setup.md": {
+    "mtime": 1792593028.8215227,
+    "seen": 1792603478.573948,
+    "ast_hash": "194d3b7469fa0933f214862740088853",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-firestore/references/enterprise/indexes.md": {
+    "mtime": 1792593028.8215227,
+    "seen": 1792603478.5739489,
+    "ast_hash": "e1604d862d4affe98bb73a6935145b32",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-firestore/references/enterprise/ios_setup.md": {
+    "mtime": 1792593028.8215227,
+    "seen": 1792603478.5739498,
+    "ast_hash": "02dc51a9da86051d2192db4344c074fa",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-firestore/references/enterprise/provisioning.md": {
+    "mtime": 1792593028.8225229,
+    "seen": 1792603478.5739505,
+    "ast_hash": "d957d9b5bd28bbe536ba442d127b0635",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-firestore/references/enterprise/python_sdk_usage.md": {
+    "mtime": 1792593028.8225229,
+    "seen": 1792603478.5739512,
+    "ast_hash": "5a70b1cc54fef2f78492d0dbd2318be1",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-firestore/references/enterprise/web_sdk_usage.md": {
+    "mtime": 1792593028.8225229,
+    "seen": 1792603478.573952,
+    "ast_hash": "fdfab1c5f53df47caf559ce50f9379aa",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-firestore/references/standard/android_sdk_usage.md": {
+    "mtime": 1792593028.8235228,
+    "seen": 1792603478.5739527,
+    "ast_hash": "d5fdcd4857466171e8fb9cd29ea0b283",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-firestore/references/standard/flutter_setup.md": {
+    "mtime": 1792593028.8235228,
+    "seen": 1792603478.5739536,
+    "ast_hash": "bb161d4112815587b67d4b82c4b7c2a9",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-firestore/references/standard/indexes.md": {
+    "mtime": 1792593028.824523,
+    "seen": 1792603478.5739543,
+    "ast_hash": "19f678fd12369e895f16a20d79337519",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-firestore/references/standard/ios_setup.md": {
+    "mtime": 1792593028.824523,
+    "seen": 1792603478.573955,
+    "ast_hash": "43132eb0e239373703f68566ebf0a676",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-firestore/references/standard/provisioning.md": {
+    "mtime": 1792593028.824523,
+    "seen": 1792603478.5739558,
+    "ast_hash": "591f2d6b232e3aef7f0dfe2d1d597f09",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-firestore/references/standard/web_sdk_usage.md": {
+    "mtime": 1792593028.8255231,
+    "seen": 1792603478.5739565,
+    "ast_hash": "c7e06eedcdfebd8d1aca59611756bc7c",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-hosting-basics/SKILL.md": {
+    "mtime": 1792593028.8255231,
+    "seen": 1792603478.5739574,
+    "ast_hash": "30935256fb108ce3b2152fcd8df69e1e",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-hosting-basics/references/configuration.md": {
+    "mtime": 1792593028.8265233,
+    "seen": 1792603478.5739584,
+    "ast_hash": "154c889c03b0161d6366be5aca10deea",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-hosting-basics/references/deploying.md": {
+    "mtime": 1792593028.8265233,
+    "seen": 1792603478.573959,
+    "ast_hash": "fbe58565ff6cc6bd970365c560298416",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-remote-config-basics/SKILL.md": {
+    "mtime": 1792593028.8265233,
+    "seen": 1792603478.5739598,
+    "ast_hash": "f47cbc17fe42118dd0d55f1058d63d78",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-remote-config-basics/references/android_setup.md": {
+    "mtime": 1792593028.8275235,
+    "seen": 1792603478.5739608,
+    "ast_hash": "d68a751a5422814c5875c0adf2a8d00f",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-remote-config-basics/references/ios_setup.md": {
+    "mtime": 1792593028.8275235,
+    "seen": 1792603478.5739615,
+    "ast_hash": "c8c79fcbb5130726bf9d6648cd754717",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firebase-security-rules-auditor/SKILL.md": {
+    "mtime": 1792593028.8285224,
+    "seen": 1792603478.5739622,
+    "ast_hash": "93e19556dacc4dfcc603f7c76938a9ef",
+    "semantic_hash": ""
+  },
+  ".agents/skills/firestore-rules-creation/SKILL.md": {
+    "mtime": 1792593028.8285224,
+    "seen": 1792603478.573963,
+    "ast_hash": "50f5038cd5f637779b17901df9103d97",
+    "semantic_hash": ""
+  },
+  ".agents/skills/xcode-project-setup/SKILL.md": {
+    "mtime": 1792593028.8295224,
+    "seen": 1792603478.5739639,
+    "ast_hash": "46546db0992aea4184a7a9ebd3f42439",
+    "semantic_hash": ""
+  },
+  ".claude/skills/extension-to-functions-codebase/SKILL.md": {
+    "mtime": 1792593028.793278,
+    "seen": 1792603478.5739648,
+    "ast_hash": "c8e5f544b04fbfacb9593ab4be6e14b9",
+    "semantic_hash": ""
+  },
+  ".claude/skills/extension-to-functions-codebase/references/configuration-migration.md": {
+    "mtime": 1792593028.7942772,
+    "seen": 1792603478.5739655,
+    "ast_hash": "46af2230df7e6ddc5ea165e1a1da8afc",
+    "semantic_hash": ""
+  },
+  ".claude/skills/extension-to-functions-codebase/references/destructuring-shim.md": {
+    "mtime": 1792593028.7942772,
+    "seen": 1792603478.5739663,
+    "ast_hash": "1f922ddc289a9392caa860668f0835dc",
+    "semantic_hash": ""
+  },
+  ".claude/skills/extension-to-functions-codebase/references/signature-mapping.md": {
+    "mtime": 1792593028.7952778,
+    "seen": 1792603478.5739672,
+    "ast_hash": "a94c9ba96e4507cdbadd862eb5e833e7",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-ai-logic-basics/SKILL.md": {
+    "mtime": 1792593028.7952778,
+    "seen": 1792603478.573968,
+    "ast_hash": "100ce899a73b772ca03d210b6da075e5",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-ai-logic-basics/references/flutter_setup.md": {
+    "mtime": 1792593028.7962775,
+    "seen": 1792603478.573969,
+    "ast_hash": "78f7881fee20cb5b6330ebeba2042e72",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-ai-logic-basics/references/ios_setup.md": {
+    "mtime": 1792593028.7962775,
+    "seen": 1792603478.5739698,
+    "ast_hash": "b6bd0dd41640ccc398d8c0df0852e113",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-ai-logic-basics/references/tts_generation.md": {
+    "mtime": 1792593028.7972772,
+    "seen": 1792603478.5739708,
+    "ast_hash": "0e2bdd245cd9b6c384983c9f593444d3",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-ai-logic-basics/references/usage_patterns_android.md": {
+    "mtime": 1792593028.7972772,
+    "seen": 1792603478.5739717,
+    "ast_hash": "34e857a50e91ccf173408287224f0ea6",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-ai-logic-basics/references/usage_patterns_web.md": {
+    "mtime": 1792593028.798277,
+    "seen": 1792603478.5739725,
+    "ast_hash": "66b59c737e47a2cdc56c72b12d3247d8",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-app-hosting-basics/SKILL.md": {
+    "mtime": 1792593028.7986498,
+    "seen": 1792603478.5739732,
+    "ast_hash": "993456c356c5d11366177a11d40484f4",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-app-hosting-basics/references/cli_commands.md": {
+    "mtime": 1792593028.7986498,
+    "seen": 1792603478.5739741,
+    "ast_hash": "e362d601a8ff24340fbd3fecc624d26d",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-app-hosting-basics/references/configuration.md": {
+    "mtime": 1792593028.799656,
+    "seen": 1792603478.5739748,
+    "ast_hash": "5b743366d98bff3d0e6d32597a8d978c",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-app-hosting-basics/references/emulation.md": {
+    "mtime": 1792593028.800657,
+    "seen": 1792603478.5739756,
+    "ast_hash": "4226c83e5a93068c583043f5e75e4ed0",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-auth-basics/SKILL.md": {
+    "mtime": 1792593028.800657,
+    "seen": 1792603478.5739763,
+    "ast_hash": "d698019fc0bde803af8afb4fb77c9a48",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-auth-basics/references/client_sdk_android.md": {
+    "mtime": 1792593028.801662,
+    "seen": 1792603478.573977,
+    "ast_hash": "740105f5713a897242fa5b767ba566a7",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-auth-basics/references/client_sdk_web.md": {
+    "mtime": 1792593028.801662,
+    "seen": 1792603478.5739782,
+    "ast_hash": "edf2f3838d187f9fc845d0a1734ff8e1",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-auth-basics/references/flutter_setup.md": {
+    "mtime": 1792593028.8026607,
+    "seen": 1792603478.573979,
+    "ast_hash": "515f981052ebeb1d54ce062f54db405e",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-auth-basics/references/ios_setup.md": {
+    "mtime": 1792593028.8026607,
+    "seen": 1792603478.5739796,
+    "ast_hash": "77345c72e6f17d8301a9f5cd83d0d8f1",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-auth-basics/references/security_rules.md": {
+    "mtime": 1792593028.8026607,
+    "seen": 1792603478.5739803,
+    "ast_hash": "ddb3dee5873b8189e430f8cbc0b9ba29",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-basics/SKILL.md": {
+    "mtime": 1792593028.8036602,
+    "seen": 1792603478.5739813,
+    "ast_hash": "9d4ccf9808a288337aa9692bcad3b031",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-basics/references/android_setup.md": {
+    "mtime": 1792593028.8036602,
+    "seen": 1792603478.573982,
+    "ast_hash": "04f18d87a9e98dd17bf9eb377c3dbae5",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-basics/references/firebase-cli-guide.md": {
+    "mtime": 1792593028.8046596,
+    "seen": 1792603478.5739827,
+    "ast_hash": "cc127c968a5dc13a057fbaf07c34a73d",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-basics/references/firebase-service-init.md": {
+    "mtime": 1792593028.8046596,
+    "seen": 1792603478.5739834,
+    "ast_hash": "dabcaf25db5a5fed677755fef5bd1e61",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-basics/references/flutter_setup.md": {
+    "mtime": 1792593028.805661,
+    "seen": 1792603478.5739856,
+    "ast_hash": "12d4ad820d37e9ef5448bb5c699ee27e",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-basics/references/ios_setup.md": {
+    "mtime": 1792593028.805661,
+    "seen": 1792603478.5739865,
+    "ast_hash": "bb0bc24db0aa22eb58971c973c00e9bf",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-basics/references/local-env-setup.md": {
+    "mtime": 1792593028.805661,
+    "seen": 1792603478.5739872,
+    "ast_hash": "6cb18fea07c02582e48c7366a1bdd559",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-basics/references/refresh/android_studio.md": {
+    "mtime": 1792593028.8066604,
+    "seen": 1792603478.5739882,
+    "ast_hash": "e7c4cc04ec1a52af054ce76a2e20cf86",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-basics/references/refresh/antigravity.md": {
+    "mtime": 1792593028.8066604,
+    "seen": 1792603478.573989,
+    "ast_hash": "7ae370277acf93b42379c96a16ec1775",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-basics/references/refresh/claude.md": {
+    "mtime": 1792593028.8066604,
+    "seen": 1792603478.5739896,
+    "ast_hash": "45abe71395e5e27df70b6212841d626f",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-basics/references/refresh/gemini-cli.md": {
+    "mtime": 1792593028.80766,
+    "seen": 1792603478.5739903,
+    "ast_hash": "86cd617f1a0585211a145030e7133b2f",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-basics/references/refresh/other-agents.md": {
+    "mtime": 1792593028.80766,
+    "seen": 1792603478.573991,
+    "ast_hash": "5a3b6c6d6d00edff7ce290c10e76bbe5",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-basics/references/setup/android_studio.md": {
+    "mtime": 1792593028.808661,
+    "seen": 1792603478.573992,
+    "ast_hash": "243c30a9545fbf9c37c2fd47f002866a",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-basics/references/setup/antigravity.md": {
+    "mtime": 1792593028.808661,
+    "seen": 1792603478.5739927,
+    "ast_hash": "fd96bbad97a7f0d745dbe463cb5baf40",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-basics/references/setup/claude_code.md": {
+    "mtime": 1792593028.808661,
+    "seen": 1792603478.5739934,
+    "ast_hash": "5f143edb5e2620edf65ed99a5f41b826",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-basics/references/setup/cursor.md": {
+    "mtime": 1792593028.810013,
+    "seen": 1792603478.5739942,
+    "ast_hash": "939228ffa52befa63ac459f418ecbe0e",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-basics/references/setup/gemini_cli.md": {
+    "mtime": 1792593028.810013,
+    "seen": 1792603478.573995,
+    "ast_hash": "f4fca7b83892d14e1742e23b8b8c3212",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-basics/references/setup/github_copilot.md": {
+    "mtime": 1792593028.810013,
+    "seen": 1792603478.5739958,
+    "ast_hash": "b18aafeb2a3f64dfe29c65819f655356",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-basics/references/setup/other_agents.md": {
+    "mtime": 1792593028.811016,
+    "seen": 1792603478.5739965,
+    "ast_hash": "c6ab7f26eb3e072913d647d6ef2720a3",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-basics/references/web_setup.md": {
+    "mtime": 1792593028.811016,
+    "seen": 1792603478.5739973,
+    "ast_hash": "9a21eadae9d89a3438a868ec356051dd",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-crashlytics/SKILL.md": {
+    "mtime": 1792593028.8120165,
+    "seen": 1792603478.573998,
+    "ast_hash": "f1d5102a232de4e44cb877606ae70dcf",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-crashlytics/references/android_setup.md": {
+    "mtime": 1792593028.8120165,
+    "seen": 1792603478.573999,
+    "ast_hash": "dc4b42044fb7562d1013938090a3bbec",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-crashlytics/references/ios_setup.md": {
+    "mtime": 1792593028.8120165,
+    "seen": 1792603478.5739996,
+    "ast_hash": "2cbc6d3096d8ad6528124ef40e707917",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-data-connect/SKILL.md": {
+    "mtime": 1792593028.8130162,
+    "seen": 1792603478.5740006,
+    "ast_hash": "ed659ba04a950fb55153c8fc2abfb6ce",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-data-connect/examples.md": {
+    "mtime": 1792593028.8130162,
+    "seen": 1792603478.5740013,
+    "ast_hash": "4b1e1d21c39d5afb599c5e18199c8ba9",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-data-connect/reference/cloud_functions.md": {
+    "mtime": 1792593028.8140159,
+    "seen": 1792603478.5740023,
+    "ast_hash": "d0a23ec9e548a3bc482008423c641b75",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-data-connect/reference/config.md": {
+    "mtime": 1792593028.8140159,
+    "seen": 1792603478.574003,
+    "ast_hash": "37f43ad076702b562a1395b0b3e29a75",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-data-connect/reference/data_seeding.md": {
+    "mtime": 1792593028.815016,
+    "seen": 1792603478.5740037,
+    "ast_hash": "5f40b38f77d3129f2ddbff94aeac8518",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-data-connect/reference/native_sql.md": {
+    "mtime": 1792593028.815016,
+    "seen": 1792603478.5740044,
+    "ast_hash": "ecea48e56509cbc97e863a9da33a6f42",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-data-connect/reference/operations.md": {
+    "mtime": 1792593028.815016,
+    "seen": 1792603478.5740056,
+    "ast_hash": "8b4ddd15f32b61d8368f4b2cb66ccfdf",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-data-connect/reference/realtime.md": {
+    "mtime": 1792593028.8165188,
+    "seen": 1792603478.5740063,
+    "ast_hash": "a192e3c718d57e295e48201937a8f3f1",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-data-connect/reference/schema.md": {
+    "mtime": 1792593028.8165188,
+    "seen": 1792603478.574007,
+    "ast_hash": "5d7d21a5bd79f3ff585343727575ff15",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-data-connect/reference/sdk_admin_node.md": {
+    "mtime": 1792593028.8165188,
+    "seen": 1792603478.5740077,
+    "ast_hash": "03bd3294692c0b76b7f96dcdc8d780f0",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-data-connect/reference/sdk_android.md": {
+    "mtime": 1792593028.8175223,
+    "seen": 1792603478.5740085,
+    "ast_hash": "7c544924866e7353657c5fcf3cb75a7b",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-data-connect/reference/sdk_flutter.md": {
+    "mtime": 1792593028.8175223,
+    "seen": 1792603478.5740094,
+    "ast_hash": "84ba574871911099e8be21f4445ae925",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-data-connect/reference/sdk_ios.md": {
+    "mtime": 1792593028.8175223,
+    "seen": 1792603478.5740101,
+    "ast_hash": "f7a9d091bda568ad9094698c0344d5c9",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-data-connect/reference/sdk_web.md": {
+    "mtime": 1792593028.818523,
+    "seen": 1792603478.5740108,
+    "ast_hash": "1766fe9e96d8824fa031d1aab945216e",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-data-connect/reference/search.md": {
+    "mtime": 1792593028.818523,
+    "seen": 1792603478.5740118,
+    "ast_hash": "ab0fd5df9be2d961a37e4e99565b1282",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-data-connect/reference/security.md": {
+    "mtime": 1792593028.818523,
+    "seen": 1792603478.5740128,
+    "ast_hash": "37da850ccec7397fedb93599875486d7",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-data-connect/templates.md": {
+    "mtime": 1792593028.819523,
+    "seen": 1792603478.5740135,
+    "ast_hash": "fd867ef613a8b37bb3fc6722857dd0ab",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-firestore/SKILL.md": {
+    "mtime": 1792593028.819523,
+    "seen": 1792603478.5740142,
+    "ast_hash": "6534a633eb685169f3a680d6703d2a56",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-firestore/references/enterprise/android_sdk_usage.md": {
+    "mtime": 1792593028.820523,
+    "seen": 1792603478.574015,
+    "ast_hash": "65188c33cf9595eee7e6823de3e5a7f1",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-firestore/references/enterprise/data_model.md": {
+    "mtime": 1792593028.820523,
+    "seen": 1792603478.5740159,
+    "ast_hash": "a180a21befe75f97daecc6f4a9e47530",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-firestore/references/enterprise/flutter_setup.md": {
+    "mtime": 1792593028.8215227,
+    "seen": 1792603478.5740166,
+    "ast_hash": "194d3b7469fa0933f214862740088853",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-firestore/references/enterprise/indexes.md": {
+    "mtime": 1792593028.8215227,
+    "seen": 1792603478.5740173,
+    "ast_hash": "e1604d862d4affe98bb73a6935145b32",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-firestore/references/enterprise/ios_setup.md": {
+    "mtime": 1792593028.8215227,
+    "seen": 1792603478.574018,
+    "ast_hash": "02dc51a9da86051d2192db4344c074fa",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-firestore/references/enterprise/provisioning.md": {
+    "mtime": 1792593028.8225229,
+    "seen": 1792603478.5740187,
+    "ast_hash": "d957d9b5bd28bbe536ba442d127b0635",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-firestore/references/enterprise/python_sdk_usage.md": {
+    "mtime": 1792593028.8225229,
+    "seen": 1792603478.5740197,
+    "ast_hash": "5a70b1cc54fef2f78492d0dbd2318be1",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-firestore/references/enterprise/web_sdk_usage.md": {
+    "mtime": 1792593028.8225229,
+    "seen": 1792603478.5740206,
+    "ast_hash": "fdfab1c5f53df47caf559ce50f9379aa",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-firestore/references/standard/android_sdk_usage.md": {
+    "mtime": 1792593028.8235228,
+    "seen": 1792603478.5740213,
+    "ast_hash": "d5fdcd4857466171e8fb9cd29ea0b283",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-firestore/references/standard/flutter_setup.md": {
+    "mtime": 1792593028.8235228,
+    "seen": 1792603478.574022,
+    "ast_hash": "bb161d4112815587b67d4b82c4b7c2a9",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-firestore/references/standard/indexes.md": {
+    "mtime": 1792593028.824523,
+    "seen": 1792603478.574023,
+    "ast_hash": "19f678fd12369e895f16a20d79337519",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-firestore/references/standard/ios_setup.md": {
+    "mtime": 1792593028.824523,
+    "seen": 1792603478.5740237,
+    "ast_hash": "43132eb0e239373703f68566ebf0a676",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-firestore/references/standard/provisioning.md": {
+    "mtime": 1792593028.824523,
+    "seen": 1792603478.5740244,
+    "ast_hash": "591f2d6b232e3aef7f0dfe2d1d597f09",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-firestore/references/standard/web_sdk_usage.md": {
+    "mtime": 1792593028.8255231,
+    "seen": 1792603478.5740252,
+    "ast_hash": "c7e06eedcdfebd8d1aca59611756bc7c",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-hosting-basics/SKILL.md": {
+    "mtime": 1792593028.8255231,
+    "seen": 1792603478.5740259,
+    "ast_hash": "30935256fb108ce3b2152fcd8df69e1e",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-hosting-basics/references/configuration.md": {
+    "mtime": 1792593028.8265233,
+    "seen": 1792603478.574027,
+    "ast_hash": "154c889c03b0161d6366be5aca10deea",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-hosting-basics/references/deploying.md": {
+    "mtime": 1792593028.8265233,
+    "seen": 1792603478.5740275,
+    "ast_hash": "fbe58565ff6cc6bd970365c560298416",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-remote-config-basics/SKILL.md": {
+    "mtime": 1792593028.8265233,
+    "seen": 1792603478.5740283,
+    "ast_hash": "f47cbc17fe42118dd0d55f1058d63d78",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-remote-config-basics/references/android_setup.md": {
+    "mtime": 1792593028.8275235,
+    "seen": 1792603478.5740292,
+    "ast_hash": "d68a751a5422814c5875c0adf2a8d00f",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-remote-config-basics/references/ios_setup.md": {
+    "mtime": 1792593028.8275235,
+    "seen": 1792603478.5740302,
+    "ast_hash": "c8c79fcbb5130726bf9d6648cd754717",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firebase-security-rules-auditor/SKILL.md": {
+    "mtime": 1792593028.8285224,
+    "seen": 1792603478.5740309,
+    "ast_hash": "93e19556dacc4dfcc603f7c76938a9ef",
+    "semantic_hash": ""
+  },
+  ".claude/skills/firestore-rules-creation/SKILL.md": {
+    "mtime": 1792593028.8285224,
+    "seen": 1792603478.5740316,
+    "ast_hash": "50f5038cd5f637779b17901df9103d97",
+    "semantic_hash": ""
+  },
+  ".claude/skills/xcode-project-setup/SKILL.md": {
+    "mtime": 1792593028.8295224,
+    "seen": 1792603478.5740323,
+    "ast_hash": "46546db0992aea4184a7a9ebd3f42439",
     "semantic_hash": ""
   }
 }

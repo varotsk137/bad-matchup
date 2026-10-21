@@ -9,7 +9,10 @@
     "build": "vite build",
     "preview": "vite preview --host",
     "test": "vitest run",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-bad-matchup \"vitest run rules-tests\"",
+    "dev:emulator": "vite --mode emulator",
+    "emulators": "firebase emulators:start --only firestore,auth"
   },
   "dependencies": {
     "firebase": "^13.0.0",
@@ -17,6 +20,7 @@
     "react-dom": "^19.1.1"
   },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "^6.0.0",
     "@playwright/test": "^1.64.1",
     "@tailwindcss/vite": "^4.1.13",
     "@vitejs/plugin-react": "^5.0.2",

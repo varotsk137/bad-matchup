@@ -3,7 +3,7 @@ import CourtsTab from './components/CourtsTab'
 import PlayTab, { DEFAULT_COUNTS } from './components/PlayTab'
 import PlayersTab from './components/PlayersTab'
 import SettingsTab from './components/SettingsTab'
-import ShareSheet from './components/ShareSheet'
+import ShareSheet, { RoomStatus } from './components/ShareSheet'
 import StatsTab from './components/StatsTab'
 import { Button, Toast, cx } from './components/ui'
 import { makeT } from './lib/i18n'
@@ -16,10 +16,14 @@ import {
   makeContext,
 } from './lib/matchmaker'
 import { PLAN_MAX, PLAN_MIN, planKey } from './lib/plan'
+import { OWN_KEY, createPublisher, loadOwnRoom, readRoomHash, saveOwnRoom } from './lib/room'
 import { clearShareHash, decodeShare, readShareHash } from './lib/share'
 import { loadSkinFont, skinById } from './lib/skins'
 import { clearState, defaultState } from './lib/storage'
 import { createLocalStore } from './lib/store'
+
+/** Firebase is only downloaded once someone opens or watches a room. */
+const loadRemote = () => import('./lib/roomRemote')
 
 /* ------------------------------------------------------------------ icons */
 
@@ -103,7 +107,15 @@ const TABS = [
 
 /* ----------------------------------------------------------------- header */
 
-function Header({ t, state, actions, readyCount, roundCount, shared = false }) {
+function Header({
+  t,
+  state,
+  actions,
+  readyCount,
+  roundCount,
+  shared = false,
+  roomStatus = null,
+}) {
   return (
     <header className="sticky top-0 z-40 border-b-(length:--line-w) border-chrome-edge bg-chrome/95 backdrop-blur-md dark:bg-chrome-dark/95">
       <div className="mx-auto flex h-14 max-w-3xl items-center gap-3 px-4">
@@ -116,6 +128,12 @@ function Header({ t, state, actions, readyCount, roundCount, shared = false }) {
           {!shared && (
             <p className="truncate text-[11px] leading-tight text-slate-500 dark:text-slate-400">
               {readyCount} {t('playersUnit')} · {roundCount} {t('roundsUnit')}
+              {roomStatus && (
+                <>
+                  {' · '}
+                  <RoomStatus status={roomStatus} t={t} />
+                </>
+              )}
             </p>
           )}
         </div>
@@ -154,6 +172,11 @@ export default function App() {
   // a session that arrived through a link — held apart from the user's own data
   // so opening someone else's schedule can never clobber it
   const [shared, setShared] = useState(null)
+  // the live room this device publishes to, and how that is going
+  const [ownRoom, setOwnRoom] = useState(loadOwnRoom)
+  const [roomStatus, setRoomStatus] = useState(null)
+  // a live room being watched: { id, session?, offline?, updatedAt? }
+  const [live, setLive] = useState(null)
 
   const t = useMemo(() => makeT(state.lang), [state.lang])
 
@@ -187,6 +210,85 @@ export default function App() {
     window.addEventListener('hashchange', open)
     return () => window.removeEventListener('hashchange', open)
   }, [store])
+
+  /* ------------------------------------------------------- own live room */
+  // a room opened or closed in another tab of this browser applies here too,
+  // so two tabs never keep writing to a room only one of them still runs
+  useEffect(() => {
+    const sync = (e) => e.key === OWN_KEY && setOwnRoom(loadOwnRoom())
+    window.addEventListener('storage', sync)
+    return () => window.removeEventListener('storage', sync)
+  }, [])
+
+  useEffect(() => {
+    if (!ownRoom) {
+      setRoomStatus(null)
+      return
+    }
+    let alive = true
+    let stop = () => {}
+    setRoomStatus('sending')
+    loadRemote()
+      .then((remote) => {
+        if (!alive) return
+        stop = createPublisher({
+          store,
+          write: (json) => remote.publishRoom(ownRoom.id, json),
+          onStatus: setRoomStatus,
+        })
+      })
+      .catch(() => alive && setRoomStatus('error'))
+    return () => {
+      alive = false
+      stop()
+    }
+  }, [store, ownRoom])
+
+  /* --------------------------------------------------- watching a room */
+  useEffect(() => {
+    const open = () => {
+      const id = readRoomHash()
+      if (id && id === loadOwnRoom()?.id) {
+        // the organiser tapped their own link — their app already is the room
+        clearShareHash()
+        setLive(null)
+        setToastState({ message: makeT(store.getState().lang)('roomIsYours'), tone: 'info' })
+        return
+      }
+      setLive((cur) => (id ? (cur?.id === id ? cur : { id }) : null))
+    }
+    open()
+    window.addEventListener('hashchange', open)
+    return () => window.removeEventListener('hashchange', open)
+  }, [store])
+
+  const liveId = live?.id
+  useEffect(() => {
+    if (!liveId) return
+    let alive = true
+    let off = () => {}
+    const fail = (key) => {
+      if (!alive) return
+      clearShareHash()
+      setLive(null)
+      setToastState({ message: makeT(store.getState().lang)(key), tone: 'error' })
+    }
+    loadRemote()
+      .then((remote) => {
+        if (!alive) return
+        off = remote.watchRoom(liveId, {
+          onChange: (data) =>
+            setLive((cur) => (cur?.id === liveId ? { ...cur, ...data } : cur)),
+          onMissing: () => fail('roomGone'),
+          onError: () => fail('roomFailed'),
+        })
+      })
+      .catch(() => fail('roomFailed'))
+    return () => {
+      alive = false
+      off()
+    }
+  }, [store, liveId])
 
   /* ----------------------------------------------------------------- theme */
   useEffect(() => {
@@ -430,6 +532,41 @@ export default function App() {
   const roundCount = state.rounds.length
   const readyCount = state.players.filter((p) => p.active !== false && !p.resting).length
 
+  /* ------------------------------------------------------------- rooms */
+  const openRoom = async () => {
+    const remote = await loadRemote()
+    const id = await remote.createRoom(store.getState())
+    const room = { id, openedAt: Date.now() }
+    saveOwnRoom(room)
+    setOwnRoom(room)
+  }
+
+  const closeRoom = async () => {
+    if (!ownRoom || !confirm(t('roomCloseConfirm'))) return
+    const { id } = ownRoom
+    saveOwnRoom(null)
+    setOwnRoom(null)
+    try {
+      await (await loadRemote()).deleteRoom(id)
+    } catch {
+      // the room just stops updating; nobody can write to it but this device
+    }
+  }
+
+  const exitLive = () => {
+    clearShareHash()
+    setLive(null)
+  }
+
+  /** Copies a watched room's schedule onto this device. */
+  const adoptLive = () => {
+    const hasOwn = state.players.length > 0 || state.rounds.length > 0
+    if (hasOwn && !confirm(t('adoptConfirm'))) return
+    store.dispatch('adoptSession', live.session)
+    exitLive()
+    setTab('play')
+  }
+
   /** Copies a shared schedule onto this device, replacing whatever was here. */
   const adoptShared = () => {
     const hasOwn = state.players.length > 0 || state.rounds.length > 0
@@ -443,6 +580,79 @@ export default function App() {
   const exitShared = () => {
     clearShareHash()
     setShared(null)
+  }
+
+  /* ------------------------------------------------------ live room view */
+  if (live) {
+    const session = live.session
+    const liveState = session ? { ...state, ...session } : null
+    const liveById = new Map((session?.players ?? []).map((p) => [p.id, p]))
+    const time = live.updatedAt
+      ? new Date(live.updatedAt).toLocaleTimeString(state.lang === 'th' ? 'th-TH' : 'en-GB', {
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+      : null
+
+    return (
+      <div className="min-h-dvh">
+        <Header t={t} state={state} actions={actions} readyCount={0} roundCount={0} shared />
+
+        <div className="mx-auto max-w-3xl px-3 pt-3">
+          <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-accent-300 bg-accent-50 p-3 dark:border-accent-800 dark:bg-accent-950/40">
+            <div className="min-w-0 flex-1">
+              <p className="flex items-center gap-1.5 text-sm font-bold text-accent-900 dark:text-accent-100">
+                <span
+                  className={cx(
+                    'inline-block h-2 w-2 rounded-full',
+                    live.offline ? 'bg-slate-400' : 'animate-pulse bg-rose-500'
+                  )}
+                  aria-hidden
+                />
+                {t('liveView')}
+              </p>
+              <p className="text-xs text-accent-800/80 dark:text-accent-200/80">
+                {t(live.offline ? 'liveOffline' : 'liveUpdating')}
+                {time ? ` · ${t('liveUpdated', { time })}` : ''}
+              </p>
+            </div>
+            {session && (
+              <Button variant="outline" size="sm" onClick={adoptLive}>
+                {t('saveAsMine')}
+              </Button>
+            )}
+            <Button size="sm" onClick={exitLive}>
+              {t('exitShare')}
+            </Button>
+          </div>
+        </div>
+
+        <main className="mx-auto max-w-3xl px-3 pt-3 pb-10">
+          {liveState ? (
+            <PlayTab
+              readOnly
+              state={liveState}
+              playersById={liveById}
+              t={t}
+              actions={actions}
+              goTo={goTo}
+              setToast={setToast}
+            />
+          ) : (
+            <p className="py-16 text-center text-sm text-slate-500 dark:text-slate-400">
+              {t('liveLoading')}
+            </p>
+          )}
+        </main>
+
+        <Toast
+          message={toast?.message}
+          tone={toast?.tone}
+          action={toast?.action}
+          onAction={onToastAction}
+        />
+      </div>
+    )
   }
 
   /* --------------------------------------------------- shared-link view */
@@ -516,6 +726,7 @@ export default function App() {
         actions={actions}
         readyCount={readyCount}
         roundCount={roundCount}
+        roomStatus={ownRoom ? roomStatus : null}
       />
 
       {/* --------------------------------------------------------- tabs */}
@@ -600,6 +811,10 @@ export default function App() {
         state={state}
         t={t}
         setToast={setToast}
+        room={ownRoom}
+        roomStatus={roomStatus}
+        onOpenRoom={openRoom}
+        onCloseRoom={closeRoom}
       />
 
       <Toast
