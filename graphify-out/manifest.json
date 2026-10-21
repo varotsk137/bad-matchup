@@ -42,9 +42,9 @@
     "semantic_hash": ""
   },
   "src/components/PlayTab.jsx": {
-    "mtime": 1792605691.638397,
-    "seen": 1792606873.5160964,
-    "ast_hash": "b16beb2a5def94c1d26da997d040d91f",
+    "mtime": 1792608975.4977481,
+    "seen": 1792609055.2617176,
+    "ast_hash": "d42191b5f1739489b29fe06d5856a6a2",
     "semantic_hash": ""
   },
   "src/components/PlayerBits.jsx": {
@@ -90,9 +90,9 @@
     "semantic_hash": ""
   },
   "src/components/ui.jsx": {
-    "mtime": 1792355016.0324354,
-    "seen": 1792355161.7103739,
-    "ast_hash": "d582a89dfad57f638de077731f95b775",
+    "mtime": 1792608975.541871,
+    "seen": 1792609055.2617402,
+    "ast_hash": "72ea4538256afd8a32bbc1f23583127c",
     "semantic_hash": ""
   },
   "src/lib/exportImage.js": {
@@ -138,9 +138,9 @@
     "semantic_hash": ""
   },
   ".github/workflows/deploy.yml": {
-    "mtime": 1792606740.8669353,
-    "seen": 1792606873.516307,
-    "ast_hash": "78845a4a8d9bbdf11c9383f604b701e9",
+    "mtime": 1792607242.97688,
+    "seen": 1792609055.2621458,
+    "ast_hash": "716ad60ec63b4902dd69d6df576eb1e4",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -150,9 +150,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792606118.1342487,
-    "seen": 1792606873.51631,
-    "ast_hash": "1d7fef03aa21b5e50034159f8731d212",
+    "mtime": 1792607243.0970695,
+    "seen": 1792609055.2621522,
+    "ast_hash": "8ebe17829de1c098b99781cb1b811a69",
     "semantic_hash": ""
   },
   "index.html": {
@@ -354,9 +354,9 @@
     "semantic_hash": ""
   },
   "src/lib/firebase.js": {
-    "mtime": 1792606776.1202104,
-    "seen": 1792606873.5161095,
-    "ast_hash": "39c9d411548ab77af9d3e3c6d2a13590",
+    "mtime": 1792607243.046433,
+    "seen": 1792609055.261744,
+    "ast_hash": "b14c921f55327a0ea61730813829fdbb",
     "semantic_hash": ""
   },
   "src/lib/room.js": {

@@ -628,8 +628,8 @@ export default function PlayTab({
                     className={cx(
                       'press inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl border-(length:--line-w) px-3 text-sm',
                       liveOn
-                        ? 'border-rose-400 bg-rose-50 text-rose-800 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-100'
-                        : 'border-edge-strong bg-slate-50 text-slate-900 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-100'
+                        ? 'border-rose-400 bg-rose-50 text-rose-800 hover:bg-rose-100 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-100 dark:hover:bg-rose-950/70'
+                        : 'border-edge-strong bg-slate-50 text-slate-900 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700'
                     )}
                   >
                     <span
@@ -644,7 +644,7 @@ export default function PlayTab({
                 )}
                 <button
                   onClick={onShare}
-                  className="press inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl border-(length:--line-w) border-edge-strong bg-slate-50 px-3 text-sm text-slate-900 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-100"
+                  className="press inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl border-(length:--line-w) border-edge-strong bg-slate-50 px-3 text-sm text-slate-900 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
                 >
                   <svg
                     viewBox="0 0 20 20"
