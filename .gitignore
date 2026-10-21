@@ -4,3 +4,9 @@ dist/
 *.local
 .vite/
 graphify-out/cache/
+test-results/
+playwright-report/
+
+# Firebase emulator logs
+*-debug.log
+.firebase/

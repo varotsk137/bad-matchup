@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import { configDefaults } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
@@ -9,5 +10,6 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: { host: true },
   // the schedules in the tests are real builds and take a few seconds each
-  test: { testTimeout: 60000 },
+  // e2e/ holds the Playwright specs, which run in a browser via `npm run e2e`
+  test: { testTimeout: 60000, exclude: [...configDefaults.exclude, 'e2e/**'] },
 })

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import CourtsTab from './components/CourtsTab'
 import PlayTab, { DEFAULT_COUNTS } from './components/PlayTab'
 import PlayersTab from './components/PlayersTab'
@@ -8,22 +8,18 @@ import StatsTab from './components/StatsTab'
 import { Button, Toast, cx } from './components/ui'
 import { makeT } from './lib/i18n'
 import {
-  DEFAULT_LEVEL,
   createEmptyRound,
   fillRound as fillRoundFn,
   generateRoundsAsync,
   playedRounds,
   suggestRounds,
   makeContext,
-  swapSlots,
-  uid,
-  DEFAULT_OPTIONS,
-  DEFAULT_WEIGHTS,
 } from './lib/matchmaker'
 import { PLAN_MAX, PLAN_MIN, planKey } from './lib/plan'
 import { clearShareHash, decodeShare, readShareHash } from './lib/share'
 import { loadSkinFont, skinById } from './lib/skins'
-import { clearState, defaultState, loadState, saveState } from './lib/storage'
+import { clearState, defaultState } from './lib/storage'
+import { createLocalStore } from './lib/store'
 
 /* ------------------------------------------------------------------ icons */
 
@@ -146,7 +142,9 @@ function Header({ t, state, actions, readyCount, roundCount, shared = false }) {
 /* -------------------------------------------------------------------- app */
 
 export default function App() {
-  const [state, setState] = useState(loadState)
+  // one store for the life of the page; see lib/store.js
+  const [store] = useState(() => createLocalStore())
+  const state = useSyncExternalStore(store.subscribe, store.getState)
   const [tab, setTab] = useState('play')
   const [toast, setToastState] = useState(null)
   const toastTimer = useRef(null)
@@ -159,19 +157,10 @@ export default function App() {
 
   const t = useMemo(() => makeT(state.lang), [state.lang])
 
-  // Round generation needs the freshest state *outside* a setState updater,
-  // because it can fail and raise a toast — updaters have to stay pure.
-  const stateRef = useRef(state)
-  stateRef.current = state
   const cancelRef = useRef(false)
   // the rest of the session, planned in one go and revealed a round at a time
   // (see lib/plan.js); in memory only — after a reload it is simply rebuilt
   const planRef = useRef(null)
-
-  /* ----------------------------------------------------------- persistence */
-  useEffect(() => {
-    saveState(state)
-  }, [state])
 
   /* ------------------------------------------------------- incoming link */
   useEffect(() => {
@@ -189,7 +178,7 @@ export default function App() {
           // whatever shared session happened to be on screen before
           setShared(null)
           setToastState({
-            message: makeT(stateRef.current.lang)('shareBroken'),
+            message: makeT(store.getState().lang)('shareBroken'),
             tone: 'error',
           })
         })
@@ -197,7 +186,7 @@ export default function App() {
     open()
     window.addEventListener('hashchange', open)
     return () => window.removeEventListener('hashchange', open)
-  }, [])
+  }, [store])
 
   /* ----------------------------------------------------------------- theme */
   useEffect(() => {
@@ -245,188 +234,48 @@ export default function App() {
   )
 
   /* --------------------------------------------------------------- actions */
+  // The screens call these by the same names as always; each one is a named
+  // change in lib/ops.js run through the store. Only round building lives
+  // here, because it is slow, can fail and can be cancelled.
   const actions = useMemo(() => {
-    const patchRound = (roundId, fn) =>
-      setState((s) => ({
-        ...s,
-        rounds: s.rounds.map((r) => (r.id === roundId ? fn(r) : r)),
-      }))
+    const run =
+      (name) =>
+      (...args) =>
+        store.dispatch(name, ...args)
+
+    // true when the matchmaker produced nothing at all (and says why)
+    const failed = (res) => {
+      if (!res.error || res.created.length) return false
+      setToast(t(res.error === 'no_courts' ? 'errNoCourts' : 'errNotEnough'), 'error')
+      return true
+    }
 
     return {
-      set: (patch) => setState((s) => ({ ...s, ...patch })),
-      replaceState: (next) => setState(next),
-
-      setOption: (key, value) =>
-        setState((s) => ({ ...s, options: { ...s.options, [key]: value } })),
-      setWeight: (key, value) =>
-        setState((s) => ({ ...s, weights: { ...s.weights, [key]: value } })),
+      set: run('set'),
+      replaceState: run('replace'),
+      setOption: run('setOption'),
+      setWeight: run('setWeight'),
 
       /* ---- players ---- */
-      addPlayers: (names) =>
-        setState((s) => ({
-          ...s,
-          players: [
-            ...s.players,
-            ...names.map((name) => ({
-              id: uid(),
-              name,
-              level: DEFAULT_LEVEL,
-              gender: '-',
-              active: true,
-              resting: false,
-            })),
-          ],
-        })),
-      updatePlayer: (id, patch) =>
-        setState((s) => ({
-          ...s,
-          players: s.players.map((p) => (p.id === id ? { ...p, ...patch } : p)),
-        })),
-      removePlayer: (id) =>
-        setState((s) => {
-          // keep the record (hidden) when past rounds still refer to them, so
-          // the schedule never shows a blank name
-          const used = s.rounds.some(
-            (r) =>
-              r.benched.includes(id) ||
-              r.matches.some((m) => [...m.teamA, ...m.teamB].includes(id))
-          )
-          return {
-            ...s,
-            players: used
-              ? s.players.map((p) =>
-                  p.id === id ? { ...p, deleted: true, active: false, resting: false } : p
-                )
-              : s.players.filter((p) => p.id !== id),
-          }
-        }),
-      /* ---- saved settings ---- */
-      savePreset: (name) =>
-        setState((s) => ({
-          ...s,
-          presets: [
-            {
-              id: uid(),
-              name,
-              savedAt: Date.now(),
-              options: { ...s.options },
-              weights: { ...s.weights },
-              courts: s.courts.map((c) => ({ name: c.name, type: c.type, enabled: c.enabled })),
-            },
-            ...(s.presets || []),
-          ],
-        })),
+      addPlayers: run('addPlayers'),
+      updatePlayer: run('updatePlayer'),
+      removePlayer: run('removePlayer'),
+      clearPlayers: run('clearPlayers'),
+      markAllPresent: run('markAllPresent'),
 
-      /**
-       * Settings and courts from the preset; players and the schedule stay.
-       * A court whose name is already here keeps its id, so rounds that were
-       * built for it still line up with it.
-       */
-      applyPreset: (id) =>
-        setState((s) => {
-          const preset = (s.presets || []).find((p) => p.id === id)
-          if (!preset) return s
-          const byName = new Map(s.courts.map((c) => [c.name, c]))
-          return {
-            ...s,
-            options: { ...DEFAULT_OPTIONS, ...preset.options },
-            weights: { ...DEFAULT_WEIGHTS, ...preset.weights },
-            courts: preset.courts.map((c) => ({ ...c, id: byName.get(c.name)?.id ?? uid() })),
-          }
-        }),
-
-      deletePreset: (id) =>
-        setState((s) => ({ ...s, presets: (s.presets || []).filter((p) => p.id !== id) })),
-
-      /* ---- saved rosters ---- */
-      saveRoster: (name) =>
-        setState((s) => ({
-          ...s,
-          rosters: [
-            {
-              id: uid(),
-              name,
-              savedAt: Date.now(),
-              // only the durable facts: who they are and how they play.
-              // Attendance and rest flags belong to a single session.
-              players: s.players
-                .filter((p) => !p.deleted)
-                .map((p) => ({ name: p.name, level: p.level, gender: p.gender })),
-            },
-            ...s.rosters,
-          ],
-        })),
-
-      renameRoster: (id, name) =>
-        setState((s) => ({
-          ...s,
-          rosters: s.rosters.map((r) => (r.id === id ? { ...r, name } : r)),
-        })),
-
-      deleteRoster: (id) =>
-        setState((s) => ({ ...s, rosters: s.rosters.filter((r) => r.id !== id) })),
-
-      /**
-       * `replace` swaps the whole roster in (and drops the schedule, which
-       * refers to players who are about to disappear); `append` just adds the
-       * names that are not already here — the late arrivals from another group.
-       */
-      loadRoster: (id, mode = 'replace') =>
-        setState((s) => {
-          const roster = s.rosters.find((r) => r.id === id)
-          if (!roster) return s
-          const make = (p) => ({
-            id: uid(),
-            name: p.name,
-            level: p.level ?? DEFAULT_LEVEL,
-            gender: p.gender ?? '-',
-            active: true,
-            resting: false,
-          })
-          if (mode === 'append') {
-            const here = new Set(s.players.filter((p) => !p.deleted).map((p) => p.name))
-            const extra = roster.players.filter((p) => !here.has(p.name)).map(make)
-            return { ...s, players: [...s.players, ...extra] }
-          }
-          return { ...s, players: roster.players.map(make), rounds: [] }
-        }),
-
-      /** Players and the schedule go together — a schedule without its players
-       *  would render as a grid of blanks, so this clears both. */
-      clearPlayers: () => setState((s) => ({ ...s, players: [], rounds: [] })),
-
-      markAllPresent: () =>
-        setState((s) => ({
-          ...s,
-          players: s.players.map((p) =>
-            p.deleted ? p : { ...p, active: true, resting: false }
-          ),
-        })),
+      /* ---- saved settings and rosters ---- */
+      savePreset: run('savePreset'),
+      applyPreset: run('applyPreset'),
+      deletePreset: run('deletePreset'),
+      saveRoster: run('saveRoster'),
+      renameRoster: run('renameRoster'),
+      deleteRoster: run('deleteRoster'),
+      loadRoster: run('loadRoster'),
 
       /* ---- courts ---- */
-      addCourt: () =>
-        setState((s) => ({
-          ...s,
-          courts: [
-            ...s.courts,
-            {
-              id: uid(),
-              name: String(s.courts.length + 1),
-              type: 'doubles',
-              enabled: true,
-            },
-          ],
-        })),
-      updateCourt: (id, patch) =>
-        setState((s) => ({
-          ...s,
-          courts: s.courts.map((c) => (c.id === id ? { ...c, ...patch } : c)),
-        })),
-      removeCourt: (id) =>
-        setState((s) => ({
-          ...s,
-          courts: s.courts.filter((c) => c.id !== id),
-        })),
+      addCourt: run('addCourt'),
+      updateCourt: run('updateCourt'),
+      removeCourt: run('removeCourt'),
 
       /* ---- rounds ---- */
       /**
@@ -437,7 +286,7 @@ export default function App() {
        * it depended on changes.
        */
       generate: async (count, onProgress) => {
-        const s = stateRef.current
+        const s = store.getState()
         const situation = {
           players: s.players,
           courts: s.courts,
@@ -458,7 +307,7 @@ export default function App() {
           planRef.current = rest.length
             ? { key: planKey({ ...situation, rounds }), rounds: rest }
             : null
-          setState((prev) => ({ ...prev, rounds: [...prev.rounds, ...taken] }))
+          store.dispatch('appendRounds', taken)
           return
         }
 
@@ -477,25 +326,18 @@ export default function App() {
             onProgress?.(done, total, phase ?? (build > count ? 'plan' : undefined), ...rest),
           shouldCancel: () => cancelRef.current,
         })
-        if (res.error && !res.created.length) {
-          setToast(t(res.error === 'no_courts' ? 'errNoCourts' : 'errNotEnough'), 'error')
-          return
-        }
-        if (!res.created.length) return
+        if (failed(res) || !res.created.length) return
         const taken = res.created.slice(0, count)
         const rest = res.cancelled ? [] : res.created.slice(count)
         planRef.current = rest.length
           ? { key: planKey({ ...situation, rounds: [...s.rounds, ...taken] }), rounds: rest }
           : null
-        setState((prev) => ({
-          ...prev,
-          rounds: [...prev.rounds, ...taken],
-        }))
+        store.dispatch('appendRounds', taken)
       },
 
       /** Throws the whole schedule away and builds a fresh one the same length. */
       regenerate: async (count, onProgress) => {
-        const s = stateRef.current
+        const s = store.getState()
         cancelRef.current = false
         const res = await generateRoundsAsync({
           players: s.players,
@@ -507,13 +349,9 @@ export default function App() {
           onProgress,
           shouldCancel: () => cancelRef.current,
         })
-        if (res.error && !res.created.length) {
-          setToast(t(res.error === 'no_courts' ? 'errNoCourts' : 'errNotEnough'), 'error')
-          return
-        }
         // a cancel before the very first round produced nothing — keep what was there
-        if (!res.created.length) return
-        setState((prev) => ({ ...prev, rounds: res.created }))
+        if (failed(res) || !res.created.length) return
+        store.dispatch('setRounds', res.created)
       },
 
       /**
@@ -521,7 +359,7 @@ export default function App() {
        * the rest with today's player list — someone left, someone arrived.
        */
       regenerateRemaining: async (onProgress, wanted) => {
-        const s = stateRef.current
+        const s = store.getState()
         const kept = playedRounds(s.rounds)
         // how many rounds to have after the played ones (default: as many as now)
         const count = wanted ?? s.rounds.length - kept
@@ -537,15 +375,8 @@ export default function App() {
           onProgress,
           shouldCancel: () => cancelRef.current,
         })
-        if (res.error && !res.created.length) {
-          setToast(t(res.error === 'no_courts' ? 'errNoCourts' : 'errNotEnough'), 'error')
-          return
-        }
-        if (!res.created.length) return
-        setState((prev) => ({
-          ...prev,
-          rounds: [...prev.rounds.slice(0, kept), ...res.created],
-        }))
+        if (failed(res) || !res.created.length) return
+        store.dispatch('replaceRoundsFrom', kept, res.created)
       },
 
       cancelGenerate: () => {
@@ -553,17 +384,17 @@ export default function App() {
       },
 
       newEmptyRound: () => {
-        const s = stateRef.current
+        const s = store.getState()
         const res = createEmptyRound({ players: s.players, courts: s.courts })
         if (res.error) {
           setToast(t('errNoCourts'), 'error')
           return
         }
-        setState((prev) => ({ ...prev, rounds: [...prev.rounds, res.round] }))
+        store.dispatch('appendRounds', [res.round])
       },
 
       fillRound: (roundId) => {
-        const s = stateRef.current
+        const s = store.getState()
         const round = s.rounds.find((r) => r.id === roundId)
         if (!round) return
         const res = fillRoundFn({
@@ -574,52 +405,22 @@ export default function App() {
           weights: s.weights,
           options: s.options,
         })
-        setState((prev) => ({
-          ...prev,
-          rounds: prev.rounds.map((r) => (r.id === roundId ? res.round : r)),
-        }))
+        store.dispatch('replaceRound', roundId, res.round)
       },
 
-      swapInRound: (roundId, a, b) => patchRound(roundId, (r) => swapSlots(r, a, b)),
-
-      // puts who-plays-where back the way it was (undoing a swap) without
-      // touching scores or ticks entered since
-      restoreLineup: (roundId, before) =>
-        patchRound(roundId, (r) => ({
-          ...r,
-          benched: before.benched,
-          matches: r.matches.map((m) => {
-            const old = before.matches.find((x) => x.id === m.id)
-            return old ? { ...m, teamA: old.teamA, teamB: old.teamB } : m
-          }),
-        })),
-
-      updateMatch: (roundId, matchId, patch) =>
-        patchRound(roundId, (r) => ({
-          ...r,
-          matches: r.matches.map((m) => (m.id === matchId ? { ...m, ...patch } : m)),
-        })),
-
-      toggleMatchDone: (roundId, matchId) =>
-        patchRound(roundId, (r) => ({
-          ...r,
-          matches: r.matches.map((m) => (m.id === matchId ? { ...m, done: !m.done } : m)),
-        })),
-
-      deleteRound: (roundId) =>
-        setState((s) => ({
-          ...s,
-          rounds: s.rounds.filter((r) => r.id !== roundId),
-        })),
-
-      clearRounds: () => setState((s) => ({ ...s, rounds: [] })),
+      swapInRound: run('swapInRound'),
+      restoreLineup: run('restoreLineup'),
+      updateMatch: run('updateMatch'),
+      toggleMatchDone: run('toggleMatchDone'),
+      deleteRound: run('deleteRound'),
+      clearRounds: run('clearRounds'),
 
       resetAll: () => {
         clearState()
-        setState((s) => ({ ...defaultState(), lang: s.lang, theme: s.theme, skin: s.skin }))
+        store.dispatch('reset', defaultState())
       },
     }
-  }, [setToast, t])
+  }, [store, setToast, t])
 
   const goTo = useCallback((key) => {
     setTab(key)
@@ -633,8 +434,7 @@ export default function App() {
   const adoptShared = () => {
     const hasOwn = state.players.length > 0 || state.rounds.length > 0
     if (hasOwn && !confirm(t('adoptConfirm'))) return
-    const { players, courts, rounds } = shared.session
-    setState((s) => ({ ...s, players, courts, rounds }))
+    store.dispatch('adoptSession', shared.session)
     clearShareHash()
     setShared(null)
     setTab('play')
@@ -803,11 +603,11 @@ export default function App() {
       />
 
       <Toast
-          message={toast?.message}
-          tone={toast?.tone}
-          action={toast?.action}
-          onAction={onToastAction}
-        />
+        message={toast?.message}
+        tone={toast?.tone}
+        action={toast?.action}
+        onAction={onToastAction}
+      />
     </div>
   )
 }

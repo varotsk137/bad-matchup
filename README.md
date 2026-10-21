@@ -118,9 +118,21 @@ The engine is covered by a Vitest suite with seeded randomness, so every run is 
 | `plan.test.js` | The one-round-at-a-time plan survives ticks and scores, and is discarded on real changes |
 | `roster.test.js` | Detection of players who left or arrived after the schedule was built |
 | `stats.test.js` | Fair-share statistics for part-time players |
+| `ops.test.js` | Every named change to the data is pure and does what its screen promises |
+| `store.test.js` | The local store notifies, saves once per burst and loads back |
+| `storage.test.js` | Old, partial or broken saves and backups load as a complete state |
 
-GitHub Actions runs the suite on every branch push and again before each deploy. A failing test
-blocks the release.
+End-to-end checks drive the real app in Chromium with Playwright: adding a player, building
+and ticking a schedule, opening a share link, and remembering language and theme, each across
+a reload.
+
+```bash
+npx playwright install chromium   # once
+npm run e2e
+```
+
+GitHub Actions runs both suites on every branch push, and the unit suite again before each
+deploy. A failing test blocks the release.
 
 ## Deployment
 
@@ -242,7 +254,9 @@ src/
     roster.js          detects players who left or arrived after scheduling
     exportImage.js     canvas rendering of the schedule image
     share.js           packing schedules into share links
-    storage.js         localStorage, backup import/export, settings migration
+    ops.js             every change the app can make to its data, as named pure functions
+    store.js           the local store: holds the state, runs ops, saves to localStorage
+    storage.js         localStorage, backup import/export, schema version and migrations
     i18n.js            Thai and English strings
     skins.js           the skins offered in settings
     testkit.js         shared helpers for the test suite
@@ -262,7 +276,8 @@ src/
     ShareSheet.jsx     share-link creation
     RosterSheet.jsx    saved rosters
     PlayersTab.jsx, CourtsTab.jsx, PlayerBits.jsx, ui.jsx
-  App.jsx              application state, actions and tabs
+  App.jsx              wires the store to the screens, round building, tabs
+e2e/                   Playwright end-to-end checks
 ```
 
 ## Data and privacy
