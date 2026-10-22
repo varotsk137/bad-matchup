@@ -8,7 +8,7 @@ import { Button, Sheet } from './ui'
  * "Save to Photos" / "Download image" — the one route that reaches the gallery
  * on every phone. The buttons cover a file download and the share sheet.
  */
-export default function ImageSheet({ png, onClose, t, setToast }) {
+export default function ImageSheet({ png, onClose, t, setToast, title }) {
   const [url, setUrl] = useState('')
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function ImageSheet({ png, onClose, t, setToast }) {
     <Sheet
       open
       onClose={onClose}
-      title={t('imageReady')}
+      title={title || t('imageReady')}
       footer={
         <div className="flex gap-2">
           <Button
@@ -57,7 +57,7 @@ export default function ImageSheet({ png, onClose, t, setToast }) {
       {url && (
         <img
           src={url}
-          alt={t('imageTitle')}
+          alt={title || t('imageTitle')}
           className="w-full rounded-xl border border-slate-200 dark:border-slate-800"
         />
       )}

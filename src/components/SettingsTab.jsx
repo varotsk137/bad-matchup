@@ -4,6 +4,7 @@ import { DEFAULT_OPTIONS, DEFAULT_WEIGHTS } from '../lib/matchmaker'
 import { DEFAULT_SKIN, SKINS, loadSkinFont } from '../lib/skins'
 import { exportState, importState } from '../lib/storage'
 import { RestModeHelp } from './HelpSheet'
+import PaymentCard from './PaymentCard'
 import PresetCard from './PresetCard'
 import { Button, Card, SectionTitle, Segmented, Slider, Toggle, cx } from './ui'
 
@@ -100,6 +101,8 @@ export default function SettingsTab({ state, t, actions, setToast }) {
           })}
         </div>
       </Card>
+
+      <PaymentCard t={t} setToast={setToast} />
 
       {/* --------------------------------------------------- stamina */}
       <div>

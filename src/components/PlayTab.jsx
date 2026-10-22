@@ -7,6 +7,7 @@ import {
   roundQuality,
   totalCapacity,
 } from '../lib/matchmaker'
+import CostSplitSheet from './CostSplitSheet'
 import MatchCard from './MatchCard'
 import ScheduleTable from './ScheduleTable'
 import { analyse } from './FairnessReport'
@@ -68,6 +69,7 @@ export default function PlayTab({
   const [progress, setProgress] = useState(null)
   const [queueOpen, setQueueOpen] = useState(false)
   const [archiveOpen, setArchiveOpen] = useState(false)
+  const [splitOpen, setSplitOpen] = useState(false)
   // undefined = "follow the play" (open the first unfinished round); a string id
   // pins one open; null = everything shut
   const [openId, setOpenId] = useState(undefined)
@@ -600,8 +602,9 @@ export default function PlayTab({
         </Card>
       ) : (
         <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <div className="flex flex-1 gap-1 rounded-xl border-(length:--line-w) border-edge bg-track p-1">
+          {/* on a phone the actions get a line of their own under the view switch */}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex basis-full gap-1 rounded-xl sm:basis-0 sm:flex-1 border-(length:--line-w) border-edge bg-track p-1">
               {[
                 ['table', 'viewTable'],
                 ['cards', 'viewCards'],
@@ -663,12 +666,27 @@ export default function PlayTab({
                   {t('share')}
                 </button>
                 <button
+                  onClick={() => setSplitOpen(true)}
+                  className="press inline-flex h-10 shrink-0 items-center rounded-xl border-(length:--line-w) border-btn-edge bg-accent-500 px-3 text-sm text-white hover:bg-accent-600"
+                >
+                  {t('splitButton')}
+                </button>
+                {splitOpen && (
+                  <CostSplitSheet
+                    state={state}
+                    t={t}
+                    setToast={setToast}
+                    goTo={goTo}
+                    onClose={() => setSplitOpen(false)}
+                  />
+                )}
+                <button
                   onClick={() => {
                     if (confirm(t('clearRoundsConfirm'))) actions.clearRounds()
                   }}
                   aria-label={t('clearRounds')}
                   title={t('clearRounds')}
-                  className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-slate-400 transition hover:bg-rose-100 hover:text-rose-600 active:scale-95 dark:hover:bg-rose-950/50"
+                  className="ml-auto grid h-10 w-10 shrink-0 place-items-center rounded-xl text-slate-400 transition hover:bg-rose-100 hover:text-rose-600 active:scale-95 dark:hover:bg-rose-950/50"
                 >
                   <svg
                     viewBox="0 0 20 20"
