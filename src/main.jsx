@@ -1,7 +1,11 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
+import './fonts'
 import './index.css'
+import { startPwa } from './lib/pwa'
+
+startPwa()
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

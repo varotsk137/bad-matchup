@@ -698,3 +698,22 @@
 .animate-sheet {
   animation: sheet-up 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
+/* the install invite's thin line, running out while the invite is up */
+@keyframes run-out {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+.invite-countdown {
+  transform-origin: left;
+  animation: run-out 4s linear forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .invite-countdown {
+    animation: none;
+  }
+}

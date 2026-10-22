@@ -4,6 +4,8 @@ import { defineConfig, devices } from '@playwright/test'
 // app in a browser, so a refactor that keeps the unit tests green but breaks
 // the wiring between the screens and the data still gets caught.
 const PORT = 5180
+// the built app, service worker and all, for the checks that need one
+const PREVIEW_PORT = 5181
 
 export default defineConfig({
   testDir: 'e2e',
@@ -18,9 +20,17 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
-  webServer: {
-    command: `npm run dev -- --port ${PORT} --strictPort`,
-    url: `http://localhost:${PORT}`,
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: [
+    {
+      command: `npm run dev -- --port ${PORT} --strictPort`,
+      url: `http://localhost:${PORT}`,
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command: `npm run build && npx vite preview --port ${PREVIEW_PORT} --strictPort`,
+      url: `http://localhost:${PREVIEW_PORT}`,
+      reuseExistingServer: !process.env.CI,
+      timeout: 180_000,
+    },
+  ],
 })

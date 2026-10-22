@@ -5,6 +5,7 @@ import { DEFAULT_SKIN, SKINS, loadSkinFont } from '../lib/skins'
 import { exportState, importState } from '../lib/storage'
 import { RestModeHelp } from './HelpSheet'
 import PresetCard from './PresetCard'
+import { InstallRow } from './PwaBits'
 import { Button, Card, SectionTitle, Segmented, Slider, Toggle, cx } from './ui'
 
 export default function SettingsTab({ state, t, actions, setToast }) {
@@ -275,6 +276,8 @@ export default function SettingsTab({ state, t, actions, setToast }) {
 
       {/* saving a setup comes after every setting it would save */}
       <PresetCard state={state} t={t} actions={actions} setToast={setToast} />
+
+      <InstallRow t={t} state={state} />
 
       {/* --------------------------------------------------- data */}
       <div>

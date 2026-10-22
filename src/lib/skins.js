@@ -7,8 +7,8 @@
  * `preview` is a tiny swatch of the skin drawn with inline styles, so the
  * picker can show every skin side by side whichever one is active. `bar` is
  * the browser toolbar colour (meta theme-color) for light and dark. `fonts`
- * is a Google Fonts family list for a display face index.html does not
- * already load; it is fetched only once the skin is shown.
+ * loads a display face src/fonts.js does not already bring in (self-hosted
+ * with @fontsource); it runs only once the skin is shown.
  */
 export const SKINS = [
   {
@@ -31,7 +31,15 @@ export const SKINS = [
     id: 'league',
     label: 'skinLeague',
     font: "'Mitr', 'Noto Sans Thai', sans-serif",
-    fonts: 'family=Mitr:wght@400;500;600',
+    fonts: () =>
+      Promise.all([
+        import('@fontsource/mitr/thai-400.css'),
+        import('@fontsource/mitr/thai-500.css'),
+        import('@fontsource/mitr/thai-600.css'),
+        import('@fontsource/mitr/latin-400.css'),
+        import('@fontsource/mitr/latin-500.css'),
+        import('@fontsource/mitr/latin-600.css'),
+      ]),
     bar: { light: '#fef5e6', dark: '#1c1109' },
     preview: {
       page: 'oklch(0.972 0.022 80)',
@@ -48,7 +56,15 @@ export const SKINS = [
     id: 'scoreboard',
     label: 'skinScoreboard',
     font: "'Kanit', 'Noto Sans Thai', sans-serif",
-    fonts: 'family=Kanit:wght@400;500;600',
+    fonts: () =>
+      Promise.all([
+        import('@fontsource/kanit/thai-400.css'),
+        import('@fontsource/kanit/thai-500.css'),
+        import('@fontsource/kanit/thai-600.css'),
+        import('@fontsource/kanit/latin-400.css'),
+        import('@fontsource/kanit/latin-500.css'),
+        import('@fontsource/kanit/latin-600.css'),
+      ]),
     bar: { light: '#dbe0e6', dark: '#040710' },
     preview: {
       page: 'oklch(0.952 0.006 255)',
@@ -65,7 +81,15 @@ export const SKINS = [
     id: 'editorial',
     label: 'skinEditorial',
     font: "'Noto Serif Thai', Georgia, serif",
-    fonts: 'family=Noto+Serif+Thai:wght@500;600;700',
+    fonts: () =>
+      Promise.all([
+        import('@fontsource/noto-serif-thai/thai-500.css'),
+        import('@fontsource/noto-serif-thai/thai-600.css'),
+        import('@fontsource/noto-serif-thai/thai-700.css'),
+        import('@fontsource/noto-serif-thai/latin-500.css'),
+        import('@fontsource/noto-serif-thai/latin-600.css'),
+        import('@fontsource/noto-serif-thai/latin-700.css'),
+      ]),
     bar: { light: '#fdfcf9', dark: '#0d0b09' },
     preview: {
       page: 'oklch(0.962 0.009 88)',
@@ -82,7 +106,15 @@ export const SKINS = [
     id: 'candy',
     label: 'skinCandy',
     font: "'Mali', 'Noto Sans Thai', sans-serif",
-    fonts: 'family=Mali:wght@500;600;700',
+    fonts: () =>
+      Promise.all([
+        import('@fontsource/mali/thai-500.css'),
+        import('@fontsource/mali/thai-600.css'),
+        import('@fontsource/mali/thai-700.css'),
+        import('@fontsource/mali/latin-500.css'),
+        import('@fontsource/mali/latin-600.css'),
+        import('@fontsource/mali/latin-700.css'),
+      ]),
     bar: { light: '#fffbff', dark: '#141024' },
     preview: {
       page: 'oklch(0.965 0.02 310)',
@@ -104,13 +136,11 @@ export const isSkin = (id) => SKINS.some((s) => s.id === id)
 export const skinById = (id) =>
   SKINS.find((s) => s.id === id) || SKINS.find((s) => s.id === DEFAULT_SKIN)
 
-/** Adds the skin's display font to the page, once. Offline it simply falls back. */
+const loaded = new Set()
+
+/** Adds the skin's display font to the page, once. If it cannot load, the page font stands in. */
 export function loadSkinFont(skin) {
-  if (!skin?.fonts || typeof document === 'undefined') return
-  if (document.querySelector(`link[data-skin-font="${skin.id}"]`)) return
-  const link = document.createElement('link')
-  link.rel = 'stylesheet'
-  link.href = `https://fonts.googleapis.com/css2?${skin.fonts}&display=swap`
-  link.dataset.skinFont = skin.id
-  document.head.appendChild(link)
+  if (!skin?.fonts || typeof document === 'undefined' || loaded.has(skin.id)) return
+  loaded.add(skin.id)
+  skin.fonts().catch(() => loaded.delete(skin.id))
 }

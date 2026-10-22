@@ -42,3 +42,6 @@ export function shareHash(packed, mode = 'v') {
     .replace(/=+$/, '')
   return `#s=0${b64}&m=${mode}`
 }
+
+// Must match PREVIEW_PORT in playwright.config.js: the built app, with its service worker.
+export const PREVIEW_URL = 'http://localhost:5181'

@@ -286,6 +286,53 @@ const dict = {
   },
   shareEmpty: { th: 'ยังไม่มีตารางให้แชร์', en: 'No schedule to share yet' },
 
+  /* the app on its own: connection, LINE, install, updates */
+  netOffline: {
+    th: 'ไม่พบอินเทอร์เน็ต · ใช้ได้เฉพาะจัดคู่',
+    en: 'No internet found · matchmaking only',
+  },
+  netRetry: { th: 'ลองเชื่อมต่อใหม่', en: 'Try again' },
+  netRetrying: { th: 'กำลังลอง…', en: 'Trying…' },
+  netBack: { th: 'เชื่อมต่อแล้ว · ใช้ได้ครบทุกอย่าง', en: 'Connected · everything is back' },
+  netStillOffline: { th: 'ยังไม่พบอินเทอร์เน็ต', en: 'Still no internet' },
+  lineBar: {
+    th: 'เปิดผ่าน LINE อยู่ · ใช้ในเบราว์เซอร์จะลื่นกว่า',
+    en: 'Opened in LINE · it runs smoother in your browser',
+  },
+  lineOpen: { th: 'เปิด', en: 'Open' },
+  installInvite: { th: 'ติดตั้งเป็นแอปไว้ในเครื่องได้', en: 'Add it to this device as an app' },
+  installButton: { th: 'ติดตั้ง', en: 'Install' },
+  installTitle: { th: 'ติดตั้งเป็นแอป', en: 'Install as an app' },
+  installHint: {
+    th: 'เปิดจากไอคอนบนหน้าจอได้ทันที เหมือนแอปทั่วไป',
+    en: 'Open it straight from an icon on your home screen',
+  },
+  installDone: { th: 'เครื่องนี้ใช้แอปที่ติดตั้งแล้ว', en: 'This is the installed app' },
+  installIosStep1: {
+    th: 'แตะปุ่มแชร์ของเบราว์เซอร์ (สี่เหลี่ยมมีลูกศรชี้ขึ้น)',
+    en: "Tap the browser's Share button (the square with an arrow pointing up)",
+  },
+  installIosStep2: {
+    th: 'เลื่อนลงแล้วเลือก "เพิ่มไปยังหน้าจอโฮม"',
+    en: 'Scroll down and choose "Add to Home Screen"',
+  },
+  installIosStep3: { th: 'แตะ "เพิ่ม" ที่มุมขวาบน', en: 'Tap "Add" in the top right corner' },
+  installIosData: {
+    th: 'แอปที่ติดตั้งบน iPhone เก็บข้อมูลแยกจากเบราว์เซอร์ รายชื่อ ก๊วน และการตั้งค่าในหน้านี้จึงไม่ตามไปเอง ดาวน์โหลดไฟล์สำรองไว้ก่อน แล้วในแอปที่ติดตั้งไปที่ ตั้งค่า → นำเข้าไฟล์สำรอง',
+    en: 'On iPhone the installed app keeps its own storage, apart from the browser, so the players, groups and settings here do not follow it. Export a backup first, then in the installed app go to Settings → Import backup.',
+  },
+  installManual: {
+    th: 'เปิดเมนูของเบราว์เซอร์ (⋮ หรือ ⋯) แล้วเลือก "ติดตั้งแอป" หรือ "เพิ่มไปยังหน้าจอหลัก" ถ้าไม่มีตัวเลือกนี้ ลองเปิดหน้านี้ใน Chrome, Edge หรือ Safari',
+    en: 'Open the browser menu (⋮ or ⋯) and choose "Install app" or "Add to Home screen". If it is not there, open this page in Chrome, Edge or Safari.',
+  },
+  installLine: {
+    th: 'LINE ติดตั้งแอปให้ไม่ได้ เปิดหน้านี้ในเบราว์เซอร์ก่อน แล้วติดตั้งจากที่นั่น',
+    en: 'LINE cannot install apps. Open this page in your browser first and install it from there.',
+  },
+  installOpenBrowser: { th: 'เปิดในเบราว์เซอร์', en: 'Open in browser' },
+  updateReady: { th: 'มีเวอร์ชันใหม่', en: 'A new version is ready' },
+  updateReload: { th: 'โหลดใหม่', en: 'Reload' },
+
   /* live rooms */
   liveButton: { th: 'ดูสด', en: 'Live' },
   liveTitle: { th: 'ห้องดูสด', en: 'Live room' },

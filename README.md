@@ -104,6 +104,14 @@ The interface is available in Thai and English.
   colours, fonts, outlines, shadows and corner shapes. Only the look changes; everything works
   the same.
 - JSON backup export and import.
+- Installable as an app (a service worker via `vite-plugin-pwa`): a one-line invite shows once
+  per device for a few seconds, and Settings → *Install as an app* is always there; on iPhone it
+  explains Add to Home Screen and offers a backup to carry the data over. A new version waits
+  for a *Reload* tap rather than reloading mid-game.
+- At launch the app asks its own server for `ping.txt` (no cache, 3 s). With no answer it runs
+  for matchmaking only — no live rooms — under a slim bar whose *Try again* brings the full app
+  back. It never switches by itself mid-session.
+- Opened inside LINE, a dismissible bar offers to reopen the page in the phone's browser.
 
 ---
 
@@ -141,7 +149,9 @@ The engine is covered by a Vitest suite with seeded randomness, so every run is 
 
 End-to-end checks drive the real app in Chromium with Playwright: adding a player, building
 and ticking a schedule, opening a share link, and remembering language and theme, each across
-a reload.
+a reload; then launching with no internet (on the dev server, and on a production build served
+by its service worker), the LINE bar and the install invite. The run builds the app once for
+the latter.
 
 ```bash
 npx playwright install chromium   # once
@@ -253,7 +263,8 @@ a skin. Each skin re-points Tailwind's `slate`, `brand` and `accent` scales (so 
 `edge` for outlines, `track`/`pick` for segmented controls, `chip`, `preset`, `court-1…5`, the
 header badge — plus line weight, shadows and the display font, each for light and dark.
 `src/lib/skins.js` lists the skins for the settings picker; a skin's display font is fetched
-only when it is used. Adding a skin is one CSS block and one list entry.
+only when it is used. All fonts are self-hosted with `@fontsource` (Thai and Latin subsets), and
+their SIL OFL 1.1 licences ship in `dist/licenses/`. Adding a skin is one CSS block and one list entry.
 
 Classic layers a sage header over an ivory page with cream cards (nothing approaches pure
 white); its dark mode uses navy, deep green and a raised green, with green as the primary
@@ -276,6 +287,7 @@ src/
     storage.js         localStorage, backup import/export, schema version and migrations
     i18n.js            Thai and English strings
     skins.js           the skins offered in settings
+    pwa.js             service worker, install prompt, launch-time connection check, LINE
     testkit.js         shared helpers for the test suite
   components/
     PlayTab.jsx        modes, round controls, schedule, reshuffle, roster-change banner
@@ -292,8 +304,11 @@ src/
     ImageSheet.jsx     image preview with save and share
     ShareSheet.jsx     share-link creation
     RosterSheet.jsx    saved rosters
+    PwaBits.jsx        no-internet and LINE bars, install invite and sheet, update toast
     PlayersTab.jsx, CourtsTab.jsx, PlayerBits.jsx, ui.jsx
   App.jsx              wires the store to the screens, round building, tabs
+  fonts.js             the self-hosted page fonts
+public/                icons, manifest assets, ping.txt (scripts/make-icons.mjs renders the PNGs)
 e2e/                   Playwright end-to-end checks
 ```
 
