@@ -2,6 +2,13 @@ import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore
 import CourtsTab from './components/CourtsTab'
 import PlayTab, { DEFAULT_COUNTS } from './components/PlayTab'
 import PlayersTab from './components/PlayersTab'
+import {
+  InstallInvite,
+  InstallSheet,
+  TopBars,
+  UpdateToast,
+  useInstall,
+} from './components/PwaBits'
 import SettingsTab from './components/SettingsTab'
 import LiveRoomSheet, { RoomStatus } from './components/LiveRoomSheet'
 import ShareSheet from './components/ShareSheet'
@@ -17,6 +24,7 @@ import {
   makeContext,
 } from './lib/matchmaker'
 import { PLAN_MAX, PLAN_MIN, planKey } from './lib/plan'
+import { applyUpdate, checkOnline, pwaStore, readFlag, setFlag } from './lib/pwa'
 import {
   OWN_KEY,
   ROOM_IDLE_MS,
@@ -198,6 +206,15 @@ export default function App() {
   const liveRemote = useRef(null)
 
   const t = useMemo(() => makeT(state.lang), [state.lang])
+
+  // Online or not is decided at launch (and by "try again"), never by itself
+  // mid-session: with no internet the app opens for matchmaking only, without
+  // live rooms. A signal that drops during play is the room queue's business.
+  const [online, setOnline] = useState(() => navigator.onLine !== false)
+  const [retrying, setRetrying] = useState(false)
+  const pwa = useSyncExternalStore(pwaStore.subscribe, pwaStore.getState)
+  const installer = useInstall()
+  const [inviting, setInviting] = useState(false)
 
   const cancelRef = useRef(false)
   // the rest of the session, planned in one go and revealed a round at a time
@@ -406,6 +423,29 @@ export default function App() {
     }
   }, [store, liveId, liveKey])
 
+  /* ------------------------------------------------------------ connection */
+  useEffect(() => {
+    let alive = true
+    checkOnline().then((ok) => alive && setOnline(ok))
+    return () => {
+      alive = false
+    }
+  }, [])
+
+  /* ----------------------------------------------------------- install invite */
+  // once per device, on the app's own screens, where the browser can install
+  const mainView = !live && !shared
+  const canInvite = installer.kind === 'prompt' || installer.kind === 'ios'
+  useEffect(() => {
+    if (!online || !mainView || !canInvite || readFlag('invited')) return
+    const timer = setTimeout(() => {
+      setFlag('invited')
+      setInviting(true)
+    }, 1500)
+    return () => clearTimeout(timer)
+  }, [online, mainView, canInvite])
+  const endInvite = useCallback(() => setInviting(false), [])
+
   /* ----------------------------------------------------------------- theme */
   useEffect(() => {
     document.documentElement.classList.toggle('dark', state.theme === 'dark')
@@ -438,6 +478,15 @@ export default function App() {
     clearTimeout(toastTimer.current)
     toast?.action?.run()
     setToastState(null)
+  }
+
+  /** "Try again" on the no-internet bar: back to the full app if the server answers. */
+  const retryOnline = async () => {
+    setRetrying(true)
+    const ok = await checkOnline()
+    setRetrying(false)
+    if (ok) setOnline(true)
+    setToast(t(ok ? 'netBack' : 'netStillOffline'), ok ? 'info' : 'error')
   }
 
   /* --------------------------------------------------------------- derived */
@@ -720,6 +769,10 @@ export default function App() {
     setShared(null)
   }
 
+  const topBars = <TopBars t={t} offline={!online} retrying={retrying} onRetry={retryOnline} />
+  // one message at a time: the update waits while another toast is up
+  const updateToast = pwa.updateReady && !toast && <UpdateToast t={t} onReload={applyUpdate} />
+
   /* ------------------------------------------------------ live room view */
   if (live) {
     const session = live.session
@@ -733,7 +786,7 @@ export default function App() {
       : null
     // closed by its owner, or idle past 12 hours: the final results, read-only
     const closed = session ? isRoomClosed(live) : false
-    const canScore = live.member && !closed
+    const canScore = live.member && !closed && online
 
     // an edit link's ticks and scores go to the room, never to this device's data
     const findMatch = (matchId) =>
@@ -764,6 +817,7 @@ export default function App() {
     return (
       <div className="min-h-dvh">
         <Header t={t} state={state} actions={actions} readyCount={0} roundCount={0} shared />
+        {topBars}
 
         <div className="mx-auto max-w-3xl px-3 pt-3">
           <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-accent-300 bg-accent-50 p-3 dark:border-accent-800 dark:bg-accent-950/40">
@@ -820,6 +874,7 @@ export default function App() {
           action={toast?.action}
           onAction={onToastAction}
         />
+        {updateToast}
       </div>
     )
   }
@@ -837,6 +892,7 @@ export default function App() {
     return (
       <div className="min-h-dvh">
         <Header t={t} state={state} actions={actions} readyCount={0} roundCount={0} shared />
+        {topBars}
 
         <div className="mx-auto max-w-3xl px-3 pt-3">
           <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-accent-300 bg-accent-50 p-3 dark:border-accent-800 dark:bg-accent-950/40">
@@ -882,6 +938,7 @@ export default function App() {
           action={toast?.action}
           onAction={onToastAction}
         />
+        {updateToast}
       </div>
     )
   }
@@ -896,8 +953,9 @@ export default function App() {
         readyCount={readyCount}
         roundCount={roundCount}
         roomStatus={ownRoom ? roomStatus : null}
-        onRoomClick={() => setLiveOpen(true)}
+        onRoomClick={() => online && setLiveOpen(true)}
       />
+      {topBars}
 
       {/* --------------------------------------------------------- tabs */}
       <nav
@@ -946,10 +1004,13 @@ export default function App() {
             onShare={() =>
               state.rounds.length ? setShareOpen(true) : setToast(t('shareEmpty'), 'error')
             }
-            onLive={() =>
-              ownRoom || state.rounds.length
-                ? setLiveOpen(true)
-                : setToast(t('shareEmpty'), 'error')
+            onLive={
+              online
+                ? () =>
+                    ownRoom || state.rounds.length
+                      ? setLiveOpen(true)
+                      : setToast(t('shareEmpty'), 'error')
+                : undefined
             }
             liveOn={Boolean(ownRoom)}
             counts={roundCounts}
@@ -1002,12 +1063,22 @@ export default function App() {
         onSetScoring={setScoring}
       />
 
+      {inviting && <InstallInvite t={t} onInstall={installer.install} onDone={endInvite} />}
+      <InstallSheet
+        open={installer.sheet}
+        onClose={installer.closeSheet}
+        kind={installer.kind}
+        t={t}
+        state={state}
+      />
+
       <Toast
         message={toast?.message}
         tone={toast?.tone}
         action={toast?.action}
         onAction={onToastAction}
       />
+      {updateToast}
     </div>
   )
 }
