@@ -36,7 +36,7 @@ export function SectionTitle({ children, hint, action }) {
     <div className="mb-2 flex items-end justify-between gap-3 px-1">
       <div className="min-w-0">
         <h2 className="section-title">{children}</h2>
-        {hint && <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">{hint}</p>}
+        {hint && <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">{hint}</p>}
       </div>
       {action}
     </div>
@@ -53,7 +53,7 @@ const VARIANTS = {
   secondary: `${SOLID} bg-slate-900 text-slate-50 hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200`,
   outline: `press border-(length:--line-w) border-edge-strong bg-slate-50 text-slate-900 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700`,
   ghost: 'text-slate-600 hover:bg-slate-200/70 dark:text-slate-300 dark:hover:bg-slate-800',
-  accent: `${SOLID} bg-accent-500 text-white hover:bg-accent-600`,
+  accent: `${SOLID} bg-accent-500 text-on-accent hover:bg-accent-600`,
   danger: `${SOLID} bg-rose-100 text-rose-800 hover:bg-rose-200 dark:bg-rose-950 dark:text-rose-200 dark:hover:bg-rose-900`,
 }
 
@@ -112,7 +112,7 @@ export function Segmented({ options, value, onChange, className = '', size = 'md
             onClick={() => onChange(o.value)}
             className={cx(
               'flex-1 rounded-lg font-medium transition',
-              size === 'sm' ? 'h-8 px-2 text-xs' : 'h-9 px-3 text-sm',
+              size === 'sm' ? 'h-8 px-2 text-xs' : 'h-11 px-3 text-sm',
               active
                 ? 'bg-pick text-pick-ink shadow-[var(--shadow-pick)]'
                 : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'

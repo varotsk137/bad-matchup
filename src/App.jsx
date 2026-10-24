@@ -148,7 +148,7 @@ function Header({
           {/* the skin dresses the name: an ink pill in League, plain bold in Classic */}
           <h1 className="app-title truncate">{t('appName')}</h1>
           {!shared && (
-            <p className="truncate text-[11px] leading-tight text-slate-500 dark:text-slate-400">
+            <p className="truncate text-xs leading-tight text-slate-600 dark:text-slate-400">
               {readyCount} {t('playersUnit')} · {roundCount} {t('roundsUnit')}
               {roomStatus && (
                 <>
@@ -182,14 +182,14 @@ function Header({
         </button>
         <button
           onClick={() => actions.set({ lang: state.lang === 'th' ? 'en' : 'th' })}
-          className="h-8 rounded-lg border border-chrome-edge bg-slate-50/60 px-2 text-xs font-bold text-slate-700 dark:border-slate-700 dark:bg-transparent dark:text-slate-300"
+          className="h-11 min-w-11 rounded-lg border border-chrome-edge bg-slate-50/60 px-2 text-xs font-bold text-slate-700 dark:border-slate-700 dark:bg-transparent dark:text-slate-300"
           aria-label={t('language')}
         >
           {state.lang === 'th' ? 'TH' : 'EN'}
         </button>
         <button
           onClick={() => actions.set({ theme: state.theme === 'dark' ? 'light' : 'dark' })}
-          className="grid h-8 w-8 place-items-center rounded-lg border border-chrome-edge bg-slate-50/60 text-slate-700 dark:border-slate-700 dark:bg-transparent dark:text-slate-300"
+          className="grid h-11 w-11 place-items-center rounded-lg border border-chrome-edge bg-slate-50/60 text-slate-700 dark:border-slate-700 dark:bg-transparent dark:text-slate-300"
           aria-label={t('theme')}
           title={t(state.theme === 'dark' ? 'themeDark' : 'themeLight')}
         >

@@ -10,6 +10,8 @@ import {
 import CostSplitSheet from './CostSplitSheet'
 import MatchCard from './MatchCard'
 import ScheduleTable from './ScheduleTable'
+import ImageSheet from './ImageSheet'
+import { renderSchedulePng } from '../lib/exportImage'
 import SwapSheet from './SwapSheet'
 import { analyse } from './FairnessReport'
 import HelpSheet from './HelpSheet'
@@ -69,6 +71,37 @@ export default function PlayTab({
   const [queueOpen, setQueueOpen] = useState(false)
   const [archiveOpen, setArchiveOpen] = useState(false)
   const [splitOpen, setSplitOpen] = useState(false)
+  // the table's checking aids, kept here so they sit in the view row
+  const [showLevels, setShowLevels] = useState(false)
+  const [showStamina, setShowStamina] = useState(false)
+  // the schedule image works from either view, it is what the club receives
+  const [exporting, setExporting] = useState(false)
+  const [png, setPng] = useState(null)
+  const onExport = async () => {
+    setExporting(true)
+    try {
+      setPng(
+        await renderSchedulePng({
+          rounds: state.rounds,
+          courts: state.courts,
+          playersById,
+          title: t('imageTitle'),
+          subtitle: `${state.rounds.length} ${t('roundsUnit')} · ${new Date().toLocaleDateString()}`,
+          labels: {
+            round: t('round'),
+            court: t('courtLabel'),
+            bench: t('bench'),
+            vs: t('vs'),
+            footer: t('appName'),
+          },
+        })
+      )
+    } catch {
+      setToast?.(t('exportFailed'), 'error')
+    } finally {
+      setExporting(false)
+    }
+  }
   // undefined = "follow the play" (open the first unfinished round); a string id
   // pins one open; null = everything shut
   // which rounds are open; undefined means the default: the round being
@@ -193,16 +226,14 @@ export default function PlayTab({
   const remaining = state.rounds.length - played
 
   /**
-   * Once a match has been played there are two very different "reshuffles":
-   * redo what is left (the usual one — someone left or arrived) or start over.
-   * Before that, it is the plain rebuild it always was.
+   * Reshuffling has its own count, never the add-rounds one: it starts at every
+   * round not yet played. Once a match has been played there is also the
+   * start-over choice; before that the two are the same thing.
    */
   const reshuffle = () => {
-    if (played > 0) {
-      setRedoCount(Math.max(1, remaining))
-      setStartOverCount(Math.max(1, state.rounds.length))
-      setReshuffleOpen(true)
-    } else rebuildAll(addCount)
+    setRedoCount(Math.max(1, remaining))
+    setStartOverCount(Math.max(1, state.rounds.length))
+    setReshuffleOpen(true)
   }
 
   const reshuffleRemaining = async (count) => {
@@ -229,19 +260,6 @@ export default function PlayTab({
     const n = startOverCount
     setReshuffleOpen(false)
     if (!confirm(t('startOverConfirm', { n }))) return
-    setOpenId(undefined)
-    await solve((onProgress) => actions.regenerate(n, onProgress), n)
-  }
-
-  /** Wipes the schedule and builds `n` rounds. */
-  const rebuildAll = async (n) => {
-    const old = state.rounds.length
-    const hasResults = state.rounds.some((r) =>
-      r.matches.some((m) => m.done || typeof m.scoreA === 'number')
-    )
-    // ask before throwing away recorded results, or before shortening the
-    // schedule — reshuffling the same length in place needs no ceremony
-    if ((hasResults || n !== old) && !confirm(t('regenerateConfirm', { old, n }))) return
     setOpenId(undefined)
     await solve((onProgress) => actions.regenerate(n, onProgress), n)
   }
@@ -308,9 +326,7 @@ export default function PlayTab({
     : mode === 'manual'
       ? t('newManualRound')
       : hasRounds
-        ? addCount === 1
-          ? t('addRounds')
-          : t('addRoundsN', { n: addCount })
+        ? t('addRoundsN', { n: addCount })
         : t('startRounds', { n: startCount })
 
   return (
@@ -319,16 +335,20 @@ export default function PlayTab({
       {!readOnly && (
         <Card className="space-y-2.5 p-3">
           <div className="flex gap-1">
-            <div className="grid flex-1 grid-cols-3 gap-1">
+            {/* fair is the mode nearly every night; random and manual stay one tap
+                away, as plain text, so they do not compete with it */}
+            <div className="grid flex-1 grid-cols-[2fr_1fr_1fr] gap-1">
               {MODES.map(([value, key]) => (
                 <button
                   key={value}
                   onClick={() => actions.setOption('mode', value)}
                   className={cx(
-                    'h-9 rounded-[var(--radius-pill)] border-(length:--line-w) text-xs transition active:scale-95',
+                    'h-11 rounded-[var(--radius-pill)] border-(length:--line-w) text-sm transition active:scale-95',
                     mode === value
                       ? 'border-btn-edge bg-brand-600 text-white shadow-[var(--shadow-pick)]'
-                      : 'border-transparent bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+                      : value === 'balanced'
+                        ? 'border-transparent bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                        : 'border-transparent bg-transparent text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800'
                   )}
                 >
                   {t(key)}
@@ -339,7 +359,7 @@ export default function PlayTab({
               onClick={() => setHelpOpen(true)}
               aria-label={t('help')}
               title={t('help')}
-              className="h-9 w-9 shrink-0 rounded-lg bg-slate-100 text-sm font-bold text-slate-600 transition active:scale-95 dark:bg-slate-800 dark:text-slate-300"
+              className="h-11 w-11 shrink-0 rounded-lg bg-slate-100 text-sm font-bold text-slate-600 transition active:scale-95 dark:bg-slate-800 dark:text-slate-300"
             >
               ?
             </button>
@@ -362,10 +382,12 @@ export default function PlayTab({
           >
             <div className="space-y-3">
               <p className="text-sm text-slate-600 dark:text-slate-300">
-                {t('reshuffleIntro', { played })}
+                {played > 0 ? t('reshuffleIntro', { played }) : t('reshuffleIntroFresh')}
               </p>
               <div className="flex items-center justify-between gap-3 rounded-xl bg-slate-100 px-3 py-2 dark:bg-slate-800/60">
-                <span className="text-sm">{t('reshuffleHowMany', { played })}</span>
+                <span className="text-sm">
+                  {played > 0 ? t('reshuffleHowMany', { played }) : t('reshuffleHowManyFresh')}
+                </span>
                 <Stepper
                   value={redoCount}
                   onChange={setRedoCount}
@@ -379,36 +401,42 @@ export default function PlayTab({
                 onClick={() => reshuffleRemaining(redoCount)}
               >
                 <span className="text-sm font-semibold">
-                  {t('reshuffleRemaining', { n: redoCount })}
+                  {played > 0
+                    ? t('reshuffleRemaining', { n: redoCount })
+                    : t('reshuffleAllN', { n: redoCount })}
                 </span>
                 <span className="text-xs font-normal opacity-80">
-                  {t('reshuffleRemainingHint')}
+                  {played > 0 ? t('reshuffleRemainingHint') : t('reshuffleAllHint')}
                 </span>
               </Button>
-              <div className="flex items-center gap-3 py-1 text-xs text-slate-400" aria-hidden>
-                <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
-                {t('or')}
-                <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
-              </div>
-              <div className="flex items-center justify-between gap-3 rounded-xl bg-slate-100 px-3 py-2 dark:bg-slate-800/60">
-                <span className="text-sm">{t('startOverHowMany')}</span>
-                <Stepper
-                  value={startOverCount}
-                  onChange={setStartOverCount}
-                  max={MAX_AHEAD}
-                  label={t('roundsLabel')}
-                />
-              </div>
-              <Button
-                variant="accent"
-                className="h-auto w-full flex-col items-start gap-0.5 py-3 text-left"
-                onClick={startOver}
-              >
-                <span className="text-sm font-semibold">
-                  {t('startOver', { n: startOverCount })}
-                </span>
-                <span className="text-xs font-normal opacity-90">{t('startOverHint')}</span>
-              </Button>
+              {played > 0 && (
+                <>
+                  <div className="flex items-center gap-3 py-1 text-xs text-slate-400" aria-hidden>
+                    <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+                    {t('or')}
+                    <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+                  </div>
+                  <div className="flex items-center justify-between gap-3 rounded-xl bg-slate-100 px-3 py-2 dark:bg-slate-800/60">
+                    <span className="text-sm">{t('startOverHowMany')}</span>
+                    <Stepper
+                      value={startOverCount}
+                      onChange={setStartOverCount}
+                      max={MAX_AHEAD}
+                      label={t('roundsLabel')}
+                    />
+                  </div>
+                  <Button
+                    variant="accent"
+                    className="h-auto w-full flex-col items-start gap-0.5 py-3 text-left"
+                    onClick={startOver}
+                  >
+                    <span className="text-sm font-semibold">
+                      {t('startOver', { n: startOverCount })}
+                    </span>
+                    <span className="text-xs font-normal opacity-90">{t('startOverHint')}</span>
+                  </Button>
+                </>
+              )}
             </div>
           </Sheet>
 
@@ -420,7 +448,7 @@ export default function PlayTab({
                     key={p}
                     onClick={() => setPreset(p)}
                     className={cx(
-                      'h-9 rounded-[var(--radius-pill)] border-(length:--line-w) text-xs tabular-nums transition active:scale-95',
+                      'h-11 rounded-[var(--radius-pill)] border-(length:--line-w) text-sm tabular-nums transition active:scale-95',
                       preset === p
                         ? 'border-btn-edge bg-preset text-preset-ink shadow-[var(--shadow-pick)]'
                         : 'border-transparent bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
@@ -459,9 +487,28 @@ export default function PlayTab({
                 label={t('roundsLabel')}
               />
             )}
-            <Button variant="primary" className="h-11 flex-1" disabled={busy} onClick={run}>
-              {buttonLabel}
-            </Button>
+            {busy ? (
+              // the progress runs inside the button, so its label stays readable
+              <div
+                role="status"
+                className="relative flex h-11 min-w-0 flex-1 items-center justify-center overflow-hidden rounded-xl border-(length:--line-w) border-edge bg-brand-50 px-3 dark:bg-brand-950"
+              >
+                <div
+                  className={cx(
+                    'absolute inset-y-0 left-0 bg-brand-200 transition-[width] duration-150 dark:bg-brand-800',
+                    progress?.phase === 'polish' && 'animate-pulse'
+                  )}
+                  style={{ width: progress ? `${(progress.done / progress.total) * 100}%` : '0%' }}
+                />
+                <span className="relative truncate text-sm font-semibold text-brand-900 dark:text-brand-50">
+                  {buttonLabel}
+                </span>
+              </div>
+            ) : (
+              <Button variant="primary" className="h-11 min-w-0 flex-1" onClick={run}>
+                {buttonLabel}
+              </Button>
+            )}
             {busy ? (
               <Button className="h-11" onClick={actions.cancelGenerate}>
                 {t('cancel')}
@@ -469,26 +516,12 @@ export default function PlayTab({
             ) : (
               mode !== 'manual' &&
               hasRounds && (
-                <Button variant="accent" className="h-11" onClick={reshuffle}>
+                <Button variant="outline" className="h-11 min-w-0 flex-1" onClick={reshuffle}>
                   {t(played > 0 ? 'redoRemainingShort' : 'redoAllShort')}
                 </Button>
               )
             )}
           </div>
-
-          {progress && (
-            <div className="h-1 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
-              {/* the polish has no fixed length (it stops once pairs are even), so
-                  it gets a pulsing full bar instead of a fake percentage */}
-              <div
-                className={cx(
-                  'h-full rounded-full bg-brand-600 transition-[width] duration-150',
-                  progress.phase === 'polish' && 'animate-pulse'
-                )}
-                style={{ width: `${(progress.done / progress.total) * 100}%` }}
-              />
-            </div>
-          )}
 
           {busy && slow && (
             <p className="flex flex-wrap items-center gap-x-1.5 text-xs text-slate-500 dark:text-slate-400">
@@ -552,9 +585,9 @@ export default function PlayTab({
       {!readOnly && queue.length > capacity && capacity > 0 && (
         <button
           onClick={() => setQueueOpen((v) => !v)}
-          className="flex w-full items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-left dark:border-slate-800 dark:bg-slate-900"
+          className="flex w-full items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 min-h-11 px-3 py-2 text-left dark:border-slate-800 dark:bg-slate-900"
         >
-          <span className="shrink-0 text-[11px] font-semibold tracking-wide text-slate-400 uppercase">
+          <span className="shrink-0 text-xs font-semibold text-slate-600 dark:text-slate-400">
             {t('queueNext')}
           </span>
           {queueOpen ? (
@@ -627,9 +660,94 @@ export default function PlayTab({
         </Card>
       ) : (
         <div className="space-y-3">
-          {/* on a phone the actions get a line of their own under the view switch */}
+          {/* what the organiser does once the plan is made: send it out */}
           <div className="flex flex-wrap items-center gap-2">
-            <div className="flex basis-full gap-1 rounded-xl sm:basis-0 sm:flex-1 border-(length:--line-w) border-edge bg-track p-1">
+            {!readOnly && onLive && (
+              <button
+                onClick={onLive}
+                className={cx(
+                  'press inline-flex h-11 shrink-0 items-center gap-1.5 rounded-xl border-(length:--line-w) px-3 text-sm',
+                  liveOn
+                    ? 'border-rose-400 bg-rose-50 text-rose-800 hover:bg-rose-100 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-100 dark:hover:bg-rose-950/70'
+                    : 'border-edge-strong bg-slate-50 text-slate-900 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700'
+                )}
+              >
+                {liveOn ? (
+                  <span
+                    className="inline-block h-2 w-2 animate-pulse rounded-full bg-rose-500"
+                    aria-hidden
+                  />
+                ) : (
+                  <svg
+                    viewBox="0 0 20 20"
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    aria-hidden
+                  >
+                    <path
+                      d="M10 13V3m0 0L6.5 6.5M10 3l3.5 3.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M4 12v3a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-3"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                )}
+                {t(liveOn ? 'liveButtonOn' : 'liveButton')}
+              </button>
+            )}
+            <button
+              onClick={onExport}
+              disabled={exporting}
+              className="press inline-flex h-11 shrink-0 items-center gap-1.5 rounded-xl border-(length:--line-w) border-btn-edge bg-brand-600 px-3 text-sm text-white hover:bg-brand-700 disabled:opacity-60"
+            >
+              <svg
+                viewBox="0 0 20 20"
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                aria-hidden
+              >
+                <path
+                  d="M10 3v9m0 0 3.5-3.5M10 12 6.5 8.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M3.5 13.5V15a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-1.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+              {exporting ? t('exporting') : t('exportImageShort')}
+            </button>
+            {!readOnly && (
+              <button
+                onClick={() => setSplitOpen(true)}
+                className="press inline-flex h-11 shrink-0 items-center rounded-xl border-(length:--line-w) border-btn-edge bg-accent-500 px-3 text-sm text-on-accent hover:bg-accent-600"
+              >
+                {t('splitButton')}
+              </button>
+            )}
+            {splitOpen && (
+              <CostSplitSheet
+                state={state}
+                t={t}
+                setToast={setToast}
+                goTo={goTo}
+                onClose={() => setSplitOpen(false)}
+              />
+            )}
+            <ImageSheet png={png} onClose={() => setPng(null)} t={t} setToast={setToast} />
+          </div>
+
+          {/* how to look at it: the view, and in the table the two checking aids */}
+          <div className="flex items-center gap-2">
+            <div className="flex min-w-0 flex-1 gap-1 rounded-xl border-(length:--line-w) border-edge bg-track p-0.5">
               {[
                 ['table', 'viewTable'],
                 ['cards', 'viewCards'],
@@ -638,7 +756,7 @@ export default function PlayTab({
                   key={v}
                   onClick={() => setView(v)}
                   className={cx(
-                    'h-9 flex-1 rounded-lg text-sm transition active:scale-[0.98]',
+                    'h-11 flex-1 rounded-lg text-sm transition active:scale-[0.98]',
                     view === v
                       ? 'bg-pick text-pick-ink shadow-[var(--shadow-pick)]'
                       : 'text-slate-600 dark:text-slate-300'
@@ -648,85 +766,25 @@ export default function PlayTab({
                 </button>
               ))}
             </div>
-            {!readOnly && (
-              <>
-                {onLive && (
-                  <button
-                    onClick={onLive}
-                    className={cx(
-                      'press inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl border-(length:--line-w) px-3 text-sm',
-                      liveOn
-                        ? 'border-rose-400 bg-rose-50 text-rose-800 hover:bg-rose-100 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-100 dark:hover:bg-rose-950/70'
-                        : 'border-edge-strong bg-slate-50 text-slate-900 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700'
-                    )}
-                  >
-                    {liveOn ? (
-                      <span
-                        className="inline-block h-2 w-2 animate-pulse rounded-full bg-rose-500"
-                        aria-hidden
-                      />
-                    ) : (
-                      <svg
-                        viewBox="0 0 20 20"
-                        className="h-4 w-4"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.8"
-                        aria-hidden
-                      >
-                        <path
-                          d="M10 13V3m0 0L6.5 6.5M10 3l3.5 3.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M4 12v3a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-3"
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                    )}
-                    {t(liveOn ? 'liveButtonOn' : 'liveButton')}
-                  </button>
-                )}
+            {view === 'table' &&
+              [
+                [showLevels, setShowLevels, 'showLevels'],
+                [showStamina, setShowStamina, 'showStamina'],
+              ].map(([on, set, key]) => (
                 <button
-                  onClick={() => setSplitOpen(true)}
-                  className="press inline-flex h-10 shrink-0 items-center rounded-xl border-(length:--line-w) border-btn-edge bg-accent-500 px-3 text-sm text-white hover:bg-accent-600"
+                  key={key}
+                  onClick={() => set((v) => !v)}
+                  aria-pressed={on}
+                  className={cx(
+                    'h-12 shrink-0 rounded-[var(--radius-pill)] border-(length:--line-w) px-3 text-sm whitespace-nowrap transition',
+                    on
+                      ? 'border-btn-edge bg-chip text-chip-ink'
+                      : 'border-slate-300 bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                  )}
                 >
-                  {t('splitButton')}
+                  {t(key)}
                 </button>
-                {splitOpen && (
-                  <CostSplitSheet
-                    state={state}
-                    t={t}
-                    setToast={setToast}
-                    goTo={goTo}
-                    onClose={() => setSplitOpen(false)}
-                  />
-                )}
-                <button
-                  onClick={() => {
-                    if (confirm(t('clearRoundsConfirm'))) actions.clearRounds()
-                  }}
-                  aria-label={t('clearRounds')}
-                  title={t('clearRounds')}
-                  className="ml-auto grid h-10 w-10 shrink-0 place-items-center rounded-xl text-slate-400 transition hover:bg-rose-100 hover:text-rose-600 active:scale-95 dark:hover:bg-rose-950/50"
-                >
-                  <svg
-                    viewBox="0 0 20 20"
-                    className="h-4 w-4"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.7"
-                  >
-                    <path
-                      d="M4 6h12M8 6V4h4v2m-6 0 .7 10h6.6L15 6"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </button>
-              </>
-            )}
+              ))}
           </div>
 
           {view === 'table' ? (
@@ -737,6 +795,8 @@ export default function PlayTab({
               t={t}
               setToast={setToast}
               staminaLimit={state.options.maxConsecutive}
+              showLevels={showLevels}
+              showStamina={showStamina}
               onToggleDone={readOnly && !canScore ? undefined : onMatchDone}
             />
           ) : (
@@ -769,6 +829,34 @@ export default function PlayTab({
                 </>
               )}
             </>
+          )}
+
+          {/* clearing everything sits at the end, away from the buttons used every night */}
+          {!readOnly && (
+            <div className="flex justify-center">
+              <button
+                onClick={() => {
+                  if (confirm(t('clearRoundsConfirm'))) actions.clearRounds()
+                }}
+                className="inline-flex h-11 items-center gap-1.5 rounded-xl px-3 text-sm text-rose-700 transition hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-950/40"
+              >
+                <svg
+                  viewBox="0 0 20 20"
+                  className="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                  aria-hidden
+                >
+                  <path
+                    d="M4 6h12M8 6V4h4v2m-6 0 .7 10h6.6L15 6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                {t('clearRounds')}
+              </button>
+            </div>
           )}
         </div>
       )}
@@ -821,7 +909,7 @@ function Stepper({ value, onChange, max, label }) {
         onClick={() => step(-1)}
         disabled={value <= 1}
         aria-label="-1"
-        className="grid h-full w-9 place-items-center text-lg font-bold text-slate-500 disabled:opacity-30"
+        className="grid h-full w-11 place-items-center text-lg font-bold text-slate-600 disabled:opacity-30 dark:text-slate-300"
       >
         −
       </button>
@@ -847,7 +935,7 @@ function Stepper({ value, onChange, max, label }) {
         onClick={() => step(1)}
         disabled={value >= max}
         aria-label="+1"
-        className="grid h-full w-9 place-items-center text-lg font-bold text-slate-500 disabled:opacity-30"
+        className="grid h-full w-11 place-items-center text-lg font-bold text-slate-600 disabled:opacity-30 dark:text-slate-300"
       >
         +
       </button>

@@ -143,34 +143,34 @@ export default function PlayersTab({ state, stats, t, lang, actions, setToast })
           </p>
         )}
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <Button size="sm" disabled={full} onClick={() => setBulkOpen(true)}>
+          <Button disabled={full} onClick={() => setBulkOpen(true)}>
             + {t('bulkAdd')}
           </Button>
-          <Button size="sm" onClick={() => setRosterOpen(true)}>
+          <Button onClick={() => setRosterOpen(true)}>
             📒 {t('rosterOpen')}
             {state.rosters?.length ? ` · ${state.rosters.length}` : ''}
           </Button>
+        </div>
+        {/* check-in on the left with its count; clearing everyone is pushed to the far end */}
+        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2">
           {visible.length > 0 && (
-            <>
-              <Button size="sm" onClick={actions.markAllPresent}>
-                {t('markAllPresent')}
-              </Button>
-              <Button
-                size="sm"
-                variant="danger"
-                onClick={() => {
-                  if (confirm(t('clearPlayersConfirm', { n: visible.length })))
-                    actions.clearPlayers()
-                }}
-              >
-                {t('clearPlayers')}
-              </Button>
-            </>
+            <Button onClick={actions.markAllPresent}>{t('markAllPresent')}</Button>
           )}
-          <span className="ml-auto text-xs text-slate-500 dark:text-slate-400">
+          <span className="text-sm text-slate-600 dark:text-slate-400">
             {t('available')} <b className="text-brand-700 dark:text-brand-300">{readyCount}</b>{' '}
             / {visible.length}
           </span>
+          {visible.length > 0 && (
+            <button
+              onClick={() => {
+                if (confirm(t('clearPlayersConfirm', { n: visible.length })))
+                  actions.clearPlayers()
+              }}
+              className="ml-auto h-11 rounded-xl px-2 text-sm text-rose-700 transition hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-950/40"
+            >
+              {t('clearPlayers')}
+            </button>
+          )}
         </div>
       </Card>
 
@@ -181,7 +181,7 @@ export default function PlayersTab({ state, stats, t, lang, actions, setToast })
       ) : (
         <>
           <div className="flex items-center gap-2 px-1">
-            <span className="text-xs text-slate-500 dark:text-slate-400">{t('sortBy')}</span>
+            <span className="text-xs text-slate-600 dark:text-slate-400">{t('sortBy')}</span>
             <div className="no-scrollbar flex gap-1.5 overflow-x-auto">
               {SORTS.map((s) => (
                 <button
@@ -230,7 +230,7 @@ export default function PlayersTab({ state, stats, t, lang, actions, setToast })
                           {p.name}
                         </span>
                       </span>
-                      <span className="mt-0.5 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                      <span className="mt-0.5 flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
                         <LevelBadge level={p.level} />
                         {s && s.games > 0 && (
                           <span className="tabular-nums">

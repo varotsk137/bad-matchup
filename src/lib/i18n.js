@@ -172,6 +172,7 @@ const dict = {
   awayList: { th: 'ยังไม่มา', en: 'Away' },
   vs: { th: 'พบ', en: 'vs' },
   finishGame: { th: 'จบเกม', en: 'Finish' },
+  finishGameShort: { th: 'จบ', en: 'End' },
   reopen: { th: 'แก้ไขผล', en: 'Reopen' },
   finishShort: { th: 'จบ', en: 'Done' },
   roundNow: { th: 'กำลังเล่น', en: 'Playing' },
@@ -187,7 +188,6 @@ const dict = {
     en: '{a} goes to {toA} · {b} goes to {toB}',
   },
   swapDo: { th: 'สลับ', en: 'Swap' },
-  matchFinished: { th: 'จบแล้ว', en: 'Done' },
   score: { th: 'สกอร์', en: 'Score' },
   scoreOptional: { th: 'ใส่สกอร์ก็ได้ ไม่ใส่ก็ได้', en: 'Score is optional' },
   deleteRound: { th: 'ลบรอบนี้', en: 'Delete round' },
@@ -206,8 +206,8 @@ const dict = {
   undo: { th: 'เลิกทำ', en: 'Undo' },
   noRounds: { th: 'ยังไม่ได้เริ่มแข่ง', en: 'No rounds yet' },
   noRoundsHint: {
-    th: 'กดปุ่มด้านล่างเพื่อให้ระบบจัดคนลงคอร์ทให้',
-    en: 'Hit the button below and the app will fill the courts',
+    th: 'กดปุ่ม "เริ่มจัด" ด้านบนเพื่อให้ระบบจัดคนลงคอร์ทให้',
+    en: 'Hit the "Generate" button above and the app will fill the courts',
   },
   errNoCourts: {
     th: 'ยังไม่ได้เปิดคอร์ท ไปเพิ่มที่แท็บคอร์ทก่อน',
@@ -225,16 +225,11 @@ const dict = {
   clearRounds: { th: 'ล้างตารางทั้งหมด', en: 'Clear all rounds' },
   viewCards: { th: 'การ์ด', en: 'Cards' },
   viewTable: { th: 'ตารางรวม', en: 'Schedule' },
-  tableHint: {
-    th: 'เลื่อนซ้าย-ขวาเพื่อดูคอร์ทอื่น',
-    en: 'Swipe sideways for the other courts',
-  },
   roundsLabel: { th: 'รอบ', en: 'Rounds' },
-  addRounds: { th: 'เพิ่มรอบ', en: 'Add round' },
   addRoundsN: { th: 'เพิ่ม {n} รอบ', en: 'Add {n} rounds' },
   regenerate: { th: 'จัดใหม่', en: 'Reshuffle' },
-  redoAllShort: { th: 'จัดใหม่ทั้งตาราง', en: 'Reshuffle all' },
-  redoRemainingShort: { th: 'จัดรอบที่เหลือใหม่', en: 'Redo the rest' },
+  redoAllShort: { th: 'จัดใหม่', en: 'Reshuffle' },
+  redoRemainingShort: { th: 'จัดใหม่', en: 'Redo' },
   redoRemainingN: { th: 'จัดรอบที่เหลือใหม่ ({n} รอบ)', en: 'Redo the rest ({n} rounds)' },
   rosterChangedTitle: {
     th: 'รายชื่อเปลี่ยนแล้ว — รอบที่ยังไม่เล่นยังใช้รายชื่อเดิม',
@@ -246,6 +241,16 @@ const dict = {
   reshuffleIntro: {
     th: 'เล่นไปแล้ว {played} รอบ รอบที่เล่นแล้ว (หรือมีคู่ที่ติ๊กจบแล้ว) จะเก็บไว้เป็นประวัติ',
     en: '{played} rounds played so far. Rounds already played (or with a ticked match) stay as history.',
+  },
+  reshuffleIntroFresh: {
+    th: 'ยังไม่มีรอบที่เล่น จัดใหม่ได้ทั้งตาราง',
+    en: 'Nothing has been played yet, so the whole schedule can be redone',
+  },
+  reshuffleHowManyFresh: { th: 'จัดใหม่กี่รอบ', en: 'How many rounds' },
+  reshuffleAllN: { th: 'จัดทั้งตารางใหม่ {n} รอบ', en: 'Redo the schedule with {n} rounds' },
+  reshuffleAllHint: {
+    th: 'ใช้รายชื่อคนที่อยู่ตอนนี้ จำนวนรอบเริ่มต้นเท่าตารางเดิม',
+    en: "Uses today's player list; starts at the current number of rounds",
   },
   reshuffleRemaining: {
     th: 'จัดใหม่ {n} รอบต่อจากรอบที่เล่นแล้ว',
@@ -269,10 +274,6 @@ const dict = {
   startOverConfirm: {
     th: 'ล้างทุกรอบและผลที่บันทึกไว้ แล้วจัดใหม่ {n} รอบ?',
     en: 'Clear every round and recorded result, and build {n} new rounds?',
-  },
-  regenerateConfirm: {
-    th: 'ล้างตารางเดิม {old} รอบ แล้วจัดใหม่ {n} รอบ? สกอร์ที่บันทึกไว้จะหายไป',
-    en: 'Clear the current {old} rounds and build {n} fresh ones? Recorded scores are lost.',
   },
   startRounds: { th: 'เริ่มจัด {n} รอบ', en: 'Start {n} rounds' },
   customCount: { th: 'กำหนดเอง', en: 'Custom' },
@@ -496,6 +497,7 @@ const dict = {
   archived: { th: 'รอบที่จบแล้ว', en: 'Completed' },
   matchesDone: { th: 'จบแล้ว {a}/{b}', en: '{a}/{b} done' },
   exportImage: { th: 'บันทึกเป็นรูป', en: 'Save as image' },
+  exportImageShort: { th: 'บันทึกรูป', en: 'Image' },
   shareImage: { th: 'แชร์รูป', en: 'Share image' },
   exporting: { th: 'กำลังสร้างรูป…', en: 'Rendering…' },
   imageReady: { th: 'รูปตารางแข่ง', en: 'Schedule image' },

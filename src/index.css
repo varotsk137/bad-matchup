@@ -74,6 +74,9 @@
   --color-accent-800: oklch(0.44 0.13 44);
   --color-accent-900: oklch(0.36 0.1 46);
   --color-accent-950: oklch(0.25 0.07 46);
+  /* text on a solid accent fill: dark ink by default, since white on a bright
+     orange or pink falls short of 4.5:1; a skin with a deep accent sets white */
+  --color-on-accent: var(--color-slate-950);
 
   /* shuttle yellow — highlights */
   --color-shuttle: oklch(0.88 0.16 95);
@@ -201,7 +204,7 @@
     --color-chip: var(--color-slate-900);
     --color-chip-ink: white;
     --color-preset: var(--color-accent-500);
-    --color-preset-ink: white;
+    --color-preset-ink: var(--color-on-accent);
     --color-title: var(--color-slate-500);
     --color-badge: transparent;
     --color-badge-ink: currentColor;
@@ -630,7 +633,7 @@
     --color-chip: oklch(0.9 0.2 125);
     --color-chip-ink: oklch(0.25 0.07 140);
     --color-preset: var(--color-accent-500);
-    --color-preset-ink: white;
+    --color-preset-ink: var(--color-on-accent);
     --color-title: var(--color-brand-700);
     --color-badge: transparent;
     --color-badge-ink: currentColor;
@@ -675,6 +678,7 @@
   /* ---------------------------------------------------- Contrast
      High contrast: black on white (white on black in the dark), heavy lines, yellow for what is picked. */
   :root[data-skin='contrast'] {
+    --color-on-accent: white;
     --font-display: 'Noto Sans Thai', ui-sans-serif, system-ui, sans-serif;
 
     --color-slate-50: oklch(1 0 0);
@@ -726,7 +730,7 @@
     --color-chip: oklch(0.92 0.19 103);
     --color-chip-ink: oklch(0 0 0);
     --color-preset: var(--color-accent-500);
-    --color-preset-ink: white;
+    --color-preset-ink: var(--color-on-accent);
     --color-title: var(--color-brand-700);
     --color-badge: transparent;
     --color-badge-ink: currentColor;
@@ -771,6 +775,7 @@
   /* ----------------------------------------------------- Feather
      Feather: plain white and cool grey, court-line blue, slate accent. The quietest skin. */
   :root[data-skin='feather'] {
+    --color-on-accent: white;
     --font-display: 'Noto Sans Thai', ui-sans-serif, system-ui, sans-serif;
 
     --color-slate-50: oklch(0.995 0.002 250);
@@ -806,7 +811,7 @@
     --color-accent-200: oklch(0.82 0.033 250);
     --color-accent-300: oklch(0.74 0.047 250);
     --color-accent-400: oklch(0.655 0.056 250);
-    --color-accent-500: oklch(0.575 0.06 250);
+    --color-accent-500: oklch(0.555 0.06 250); /* a step deeper so white text reaches 4.5:1 */
     --color-accent-600: oklch(0.49 0.058 250);
     --color-accent-700: oklch(0.405 0.053 250);
     --color-accent-800: oklch(0.32 0.044 250);
@@ -822,7 +827,7 @@
     --color-chip: oklch(0.995 0.002 250);
     --color-chip-ink: oklch(0.225 0.02 263);
     --color-preset: var(--color-accent-500);
-    --color-preset-ink: white;
+    --color-preset-ink: var(--color-on-accent);
     --color-title: var(--color-brand-700);
     --color-badge: transparent;
     --color-badge-ink: currentColor;
@@ -918,7 +923,7 @@
     --color-chip: oklch(0.9 0.06 355);
     --color-chip-ink: oklch(0.33 0.1 350);
     --color-preset: var(--color-accent-500);
-    --color-preset-ink: white;
+    --color-preset-ink: var(--color-on-accent);
     --color-title: var(--color-brand-700);
     --color-badge: transparent;
     --color-badge-ink: currentColor;
@@ -966,6 +971,7 @@
   /* -------------------------------------------------------- Thai
      Thai gold: cream paper, oxblood red, gold rules, looped Taviraj for headings. */
   :root[data-skin='thai'] {
+    --color-on-accent: white;
     --font-display: 'Taviraj', 'Noto Serif Thai', Georgia, serif;
 
     --color-slate-50: oklch(0.975 0.016 85);
@@ -1017,7 +1023,7 @@
     --color-chip: oklch(0.82 0.12 85);
     --color-chip-ink: oklch(0.3 0.06 60);
     --color-preset: var(--color-accent-500);
-    --color-preset-ink: white;
+    --color-preset-ink: var(--color-on-accent);
     --color-title: var(--color-brand-700);
     --color-badge: transparent;
     --color-badge-ink: currentColor;
@@ -1113,7 +1119,7 @@
     --color-chip: oklch(0.982 0.008 195);
     --color-chip-ink: oklch(0.225 0.034 215);
     --color-preset: var(--color-accent-500);
-    --color-preset-ink: white;
+    --color-preset-ink: var(--color-on-accent);
     --color-title: var(--color-brand-700);
     --color-badge: transparent;
     --color-badge-ink: currentColor;
