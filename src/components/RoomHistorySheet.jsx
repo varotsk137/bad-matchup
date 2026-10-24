@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { loadOwnRoom } from '../lib/room'
 import { clearHistory, forgetVisit, loadHistory, visitClosed } from '../lib/roomHistory'
-import { Sheet, cx } from './ui'
+import Icon from './Icon'
+import { Sheet, askConfirm, cx } from './ui'
 
 /**
  * Rooms this device has shared or watched, opened from the clock button in
@@ -42,7 +43,13 @@ function HistoryList({ t, lang, onClose, onOwnRoom }) {
         <p className="text-sm text-slate-500 dark:text-slate-400">{t('historyHint')}</p>
         {list.length > 0 && (
           <button
-            onClick={() => confirm(t('historyClearConfirm')) && setList(clearHistory())}
+            onClick={async () => {
+              const ok = await askConfirm({
+                message: t('historyClearConfirm'),
+                confirmLabel: t('cfClearHistory'),
+              })
+              if (ok) setList(clearHistory())
+            }}
             className="shrink-0 text-xs text-slate-500 underline-offset-2 hover:underline dark:text-slate-400"
           >
             {t('historyClear')}
@@ -81,7 +88,7 @@ function HistoryList({ t, lang, onClose, onOwnRoom }) {
                   title={t('historyRemove')}
                   className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-200"
                 >
-                  ✕
+                  <Icon name="close" />
                 </button>
               </div>
             )

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, Card, Input, SectionTitle } from './ui'
+import { Button, Card, Input, SectionTitle, askConfirm } from './ui'
 
 /**
  * Saved settings sets: everything in Settings plus the courts, under a name
@@ -48,10 +48,13 @@ export default function PresetCard({ state, t, actions, setToast }) {
                   {t('presetUse')}
                 </Button>
                 <button
-                  onClick={() =>
-                    confirm(t('presetDeleteConfirm', { name: p.name })) &&
-                    actions.deletePreset(p.id)
-                  }
+                  onClick={async () => {
+                    const ok = await askConfirm({
+                      message: t('presetDeleteConfirm', { name: p.name }),
+                      confirmLabel: t('cfDeleteName', { name: p.name }),
+                    })
+                    if (ok) actions.deletePreset(p.id)
+                  }}
                   aria-label={t('delete')}
                   className="grid h-9 w-9 place-items-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-slate-800"
                 >

@@ -128,6 +128,21 @@
     --badge-weight: 500;
     --badge-radius: 9999px;
     --mascot: none;
+
+    /* a skin's signature, beyond colour and shape (all neutral by default):
+       a pattern behind the page, how the round on court is marked, the
+       weight of the line icons */
+    --backdrop: none;
+    --backdrop-size: auto;
+    --icon-stroke: 1.8;
+    --live-bg: var(--color-brand-600);
+    --live-ink: white;
+    --live-border: transparent;
+    --live-radius: 9999px;
+    --live-tilt: 0deg;
+    --live-shadow: none;
+    --live-dot: none;
+    --live-dot-color: currentColor;
   }
   /* League in the dark: ink becomes the page, so lines lift a step and the
      hard shadow turns pure black */
@@ -143,6 +158,20 @@
     --shadow-hard: 3px 3px 0 0 oklch(0.1 0.01 54);
     --shadow-hard-sm: 2px 2px 0 0 oklch(0.1 0.01 54);
     --shadow-btn-down: 1px 1px 0 0 oklch(0.1 0.01 54);
+  }
+  :root[data-skin='league'] {
+    --backdrop: radial-gradient(oklch(0.255 0.032 54 / 0.09) 1.1px, transparent 1.4px);
+    --backdrop-size: 14px 14px;
+    --icon-stroke: 2.2;
+    --live-bg: var(--color-shuttle);
+    --live-ink: var(--color-shuttle-ink);
+    --live-border: var(--color-slate-900);
+    --live-tilt: -3deg;
+    --live-shadow: var(--shadow-hard-sm);
+  }
+  :root.dark[data-skin='league'] {
+    --backdrop: radial-gradient(oklch(1 0 0 / 0.06) 1.1px, transparent 1.4px);
+    --live-border: var(--color-slate-950);
   }
 
   /* ---------------------------------------------------------- Classic */
@@ -258,6 +287,15 @@
      A stadium scoreboard: cool steel, LED amber, square panels with an amber
      strip on top, and buttons with a key-cap edge. Kanit for the numbers. */
   :root[data-skin='scoreboard'] {
+    --backdrop:
+      repeating-linear-gradient(90deg, oklch(0.5 0.03 255 / 0.07) 0 1px, transparent 1px 56px),
+      repeating-linear-gradient(0deg, oklch(0.5 0.03 255 / 0.05) 0 1px, transparent 1px 56px);
+    --icon-stroke: 2;
+    --live-bg: oklch(0.215 0.028 262);
+    --live-ink: white;
+    --live-radius: 0.25rem;
+    --live-dot: inline-block;
+    --live-dot-color: var(--color-accent-400);
     --font-display: 'Kanit', 'Noto Sans Thai', ui-sans-serif, system-ui, sans-serif;
 
     --color-slate-50: oklch(0.985 0.003 255);
@@ -347,6 +385,11 @@
     --mascot: none;
   }
   :root.dark[data-skin='scoreboard'] {
+    --backdrop:
+      repeating-linear-gradient(90deg, oklch(1 0 0 / 0.04) 0 1px, transparent 1px 56px),
+      repeating-linear-gradient(0deg, oklch(1 0 0 / 0.03) 0 1px, transparent 1px 56px);
+    --live-bg: oklch(0.12 0.02 262);
+    --live-border: var(--color-accent-500);
     --color-edge: var(--color-slate-700);
     --color-edge-strong: var(--color-slate-600);
     --color-btn-edge: transparent;
@@ -1179,6 +1222,13 @@
     font-family: var(--font-sans);
     /* stop iOS rubber-band from revealing the wrong colour behind the app */
     overscroll-behavior-y: none;
+    background-image: var(--backdrop);
+    background-size: var(--backdrop-size);
+    background-attachment: fixed;
+  }
+
+  .icon {
+    stroke-width: var(--icon-stroke);
   }
 
   /* number inputs: no spinners, they are tiny score boxes */
@@ -1209,6 +1259,29 @@
 }
 
 @layer components {
+  /* the round on court right now, marked the skin's way */
+  .live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.0625rem 0.5rem;
+    border: var(--line-w) solid var(--live-border);
+    border-radius: var(--live-radius);
+    background: var(--live-bg);
+    color: var(--live-ink);
+    box-shadow: var(--live-shadow);
+    transform: rotate(var(--live-tilt));
+  }
+  .live-dot {
+    display: var(--live-dot);
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 9999px;
+    background: var(--live-dot-color);
+    box-shadow: 0 0 6px var(--live-dot-color);
+    animation: live-blink 1.6s ease-in-out infinite;
+  }
+
   /* the small heading above a card */
   .section-title {
     font-size: var(--title-size);
@@ -1275,6 +1348,12 @@
   animation: pop-in 0.22s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+@keyframes live-blink {
+  50% {
+    opacity: 0.35;
+  }
+}
+
 @keyframes sheet-up {
   from {
     transform: translateY(100%);
@@ -1301,7 +1380,10 @@
   animation: run-out 4s linear forwards;
 }
 @media (prefers-reduced-motion: reduce) {
-  .invite-countdown {
+  .invite-countdown,
+  .live-dot,
+  .animate-pop,
+  .animate-sheet {
     animation: none;
   }
 }

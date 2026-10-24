@@ -9,6 +9,7 @@ import {
   setFlag,
 } from '../lib/pwa'
 import { exportState } from '../lib/storage'
+import Icon from './Icon'
 import { Button, Card, Sheet, cx } from './ui'
 
 /** How long the install invite stays up. */
@@ -108,7 +109,7 @@ export function InstallInvite({ t, onInstall, onDone }) {
         }}
         className="animate-pop pointer-events-auto relative mx-auto flex w-full max-w-md items-center gap-2 overflow-hidden rounded-xl border-(length:--line-w) border-edge bg-slate-50 py-1.5 pr-1.5 pl-3 text-left text-sm shadow-[var(--shadow-card)] dark:bg-slate-900"
       >
-        <span aria-hidden>📲</span>
+        <Icon name="phone" className="h-5 w-5 text-brand-600 dark:text-brand-300" />
         <span className="min-w-0 flex-1 truncate">{t('installInvite')}</span>
         <span className="rounded-lg bg-brand-600 px-3 py-1 text-xs font-bold text-white">
           {t('installButton')}

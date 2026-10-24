@@ -1,4 +1,5 @@
 import { roundsForTime, suggestRounds } from '../lib/matchmaker'
+import Icon from './Icon'
 import { cx } from './ui'
 
 const HOURS = [1, 1.5, 2, 2.5, 3, 4]
@@ -23,14 +24,14 @@ export default function RoundAdvisor({ state, t, actions, onUse }) {
     <div className="space-y-2 rounded-xl bg-slate-100 p-2.5 text-xs dark:bg-slate-950/60">
       {s.coverAll && (
         <Row
-          icon="🤝"
+          icon="users"
           text={t('adviseCover', { n: s.coverAll, g: s.gamesEach })}
           onUse={() => onUse(Math.min(100, s.coverAll))}
           t={t}
         />
       )}
       <Row
-        icon="⏱"
+        icon="clock"
         text={
           t('adviseTime', { n: byTime, g: gamesByTime }) +
           (s.coverAll && byTime < s.coverAll ? ` · ${t('adviseTimeShort')}` : '')
@@ -61,7 +62,7 @@ export default function RoundAdvisor({ state, t, actions, onUse }) {
 function Row({ icon, text, onUse, t, children }) {
   return (
     <div className="flex items-start gap-2">
-      <span aria-hidden>{icon}</span>
+      <Icon name={icon} className="mt-0.5 h-4 w-4 text-slate-500 dark:text-slate-400" />
       <span className="min-w-0 flex-1 text-slate-600 dark:text-slate-300">
         {text}
         {children}

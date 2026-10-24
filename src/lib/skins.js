@@ -6,7 +6,9 @@
  *
  * `preview` is a tiny swatch of the skin drawn with inline styles, so the
  * picker can show every skin side by side whichever one is active. `bar` is
- * the browser toolbar colour (meta theme-color) for light and dark. `fonts`
+ * the browser toolbar colour (meta theme-color) for light and dark. The
+ * preview may also carry the skin's signature — `backdrop`/`backdropSize` and
+ * `live` (how the round on court is marked) — mirroring its tokens. `fonts`
  * loads a display face src/fonts.js does not already bring in (self-hosted
  * with @fontsource); it runs only once the skin is shown.
  */
@@ -50,6 +52,15 @@ export const SKINS = [
       brand: 'oklch(0.52 0.2 268)',
       accent: 'oklch(0.69 0.19 48)',
       pick: 'oklch(0.88 0.16 95)',
+      backdrop: 'radial-gradient(oklch(0.255 0.032 54 / 0.14) 1px, transparent 1.3px)',
+      backdropSize: '8px 8px',
+      live: {
+        bg: 'oklch(0.88 0.16 95)',
+        ink: 'oklch(0.3 0.06 80)',
+        border: '1.5px solid oklch(0.255 0.032 54)',
+        shadow: '1.5px 1.5px 0 0 oklch(0.255 0.032 54)',
+        tilt: '-4deg',
+      },
     },
   },
   {
@@ -75,6 +86,9 @@ export const SKINS = [
       brand: 'oklch(0.53 0.16 242)',
       accent: 'oklch(0.74 0.17 62)',
       pick: 'oklch(0.215 0.028 262)',
+      backdrop:
+        'repeating-linear-gradient(90deg, oklch(0.5 0.03 255 / 0.14) 0 1px, transparent 1px 18px)',
+      live: { bg: 'oklch(0.215 0.028 262)', ink: 'white', radius: '0.2rem', dot: 'oklch(0.79 0.16 70)' },
     },
   },
   {

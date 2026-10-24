@@ -7,7 +7,17 @@ import { RestModeHelp } from './HelpSheet'
 import PaymentCard from './PaymentCard'
 import PresetCard from './PresetCard'
 import { InstallRow } from './PwaBits'
-import { Button, Card, SectionTitle, Segmented, Sheet, Slider, Toggle, cx } from './ui'
+import {
+  Button,
+  Card,
+  SectionTitle,
+  Segmented,
+  Sheet,
+  Slider,
+  Toggle,
+  askConfirm,
+  cx,
+} from './ui'
 
 export default function SettingsTab({ state, t, actions, setToast }) {
   const fileRef = useRef(null)
@@ -321,8 +331,12 @@ export default function SettingsTab({ state, t, actions, setToast }) {
           <Button
             variant="danger"
             className="w-full"
-            onClick={() => {
-              if (confirm(t('resetAllConfirm'))) actions.resetAll()
+            onClick={async () => {
+              const ok = await askConfirm({
+                message: t('resetAllConfirm'),
+                confirmLabel: t('cfResetAll'),
+              })
+              if (ok) actions.resetAll()
             }}
           >
             {t('resetAll')}
@@ -331,7 +345,7 @@ export default function SettingsTab({ state, t, actions, setToast }) {
       </div>
 
       <p className="px-2 pb-2 text-center text-xs text-slate-400 dark:text-slate-600">
-        🏸 {t('appName')} · v{version}
+        {t('appName')} · v{version}
       </p>
     </div>
   )
@@ -350,7 +364,7 @@ function SkinTile({ skin: s, on, t, onPick, note }) {
         on ? 'border-brand-600 ring-2 ring-brand-500/40' : 'border-edge hover:border-slate-400'
       )}
     >
-      <SkinSwatch preview={s.preview} />
+      <SkinSwatch preview={s.preview} font={s.font} t={t} />
       <span
         className="flex items-center justify-between gap-1 px-1 pt-1.5 text-sm"
         style={{ fontFamily: s.font }}
@@ -379,19 +393,60 @@ function SkinTile({ skin: s, on, t, onPick, note }) {
 }
 
 /** A thumbnail of a skin: its page, a card with its outline, and its colours. */
-function SkinSwatch({ preview: p }) {
+/**
+ * A skin's tile shows a real match row in that skin: its paper, its card, the
+ * team colours and the way it marks the round on court, so people pick a look
+ * rather than a strip of colour.
+ */
+function SkinSwatch({ preview: p, font, t }) {
+  const live = p.live || {}
   return (
-    <span className="block rounded-lg p-2" style={{ background: p.page }} aria-hidden>
+    <span
+      className="block rounded-lg p-2"
+      style={{
+        background: p.page,
+        backgroundImage: p.backdrop,
+        backgroundSize: p.backdropSize,
+        fontFamily: font,
+      }}
+      aria-hidden
+    >
       <span
-        className="flex items-center gap-1.5 rounded-md p-1.5"
-        style={{ background: p.card, border: p.line, boxShadow: p.shadow }}
+        className="block p-1.5"
+        style={{
+          background: p.card,
+          border: p.line,
+          boxShadow: p.shadow,
+          borderRadius: p.radius === '9999px' ? '0.75rem' : p.radius,
+        }}
       >
-        <span className="h-3 flex-1" style={{ background: p.brand, borderRadius: p.radius }} />
-        <span className="h-3 w-5" style={{ background: p.accent, borderRadius: p.radius }} />
         <span
-          className="h-3 w-3"
-          style={{ background: p.pick, border: p.line, borderRadius: '9999px' }}
-        />
+          className="inline-flex items-center gap-1 px-1.5 text-[10px] leading-4 font-bold"
+          style={{
+            background: live.bg || p.brand,
+            color: live.ink || 'white',
+            border: live.border,
+            borderRadius: live.radius || '9999px',
+            boxShadow: live.shadow,
+            transform: live.tilt && `rotate(${live.tilt})`,
+          }}
+        >
+          {live.dot && (
+            <span className="h-1.5 w-1.5 rounded-full" style={{ background: live.dot }} />
+          )}
+          {t('roundNow')}
+        </span>
+        <span className="mt-1 flex items-center justify-between gap-1 text-[11px] leading-4 font-semibold">
+          <span className="truncate" style={{ color: p.ta || 'oklch(0.5 0.134 242.7)' }}>
+            {t('skinSampleA')}
+          </span>
+          <span className="text-[9px] opacity-50" style={{ color: p.ink }}>
+            vs
+          </span>
+          <span className="truncate" style={{ color: p.tb || 'oklch(0.514 0.222 16.9)' }}>
+            {t('skinSampleB')}
+          </span>
+        </span>
       </span>
     </span>
   )

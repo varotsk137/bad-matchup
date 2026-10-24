@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { buildRoomUrl } from '../lib/room'
-import { Button, Sheet, cx } from './ui'
+import Icon, { LiveDot } from './Icon'
+import { Button, Sheet, askConfirm, cx } from './ui'
 
 /**
  * Everything about this device's live room in one place: open it, hand out
@@ -44,7 +45,16 @@ export default function LiveRoomSheet({
     })
 
   return (
-    <Sheet open={open} onClose={onClose} title={`🔴 ${t('liveTitle')}`}>
+    <Sheet
+      open={open}
+      onClose={onClose}
+      title={
+        <span className="inline-flex items-center gap-2">
+          <LiveDot />
+          {t('liveTitle')}
+        </span>
+      }
+    >
       {!room ? (
         <div className="space-y-4">
           <ul className="space-y-2 text-sm leading-relaxed">
@@ -59,7 +69,14 @@ export default function LiveRoomSheet({
             onClick={() => run('open', onOpenRoom)}
             disabled={busy === 'open'}
           >
-            {busy === 'open' ? t('roomOpening') : `🔴 ${t('roomOpen')}`}
+            {busy === 'open' ? (
+              t('roomOpening')
+            ) : (
+              <>
+                <LiveDot />
+                {t('roomOpen')}
+              </>
+            )}
           </Button>
           <Note>{t('roomNote')}</Note>
         </div>
@@ -78,7 +95,7 @@ export default function LiveRoomSheet({
             <p className="mb-2 text-sm font-medium">{t('roomWho')}</p>
             <div className="space-y-2.5">
               <LinkCard
-                emoji="👀"
+                icon="eye"
                 title={t('roomWatchTitle')}
                 hint={t('roomWatchHint')}
                 url={buildRoomUrl(room.id)}
@@ -87,7 +104,7 @@ export default function LiveRoomSheet({
               />
 
               <LinkCard
-                emoji="✍️"
+                icon="pencil"
                 title={t('roomScoreTitle')}
                 hint={t('roomScoreHint')}
                 url={room.key ? buildRoomUrl(room.id, room.key) : null}
@@ -102,14 +119,20 @@ export default function LiveRoomSheet({
                 extra={
                   room.key && (
                     <button
-                      onClick={() => {
-                        if (confirm(t('roomNewKeyConfirm')))
-                          run('scoring', () => onSetScoring(true))
+                      onClick={async () => {
+                        const ok = await askConfirm({
+                          message: t('roomNewKeyConfirm'),
+                          confirmLabel: t('cfNewKey'),
+                        })
+                        if (ok) run('scoring', () => onSetScoring(true))
                       }}
                       disabled={busy === 'scoring'}
                       className="text-xs font-medium text-slate-500 underline-offset-2 hover:underline dark:text-slate-400"
                     >
-                      {t('roomNewKey')}
+                      <span className="inline-flex items-center gap-1">
+                        <Icon name="refresh" className="h-3.5 w-3.5" />
+                        {t('roomNewKey')}
+                      </span>
                     </button>
                   )
                 }
@@ -147,7 +170,7 @@ function Note({ children }) {
  * One kind of access: what it lets people do, and its link to copy or share.
  * With `toggle`, the access can be switched off (and then has no link).
  */
-function LinkCard({ emoji, title, hint, url, t, setToast, toggle = null, offHint, extra }) {
+function LinkCard({ icon, title, hint, url, t, setToast, toggle = null, offHint, extra }) {
   const [copied, setCopied] = useState(false)
   const on = toggle ? toggle.on : true
 
@@ -163,7 +186,7 @@ function LinkCard({ emoji, title, hint, url, t, setToast, toggle = null, offHint
 
   const share = async () => {
     try {
-      await navigator.share({ title: `${emoji} ${title}`, url })
+      await navigator.share({ title, url })
     } catch {
       /* dismissed */
     }
@@ -180,7 +203,7 @@ function LinkCard({ emoji, title, hint, url, t, setToast, toggle = null, offHint
     >
       <div className="flex items-start gap-3">
         <span className="text-2xl leading-none" aria-hidden>
-          {emoji}
+          <Icon name={icon} className="h-5 w-5" />
         </span>
         <div className="min-w-0 flex-1">
           <p className="text-sm font-bold">{title}</p>
@@ -223,7 +246,14 @@ function LinkCard({ emoji, title, hint, url, t, setToast, toggle = null, offHint
           </p>
           <div className="flex gap-2">
             <Button variant="primary" size="sm" className="flex-1" onClick={copy}>
-              {copied ? `✓ ${t('copied')}` : `📋 ${t('copyLink')}`}
+              {copied ? (
+                `✓ ${t('copied')}`
+              ) : (
+                <>
+                  <Icon name="copy" />
+                  {t('copyLink')}
+                </>
+              )}
             </Button>
             {typeof navigator.share === 'function' && (
               <Button size="sm" onClick={share}>

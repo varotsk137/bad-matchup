@@ -17,7 +17,7 @@ test('splits the bill, ticks who paid and keeps PromptPay off the shared state',
   await page.getByRole('button', { name: /^Start \d+ rounds$/ }).click()
   await expect(page.getByRole('button', { name: 'Finish', exact: true }).first()).toBeVisible()
 
-  await page.getByRole('button', { name: '💰 Split' }).click()
+  await page.getByRole('button', { name: 'Split', exact: true }).click()
   await page.getByRole('textbox', { name: 'Court 1 Price' }).fill('300')
   await page.getByRole('textbox', { name: 'Court 1 hrs' }).fill('2')
   await page.getByRole('textbox', { name: 'Court 2 Price' }).fill('180')
@@ -51,7 +51,7 @@ test('splits the bill, ticks who paid and keeps PromptPay off the shared state',
 
   // prices are never remembered; the paid tick and the chosen view are
   await page.getByRole('button', { name: 'close' }).click()
-  await page.getByRole('button', { name: '💰 Split' }).click()
+  await page.getByRole('button', { name: 'Split', exact: true }).click()
   await expect(page.getByRole('textbox', { name: 'Court 1 Price' })).toHaveValue('')
   await page.getByRole('textbox', { name: 'Court 1 Price' }).fill('900')
   await page.getByRole('textbox', { name: 'Court 1 hrs' }).fill('1')

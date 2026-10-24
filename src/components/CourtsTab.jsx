@@ -62,7 +62,7 @@ export default function CourtsTab({ state, t, actions }) {
       {state.courts.length === 0 ? (
         <Card>
           <Empty
-            emoji="🏟️"
+            icon="court"
             title={t('noCourts')}
             action={
               <Button variant="primary" onClick={actions.addCourt}>

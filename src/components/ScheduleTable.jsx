@@ -212,7 +212,8 @@ export default function ScheduleTable({
                         {i + 1}
                       </span>
                       {current && (
-                        <span className="block text-xs leading-tight font-semibold text-brand-700 dark:text-brand-300">
+                        <span className="flex items-start gap-1 text-xs leading-tight font-semibold text-brand-700 dark:text-brand-300">
+                          <span className="live-dot mt-1" aria-hidden />
                           {t('nowPlaying')}
                         </span>
                       )}

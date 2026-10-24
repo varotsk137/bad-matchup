@@ -140,22 +140,63 @@ export default function FairnessReport({ state, playersById, t, goTo }) {
               </button>
             ))}
           </div>
-          <MeetGrid names={names} grid={grid} />
-          <p className="mt-1.5 text-[11px] text-slate-500 dark:text-slate-400">
-            {t('fairGridHint')}
-          </p>
+          <MeetGrid names={names} grid={grid} t={t} />
+          <p className="mt-1.5 text-xs text-slate-600 dark:text-slate-400">{t('fairGridHint')}</p>
         </div>
       </Card>
     </div>
   )
 }
 
-/** Everyone × everyone, with the count in each cell; zeros stand out. */
-function MeetGrid({ names, grid }) {
-  const max = Math.max(1, ...grid.flat())
+/**
+ * Everyone × everyone, with the count in each cell. In a big group most pairs
+ * never meet, so a zero stays quiet; the colour only warms up where two people
+ * met more than their fair share (the average, rounded up).
+ */
+function MeetGrid({ names, grid, t }) {
+  const cells = grid.flatMap((row, i) => row.filter((_, j) => j !== i))
+  const mean = cells.length ? cells.reduce((a, b) => a + b, 0) / cells.length : 0
+  const fair = Math.max(1, Math.ceil(mean))
+  const max = Math.max(fair + 1, ...cells)
+  const tone = (v) =>
+    v === 0
+      ? { className: 'bg-slate-100 font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400' }
+      : v <= fair
+        ? {
+            className: 'text-slate-900 dark:text-white',
+            style: {
+              backgroundColor: `color-mix(in oklch, var(--color-brand-500) ${20 + (v / fair) * 30}%, transparent)`,
+            },
+          }
+        : {
+            className: 'text-slate-950 ring-1 ring-accent-600 dark:text-white',
+            style: {
+              backgroundColor: `color-mix(in oklch, var(--color-accent-500) ${45 + ((v - fair) / (max - fair)) * 45}%, transparent)`,
+            },
+          }
   return (
     <div className="overflow-x-auto">
-      <table className="border-separate border-spacing-0.5 text-[10px]">
+      <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600 dark:text-slate-400">
+        {[
+          [0, t('meetNone')],
+          [1, t('meetFair', { n: fair })],
+          [fair + 1, t('meetOver', { n: fair })],
+        ].map(([v, label]) => {
+          const c = tone(v)
+          return (
+            <span key={label} className="inline-flex items-center gap-1.5">
+              <span
+                className={cx('grid h-5 w-5 place-items-center rounded text-[11px] font-bold', c.className)}
+                style={c.style}
+              >
+                {v}
+              </span>
+              {label}
+            </span>
+          )
+        })}
+      </div>
+      <table className="border-separate border-spacing-0.5 text-[11px]">
         <thead>
           <tr>
             <th />
@@ -185,15 +226,9 @@ function MeetGrid({ names, grid }) {
                     key={j}
                     className={cx(
                       'h-6 w-6 rounded text-center font-bold tabular-nums',
-                      v === 0 ? 'bg-rose-500 text-white' : 'text-slate-900 dark:text-white'
+                      tone(v).className
                     )}
-                    style={
-                      v === 0
-                        ? undefined
-                        : {
-                            backgroundColor: `color-mix(in oklch, var(--color-brand-500) ${20 + (v / max) * 70}%, transparent)`,
-                          }
-                    }
+                    style={tone(v).style}
                   >
                     {v}
                   </td>

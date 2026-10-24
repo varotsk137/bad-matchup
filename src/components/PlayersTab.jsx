@@ -12,7 +12,8 @@ import {
 } from '../lib/names'
 import { Avatar, GenderDot, LevelBadge, levelLabel } from './PlayerBits'
 import RosterSheet from './RosterSheet'
-import { Button, Card, Empty, Input, Sheet, cx } from './ui'
+import Icon from './Icon'
+import { Button, Card, Empty, Input, Sheet, askConfirm, cx } from './ui'
 
 const SORTS = ['added', 'name', 'level', 'games']
 
@@ -62,9 +63,16 @@ export default function PlayersTab({ state, stats, t, lang, actions, setToast })
    * Deleting a name that has never been on court is almost always a typo fix,
    * so it goes straight through; anyone with games behind them gets a prompt.
    */
-  const removePlayer = (p) => {
+  const removePlayer = async (p) => {
     const played = (stats[p.id]?.games ?? 0) > 0
-    if (played && !confirm(t('deletePlayerConfirm', { name: p.name }))) return
+    if (
+      played &&
+      !(await askConfirm({
+        message: t('deletePlayerConfirm', { name: p.name }),
+        confirmLabel: t('cfDeleteName', { name: p.name }),
+      }))
+    )
+      return
     actions.removePlayer(p.id)
   }
 
@@ -147,7 +155,8 @@ export default function PlayersTab({ state, stats, t, lang, actions, setToast })
             + {t('bulkAdd')}
           </Button>
           <Button onClick={() => setRosterOpen(true)}>
-            📒 {t('rosterOpen')}
+            <Icon name="book" />
+            {t('rosterOpen')}
             {state.rosters?.length ? ` · ${state.rosters.length}` : ''}
           </Button>
         </div>
@@ -162,9 +171,12 @@ export default function PlayersTab({ state, stats, t, lang, actions, setToast })
           </span>
           {visible.length > 0 && (
             <button
-              onClick={() => {
-                if (confirm(t('clearPlayersConfirm', { n: visible.length })))
-                  actions.clearPlayers()
+              onClick={async () => {
+                const ok = await askConfirm({
+                  message: t('clearPlayersConfirm', { n: visible.length }),
+                  confirmLabel: t('cfClearPlayers', { n: visible.length }),
+                })
+                if (ok) actions.clearPlayers()
               }}
               className="ml-auto h-11 rounded-xl px-2 text-sm text-rose-700 transition hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-950/40"
             >
@@ -176,7 +188,7 @@ export default function PlayersTab({ state, stats, t, lang, actions, setToast })
 
       {visible.length === 0 ? (
         <Card>
-          <Empty emoji="🙋" title={t('noPlayers')} hint={t('noPlayersHint')} />
+          <Empty icon="users" title={t('noPlayers')} hint={t('noPlayersHint')} />
         </Card>
       ) : (
         <>
@@ -379,8 +391,12 @@ function PlayerEditor({ player, onClose, t, lang, actions, taken }) {
     onClose()
   }
 
-  const remove = () => {
-    if (!confirm(t('deletePlayerConfirm', { name: player.name }))) return
+  const remove = async () => {
+    const ok = await askConfirm({
+      message: t('deletePlayerConfirm', { name: player.name }),
+      confirmLabel: t('cfDeleteName', { name: player.name }),
+    })
+    if (!ok) return
     actions.removePlayer(player.id)
     setForm(null)
     onClose()

@@ -34,7 +34,7 @@ export default function StatsTab({ state, stats, playersById, t, lang, goTo }) {
   if (!state.rounds.length) {
     return (
       <Card>
-        <Empty emoji="📊" title={t('noStats')} />
+        <Empty icon="chart" title={t('noStats')} />
       </Card>
     )
   }

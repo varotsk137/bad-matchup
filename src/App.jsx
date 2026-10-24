@@ -13,7 +13,8 @@ import SettingsTab from './components/SettingsTab'
 import LiveRoomSheet, { RoomStatus } from './components/LiveRoomSheet'
 import RoomHistorySheet from './components/RoomHistorySheet'
 import StatsTab from './components/StatsTab'
-import { Button, Toast, cx } from './components/ui'
+import LineIcon from './components/Icon'
+import { Button, ConfirmHost, Toast, askConfirm, cx } from './components/ui'
 import { makeT } from './lib/i18n'
 import {
   createEmptyRound,
@@ -141,8 +142,8 @@ function Header({
   return (
     <header className="sticky top-0 z-40 border-b-(length:--line-w) border-chrome-edge bg-chrome/95 backdrop-blur-md dark:bg-chrome-dark/95">
       <div className="mx-auto flex h-14 max-w-3xl items-center gap-3 px-4">
-        <span className="app-mascot text-xl" aria-hidden>
-          🏸
+        <span className="app-mascot text-brand-600 dark:text-brand-300">
+          <LineIcon name="shuttle" className="h-6 w-6" />
         </span>
         <div className="min-w-0 flex-1">
           {/* the skin dresses the name: an ink pill in League, plain bold in Classic */}
@@ -193,7 +194,7 @@ function Header({
           aria-label={t('theme')}
           title={t(state.theme === 'dark' ? 'themeDark' : 'themeLight')}
         >
-          {state.theme === 'dark' ? '🌙' : '☀️'}
+          <LineIcon name={state.theme === 'dark' ? 'moon' : 'sun'} className="h-5 w-5" />
         </button>
       </div>
     </header>
@@ -760,7 +761,9 @@ export default function App() {
 
   /** Closes the room; it is kept as it ended, so the links still show the results. */
   const closeRoom = async () => {
-    if (!ownRoom || !confirm(t('roomCloseConfirm'))) return
+    if (!ownRoom) return
+    if (!(await askConfirm({ message: t('roomCloseConfirm'), confirmLabel: t('cfCloseRoom') })))
+      return
     const { id } = ownRoom
     saveOwnRoom(null)
     setOwnRoom(null)
@@ -779,18 +782,20 @@ export default function App() {
   }
 
   /** Copies a watched room's schedule onto this device. */
-  const adoptLive = () => {
+  const adoptLive = async () => {
     const hasOwn = state.players.length > 0 || state.rounds.length > 0
-    if (hasOwn && !confirm(t('adoptConfirm'))) return
+    if (hasOwn && !(await askConfirm({ message: t('adoptConfirm'), confirmLabel: t('cfAdopt') })))
+      return
     store.dispatch('adoptSession', live.session)
     exitLive()
     setTab('play')
   }
 
   /** Copies a shared schedule onto this device, replacing whatever was here. */
-  const adoptShared = () => {
+  const adoptShared = async () => {
     const hasOwn = state.players.length > 0 || state.rounds.length > 0
-    if (hasOwn && !confirm(t('adoptConfirm'))) return
+    if (hasOwn && !(await askConfirm({ message: t('adoptConfirm'), confirmLabel: t('cfAdopt') })))
+      return
     store.dispatch('adoptSession', shared.session)
     clearShareHash()
     setShared(null)
@@ -918,6 +923,7 @@ export default function App() {
           )}
         </main>
 
+        <ConfirmHost t={t} />
         <Toast
           message={toast?.message}
           tone={toast?.tone}
@@ -956,8 +962,9 @@ export default function App() {
         <div className="mx-auto max-w-3xl px-3 pt-3">
           <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-accent-300 bg-accent-50 p-3 dark:border-accent-800 dark:bg-accent-950/40">
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-bold text-accent-900 dark:text-accent-100">
-                🔗 {t('sharedView')}
+              <p className="flex items-center gap-1.5 text-sm font-bold text-accent-900 dark:text-accent-100">
+                <LineIcon name="link" />
+                {t('sharedView')}
               </p>
               <p className="text-xs text-accent-800/80 dark:text-accent-200/80">
                 {t(shared.mode === 'edit' ? 'sharedEditHint' : 'sharedViewHint')}
@@ -991,6 +998,7 @@ export default function App() {
           />
         </main>
 
+        <ConfirmHost t={t} />
         <Toast
           message={toast?.message}
           tone={toast?.tone}
@@ -1122,6 +1130,7 @@ export default function App() {
         state={state}
       />
 
+      <ConfirmHost t={t} />
       <Toast
         message={toast?.message}
         tone={toast?.tone}

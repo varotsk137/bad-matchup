@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { PLAYER_MAX } from '../lib/names'
-import { Button, Empty, Input, Sheet, cx } from './ui'
+import Icon from './Icon'
+import { Button, Empty, Input, Sheet, askConfirm, cx } from './ui'
 
 /**
  * Named player lists. A group that plays every Tuesday should not have to
@@ -25,7 +26,7 @@ export default function RosterSheet({ open, onClose, state, t, actions, setToast
     setToast?.(t('rosterSaved'))
   }
 
-  const load = (roster, mode) => {
+  const load = async (roster, mode) => {
     const here = new Set(current.map((p) => p.name))
     const after =
       mode === 'append'
@@ -37,7 +38,14 @@ export default function RosterSheet({ open, onClose, state, t, actions, setToast
     }
     if (mode === 'replace') {
       const risky = current.length > 0 || state.rounds.length > 0
-      if (risky && !confirm(t('rosterLoadConfirm', { name: roster.name }))) return
+      if (
+        risky &&
+        !(await askConfirm({
+          message: t('rosterLoadConfirm', { name: roster.name }),
+          confirmLabel: t('cfLoadRoster'),
+        }))
+      )
+        return
     }
     actions.loadRoster(roster.id, mode)
     setToast?.(t(mode === 'append' ? 'rosterAppended' : 'rosterLoaded'))
@@ -78,7 +86,7 @@ export default function RosterSheet({ open, onClose, state, t, actions, setToast
 
         <div className="border-t border-slate-200 pt-3 dark:border-slate-800">
           {rosters.length === 0 ? (
-            <Empty emoji="📒" title={t('rosterNone')} hint={t('rosterNoneHint')} />
+            <Empty icon="book" title={t('rosterNone')} hint={t('rosterNoneHint')} />
           ) : (
             <ul className="space-y-2">
               {rosters.map((r) => (
@@ -140,7 +148,7 @@ export default function RosterSheet({ open, onClose, state, t, actions, setToast
                           title={t('rename')}
                           className="px-2.5"
                         >
-                          ✎
+                          <Icon name="pencil" />
                         </Button>
                         <Button
                           size="sm"
@@ -148,12 +156,15 @@ export default function RosterSheet({ open, onClose, state, t, actions, setToast
                           className={cx('px-2.5')}
                           aria-label={t('delete')}
                           title={t('delete')}
-                          onClick={() => {
-                            if (confirm(t('rosterDeleteConfirm', { name: r.name })))
-                              actions.deleteRoster(r.id)
+                          onClick={async () => {
+                            const ok = await askConfirm({
+                              message: t('rosterDeleteConfirm', { name: r.name }),
+                              confirmLabel: t('cfDeleteName', { name: r.name }),
+                            })
+                            if (ok) actions.deleteRoster(r.id)
                           }}
                         >
-                          🗑
+                          <Icon name="trash" />
                         </Button>
                       </div>
                     </>

@@ -1,4 +1,5 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import Icon from './Icon'
 
 export const cx = (...parts) => parts.filter(Boolean).join(' ')
 
@@ -55,6 +56,7 @@ const VARIANTS = {
   ghost: 'text-slate-600 hover:bg-slate-200/70 dark:text-slate-300 dark:hover:bg-slate-800',
   accent: `${SOLID} bg-accent-500 text-on-accent hover:bg-accent-600`,
   danger: `${SOLID} bg-rose-100 text-rose-800 hover:bg-rose-200 dark:bg-rose-950 dark:text-rose-200 dark:hover:bg-rose-900`,
+  destroy: `${SOLID} bg-rose-600 text-white hover:bg-rose-700`,
 }
 
 const SIZES = {
@@ -209,7 +211,7 @@ export function Input({ className = '', ...rest }) {
 
 /* ---------------------------------------------------------- Bottom sheet */
 
-export function Sheet({ open, onClose, title, children, footer }) {
+export function Sheet({ open, onClose, title, children, footer, above = false }) {
   useEffect(() => {
     if (!open) return
     const onKey = (e) => e.key === 'Escape' && onClose()
@@ -225,7 +227,12 @@ export function Sheet({ open, onClose, title, children, footer }) {
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
+    <div
+      className={cx(
+        'fixed inset-0 flex items-end justify-center sm:items-center',
+        above ? 'z-[60]' : 'z-50'
+      )}
+    >
       <div
         className="absolute inset-0 bg-slate-950/50 backdrop-blur-[2px]"
         onClick={onClose}
@@ -271,12 +278,59 @@ export function Sheet({ open, onClose, title, children, footer }) {
   )
 }
 
+/* -------------------------------------------------------------- Confirm */
+
+// One confirm sheet for the whole app, dressed in the skin, instead of the
+// browser's own dialog (which names the site, answers OK/Cancel in the phone's
+// language and never says what is about to happen). Ask from anywhere; it
+// resolves true when the person picks the action.
+let showConfirm = null
+
+/** `{ message, confirmLabel, title? }` → Promise<boolean> */
+export function askConfirm(opts) {
+  return showConfirm ? showConfirm(opts) : Promise.resolve(window.confirm(opts.message))
+}
+
+export function ConfirmHost({ t }) {
+  const [ask, setAsk] = useState(null)
+  useEffect(() => {
+    showConfirm = (opts) => new Promise((resolve) => setAsk({ ...opts, resolve }))
+    return () => {
+      showConfirm = null
+    }
+  }, [])
+  const answer = (ok) => {
+    ask?.resolve(ok)
+    setAsk(null)
+  }
+  return (
+    <Sheet
+      open={!!ask}
+      above
+      onClose={() => answer(false)}
+      title={ask?.title || t('confirmTitle')}
+      footer={
+        <div className="grid grid-cols-2 gap-2">
+          <Button onClick={() => answer(false)}>{t('cancel')}</Button>
+          <Button variant="destroy" onClick={() => answer(true)}>
+            {ask?.confirmLabel || t('confirm')}
+          </Button>
+        </div>
+      }
+    >
+      <p className="text-sm text-slate-700 dark:text-slate-200">{ask?.message}</p>
+    </Sheet>
+  )
+}
+
 /* ---------------------------------------------------------------- Empty */
 
-export function Empty({ emoji = '🏸', title, hint, action }) {
+export function Empty({ icon = 'shuttle', title, hint, action }) {
   return (
     <div className="flex flex-col items-center px-6 py-14 text-center">
-      <div className="mb-3 text-4xl">{emoji}</div>
+      <div className="mb-3 grid h-16 w-16 place-items-center rounded-full bg-brand-50 text-brand-600 dark:bg-brand-950 dark:text-brand-300">
+        <Icon name={icon} className="h-8 w-8" />
+      </div>
       <p className="font-medium text-slate-700 dark:text-slate-200">{title}</p>
       {hint && (
         <p className="mt-1 max-w-xs text-sm text-slate-500 dark:text-slate-400">{hint}</p>

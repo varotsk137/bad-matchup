@@ -17,7 +17,8 @@ import { analyse } from './FairnessReport'
 import HelpSheet from './HelpSheet'
 import { rosterChange } from '../lib/roster'
 import RoundAdvisor from './RoundAdvisor'
-import { Button, Card, Empty, Sheet, cx } from './ui'
+import Icon from './Icon'
+import { Button, Card, Empty, Sheet, askConfirm, cx } from './ui'
 
 const MAX_AHEAD = 100
 const SLOW_MS = 5000
@@ -259,7 +260,11 @@ export default function PlayTab({
   const startOver = async () => {
     const n = startOverCount
     setReshuffleOpen(false)
-    if (!confirm(t('startOverConfirm', { n }))) return
+    const ok = await askConfirm({
+      message: t('startOverConfirm', { n }),
+      confirmLabel: t('cfStartOver', { n }),
+    })
+    if (!ok) return
     setOpenId(undefined)
     await solve((onProgress) => actions.regenerate(n, onProgress), n)
   }
@@ -646,7 +651,7 @@ export default function PlayTab({
       {state.rounds.length === 0 ? (
         <Card>
           <Empty
-            emoji="🏸"
+            icon="shuttle"
             title={t('noRounds')}
             hint={state.players.length === 0 ? t('noPlayersHint') : t('noRoundsHint')}
             action={
@@ -728,8 +733,9 @@ export default function PlayTab({
             {!readOnly && (
               <button
                 onClick={() => setSplitOpen(true)}
-                className="press inline-flex h-11 shrink-0 items-center rounded-xl border-(length:--line-w) border-btn-edge bg-accent-500 px-3 text-sm text-on-accent hover:bg-accent-600"
+                className="press inline-flex h-11 shrink-0 items-center gap-1.5 rounded-xl border-(length:--line-w) border-btn-edge bg-accent-500 px-3 text-sm text-on-accent hover:bg-accent-600"
               >
+                <Icon name="wallet" />
                 {t('splitButton')}
               </button>
             )}
@@ -835,8 +841,12 @@ export default function PlayTab({
           {!readOnly && (
             <div className="flex justify-center">
               <button
-                onClick={() => {
-                  if (confirm(t('clearRoundsConfirm'))) actions.clearRounds()
+                onClick={async () => {
+                  const ok = await askConfirm({
+                    message: t('clearRoundsConfirm'),
+                    confirmLabel: t('cfClearRounds'),
+                  })
+                  if (ok) actions.clearRounds()
                 }}
                 className="inline-flex h-11 items-center gap-1.5 rounded-xl px-3 text-sm text-rose-700 transition hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-950/40"
               >
@@ -998,12 +1008,13 @@ function RoundCard({
           {tag && !allDone && (
             <span
               className={cx(
-                'shrink-0 rounded-full px-2 py-px text-[10.5px] font-bold',
+                'shrink-0 text-xs font-bold',
                 tag === 'now'
-                  ? 'bg-brand-600 text-white'
-                  : 'bg-accent-100 text-accent-800 dark:bg-accent-900/50 dark:text-accent-200'
+                  ? 'live-badge'
+                  : 'rounded-full bg-accent-100 px-2 py-px text-accent-800 dark:bg-accent-900/50 dark:text-accent-200'
               )}
             >
+              {tag === 'now' && <span className="live-dot" aria-hidden />}
               {t(tag === 'now' ? 'roundNow' : 'roundNext')}
             </span>
           )}
@@ -1107,8 +1118,12 @@ function RoundCard({
             )}
             {!readOnly && (
               <button
-                onClick={() => {
-                  if (confirm(t('deleteRoundConfirm'))) actions.deleteRound(round.id)
+                onClick={async () => {
+                  const ok = await askConfirm({
+                    message: t('deleteRoundConfirm'),
+                    confirmLabel: t('cfDeleteRound'),
+                  })
+                  if (ok) actions.deleteRound(round.id)
                 }}
                 className="ml-auto rounded px-1.5 py-0.5 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/50"
               >
