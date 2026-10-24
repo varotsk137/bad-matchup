@@ -848,7 +848,7 @@ export default function PlayTab({
                   })
                   if (ok) actions.clearRounds()
                 }}
-                className="inline-flex h-11 items-center gap-1.5 rounded-xl px-3 text-sm text-rose-700 transition hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-950/40"
+                className="inline-flex h-11 items-center gap-1.5 rounded-xl px-3 text-sm text-rose-800 transition hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-950/40"
               >
                 <svg
                   viewBox="0 0 20 20"

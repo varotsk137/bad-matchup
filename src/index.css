@@ -409,6 +409,13 @@
      A sports page: newsprint, black rules, serif headings, navy and
      vermilion, square corners, cards that sit on a second sheet. */
   :root[data-skin='editorial'] {
+    --backdrop: repeating-linear-gradient(0deg, oklch(0.2 0.006 60 / 0.035) 0 1px, transparent 1px 4px);
+    --icon-stroke: 1.5;
+    --live-bg: transparent;
+    --live-ink: var(--color-accent-700);
+    --live-border: var(--color-accent-700);
+    --live-radius: 0.125rem;
+    --live-tilt: -2deg;
     --font-display: 'Noto Serif Thai', 'Noto Sans Thai', Georgia, serif;
 
     --color-slate-50: oklch(0.99 0.004 90);
@@ -498,6 +505,9 @@
     --mascot: none;
   }
   :root.dark[data-skin='editorial'] {
+    --backdrop: repeating-linear-gradient(0deg, oklch(1 0 0 / 0.025) 0 1px, transparent 1px 4px);
+    --live-ink: var(--color-accent-300);
+    --live-border: var(--color-accent-300);
     --color-edge: var(--color-slate-600);
     --color-edge-strong: var(--color-slate-500);
     --color-btn-edge: var(--color-slate-950);
@@ -518,6 +528,14 @@
      Pastel and playful: lavender paper, violet and coral, mint highlights,
      extra-round corners, soft coloured glows instead of lines. Mali font. */
   :root[data-skin='candy'] {
+    --backdrop: radial-gradient(oklch(0.8 0.1 330 / 0.22) 2px, transparent 2.6px), radial-gradient(oklch(0.85 0.09 175 / 0.22) 2px, transparent 2.6px);
+    --backdrop-size: 28px 28px, 28px 28px;
+    --backdrop-position: 0 0, 14px 14px;
+    --icon-stroke: 2;
+    --live-bg: var(--color-accent-400);
+    --live-ink: var(--color-slate-950);
+    --live-radius: 9999px;
+    --live-shadow: 0 4px 10px -4px oklch(0.6 0.2 12 / 0.6);
     --font-display: 'Mali', 'Noto Sans Thai', ui-sans-serif, system-ui, sans-serif;
 
     --color-slate-50: oklch(0.992 0.007 320);
@@ -607,6 +625,7 @@
     --mascot: none;
   }
   :root.dark[data-skin='candy'] {
+    --backdrop: radial-gradient(oklch(0.7 0.15 330 / 0.14) 2px, transparent 2.6px), radial-gradient(oklch(0.75 0.1 175 / 0.12) 2px, transparent 2.6px);
     --color-edge: var(--color-slate-700);
     --color-edge-strong: var(--color-slate-600);
     --color-btn-edge: transparent;
@@ -625,6 +644,14 @@
   /* ------------------------------------------------------- Night
      Night court: deep navy, a lime shuttle glow, cyan lines. Kanit. */
   :root[data-skin='night'] {
+    --backdrop: radial-gradient(oklch(0.5 0.05 255 / 0.12) 1px, transparent 1.3px);
+    --backdrop-size: 38px 38px;
+    --icon-stroke: 1.8;
+    --live-bg: oklch(0.22 0.04 260);
+    --live-ink: white;
+    --live-radius: 0.375rem;
+    --live-dot: inline-block;
+    --live-dot-color: var(--color-brand-300);
     --font-display: 'Kanit', 'Noto Sans Thai', ui-sans-serif, system-ui, sans-serif;
 
     --color-slate-50: oklch(0.955 0.012 250);
@@ -706,6 +733,7 @@
     --mascot: none;
   }
   :root.dark[data-skin='night'] {
+    --backdrop: radial-gradient(oklch(1 0 0 / 0.12) 1px, transparent 1.3px);
     --color-edge: var(--color-slate-800);
     --color-edge-strong: var(--color-slate-700);
     --color-btn-edge: transparent;
@@ -721,6 +749,11 @@
   /* ---------------------------------------------------- Contrast
      High contrast: black on white (white on black in the dark), heavy lines, yellow for what is picked. */
   :root[data-skin='contrast'] {
+    --icon-stroke: 2.2;
+    --live-bg: black;
+    --live-ink: white;
+    --live-border: black;
+    --live-radius: 0.25rem;
     --color-on-accent: white;
     --font-display: 'Noto Sans Thai', ui-sans-serif, system-ui, sans-serif;
 
@@ -803,6 +836,9 @@
     --mascot: none;
   }
   :root.dark[data-skin='contrast'] {
+    --live-bg: white;
+    --live-ink: black;
+    --live-border: white;
     --color-edge: var(--color-slate-100);
     --color-edge-strong: var(--color-slate-100);
     --color-btn-edge: transparent;
@@ -818,6 +854,12 @@
   /* ----------------------------------------------------- Feather
      Feather: plain white and cool grey, court-line blue, slate accent. The quietest skin. */
   :root[data-skin='feather'] {
+    --backdrop: repeating-linear-gradient(135deg, oklch(0.5 0.02 250 / 0.05) 0 1px, transparent 1px 11px);
+    --icon-stroke: 1.4;
+    --live-bg: transparent;
+    --live-ink: var(--color-brand-700);
+    --live-border: var(--color-brand-600);
+    --live-radius: 9999px;
     --color-on-accent: white;
     --font-display: 'Noto Sans Thai', ui-sans-serif, system-ui, sans-serif;
 
@@ -900,6 +942,9 @@
     --mascot: none;
   }
   :root.dark[data-skin='feather'] {
+    --backdrop: repeating-linear-gradient(135deg, oklch(1 0 0 / 0.03) 0 1px, transparent 1px 11px);
+    --live-ink: var(--color-brand-200);
+    --live-border: var(--color-brand-300);
     --color-edge: var(--color-slate-800);
     --color-edge-strong: var(--color-slate-700);
     --color-btn-edge: transparent;
@@ -915,6 +960,15 @@
   /* ------------------------------------------------------ Sakura
      Sakura: blush paper, plum and petal pink, soft rounded corners. */
   :root[data-skin='sakura'] {
+    --backdrop: radial-gradient(ellipse 5px 3.5px at 30% 40%, oklch(0.85 0.08 350 / 0.55) 99%, transparent), radial-gradient(ellipse 4px 3px at 75% 80%, oklch(0.88 0.06 350 / 0.5) 99%, transparent);
+    --backdrop-size: 70px 70px;
+    --icon-stroke: 1.6;
+    --live-bg: var(--color-brand-100);
+    --live-ink: var(--color-brand-800);
+    --live-border: var(--color-brand-300);
+    --live-radius: 9999px;
+    --live-dot: inline-block;
+    --live-dot-color: var(--color-brand-500);
     --font-display: 'Noto Sans Thai', ui-sans-serif, system-ui, sans-serif;
 
     --color-slate-50: oklch(0.985 0.008 350);
@@ -999,6 +1053,10 @@
     --mascot: none;
   }
   :root.dark[data-skin='sakura'] {
+    --backdrop: radial-gradient(ellipse 5px 3.5px at 30% 40%, oklch(0.7 0.1 350 / 0.25) 99%, transparent), radial-gradient(ellipse 4px 3px at 75% 80%, oklch(0.7 0.08 350 / 0.2) 99%, transparent);
+    --live-bg: var(--color-brand-900);
+    --live-ink: var(--color-brand-100);
+    --live-border: var(--color-brand-700);
     --color-edge: var(--color-slate-800);
     --color-edge-strong: var(--color-slate-700);
     --color-btn-edge: transparent;
@@ -1014,6 +1072,12 @@
   /* -------------------------------------------------------- Thai
      Thai gold: cream paper, oxblood red, gold rules, looped Taviraj for headings. */
   :root[data-skin='thai'] {
+    --backdrop: repeating-linear-gradient(45deg, oklch(0.6 0.1 80 / 0.07) 0 1px, transparent 1px 14px), repeating-linear-gradient(-45deg, oklch(0.6 0.1 80 / 0.07) 0 1px, transparent 1px 14px);
+    --icon-stroke: 1.6;
+    --live-bg: var(--color-brand-700);
+    --live-ink: oklch(0.95 0.06 90);
+    --live-border: var(--color-accent-400);
+    --live-radius: 0.2rem;
     --color-on-accent: white;
     --font-display: 'Taviraj', 'Noto Serif Thai', Georgia, serif;
 
@@ -1096,6 +1160,7 @@
     --mascot: none;
   }
   :root.dark[data-skin='thai'] {
+    --backdrop: repeating-linear-gradient(45deg, oklch(0.75 0.1 80 / 0.05) 0 1px, transparent 1px 14px), repeating-linear-gradient(-45deg, oklch(0.75 0.1 80 / 0.05) 0 1px, transparent 1px 14px);
     --color-edge: var(--color-slate-800);
     --color-edge-strong: var(--color-slate-700);
     --color-btn-edge: transparent;
@@ -1111,6 +1176,14 @@
   /* ------------------------------------------------------- Ocean
      Ocean: sea-glass teal, sand, a peach accent. Fresh but calm. */
   :root[data-skin='ocean'] {
+    --backdrop: radial-gradient(circle at 50% 100%, transparent 9px, oklch(0.55 0.08 195 / 0.1) 10px 11px, transparent 12px);
+    --backdrop-size: 26px 13px;
+    --icon-stroke: 1.8;
+    --live-bg: var(--color-brand-600);
+    --live-ink: white;
+    --live-radius: 9999px;
+    --live-dot: inline-block;
+    --live-dot-color: var(--color-accent-300);
     --font-display: 'Noto Sans Thai', ui-sans-serif, system-ui, sans-serif;
 
     --color-slate-50: oklch(0.982 0.008 195);
@@ -1192,6 +1265,7 @@
     --mascot: none;
   }
   :root.dark[data-skin='ocean'] {
+    --backdrop: radial-gradient(circle at 50% 100%, transparent 9px, oklch(0.75 0.08 195 / 0.08) 10px 11px, transparent 12px);
     --color-edge: var(--color-slate-800);
     --color-edge-strong: var(--color-slate-700);
     --color-btn-edge: transparent;
@@ -1202,6 +1276,776 @@
     --color-chrome-edge: var(--color-slate-800);
     --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.4);
     --shadow-btn-down: var(--shadow-card);
+  }
+
+  /* ------------------------------------------------- Neon arcade
+     Neon arcade: an always-dark arcade cabinet, cyan and magenta light. */
+  :root[data-skin='neon'] {
+    --font-display: 'Chakra Petch', 'Noto Sans Thai', sans-serif;
+
+    --color-slate-50: oklch(0.975 0.013 285);
+    --color-slate-100: oklch(0.948 0.019 285);
+    --color-slate-200: oklch(0.9 0.025 285);
+    --color-slate-300: oklch(0.83 0.03 285);
+    --color-slate-400: oklch(0.7 0.03 285);
+    --color-slate-500: oklch(0.56 0.03 285);
+    --color-slate-600: oklch(0.45 0.045 285);
+    --color-slate-700: oklch(0.33 0.045 285);
+    --color-slate-800: oklch(0.245 0.045 285);
+    --color-slate-900: oklch(0.185 0.045 285);
+    --color-slate-950: oklch(0.14 0.045 285);
+
+    --color-brand-50: oklch(0.95 0.022 215);
+    --color-brand-100: oklch(0.9 0.048 215);
+    --color-brand-200: oklch(0.84 0.084 215);
+    --color-brand-300: oklch(0.76 0.12 215);
+    --color-brand-400: oklch(0.67 0.141 215);
+    --color-brand-500: oklch(0.59 0.15 215);
+    --color-brand-600: oklch(0.5 0.145 215);
+    --color-brand-700: oklch(0.42 0.132 215);
+    --color-brand-800: oklch(0.34 0.112 215);
+    --color-brand-900: oklch(0.27 0.09 215);
+    --color-brand-950: oklch(0.19 0.068 215);
+
+    --color-chrome: oklch(0.948 0.019 285);
+    --color-chrome-edge: var(--color-slate-200);
+    --color-chrome-dark: oklch(0.14 0.045 285);
+
+    --color-accent-50: oklch(0.94 0.032 345);
+    --color-accent-100: oklch(0.89 0.067 345);
+    --color-accent-200: oklch(0.83 0.118 345);
+    --color-accent-300: oklch(0.75 0.168 345);
+    --color-accent-400: oklch(0.66 0.197 345);
+    --color-accent-500: oklch(0.58 0.21 345);
+    --color-accent-600: oklch(0.49 0.204 345);
+    --color-accent-700: oklch(0.41 0.185 345);
+    --color-accent-800: oklch(0.33 0.158 345);
+    --color-accent-900: oklch(0.26 0.126 345);
+    --color-accent-950: oklch(0.18 0.095 345);
+
+    --color-on-accent: white;
+    --color-edge: var(--color-slate-200);
+    --color-edge-strong: var(--color-slate-300);
+    --color-btn-edge: transparent;
+    --color-track: var(--color-slate-100);
+    --color-pick: var(--color-slate-50);
+    --color-pick-ink: var(--color-slate-900);
+    --color-chip: var(--color-slate-900);
+    --color-chip-ink: var(--color-slate-50);
+    --color-preset: var(--color-accent-500);
+    --color-preset-ink: var(--color-on-accent);
+    --color-title: var(--color-brand-700);
+    --color-badge: transparent;
+    --color-badge-ink: var(--color-brand-300);
+    --color-court-1: var(--color-brand-600);
+    --color-court-2: var(--color-accent-700);
+    --color-court-3: var(--color-brand-800);
+    --color-court-4: var(--color-accent-900);
+    --color-court-5: var(--color-slate-700);
+
+    --line-w: 1px;
+    --radius-pill: 0.375rem;
+    --shadow-card: 0 0 0 1px oklch(0.78 0.14 215 / 0.18), 0 0 22px -8px oklch(0.78 0.14 215 / 0.55);
+    --shadow-sheet: 0 25px 50px -12px rgb(0 0 0 / 0.35);
+    --shadow-pick: var(--shadow-card);
+    --shadow-btn: 0 0 16px -4px oklch(0.7 0.2 345 / 0.6);
+    --shadow-btn-down: 0 0 16px -4px oklch(0.7 0.2 345 / 0.6);
+    --press-shift: 0px;
+    --display-weight: 600;
+    --title-size: 0.875rem;
+    --title-leading: 1.25rem;
+    --title-tracking: 0.08em;
+    --title-case: uppercase;
+    --badge-px: 0;
+    --badge-py: 0;
+    --badge-size: 1rem;
+    --badge-weight: 700;
+    --badge-leading: 1.7;
+    --badge-radius: 9999px;
+    --mascot: none;
+
+    --backdrop: repeating-linear-gradient(0deg, oklch(0.55 0.2 345 / 0.06) 0 1px, transparent 1px 32px), repeating-linear-gradient(90deg, oklch(0.55 0.15 215 / 0.06) 0 1px, transparent 1px 32px);
+    --backdrop-size: auto;
+    --icon-stroke: 1.8;
+    --live-bg: oklch(0.14 0.045 285);
+    --live-ink: var(--color-brand-300);
+    --live-border: var(--color-brand-400);
+    --live-radius: 0.25rem;
+    --live-shadow: 0 0 12px -2px oklch(0.78 0.15 215 / 0.8);
+    --live-dot: inline-block;
+    --live-dot-color: var(--color-accent-400);
+  }
+  :root.dark[data-skin='neon'] {
+    --color-edge: var(--color-slate-700);
+    --color-edge-strong: var(--color-slate-600);
+    --color-btn-edge: transparent;
+    --color-track: var(--color-slate-800);
+    --color-pick: var(--color-slate-950);
+    --color-pick-ink: var(--color-slate-50);
+    --color-chip: var(--color-slate-100);
+    --color-chip-ink: var(--color-slate-900);
+    --color-title: var(--color-brand-300);
+    --color-chrome-edge: var(--color-slate-800);
+    --backdrop: repeating-linear-gradient(0deg, oklch(0.7 0.22 345 / 0.09) 0 1px, transparent 1px 32px), repeating-linear-gradient(90deg, oklch(0.8 0.15 215 / 0.07) 0 1px, transparent 1px 32px);
+  }
+
+  /* -------------------------------------------------- Chalkboard
+     Chalkboard: a slate-green board, chalk-white writing, yellow and pink chalk. */
+  :root[data-skin='chalk'] {
+    --font-display: 'Sriracha', 'Noto Sans Thai', sans-serif;
+
+    --color-slate-50: oklch(0.975 0.007 95);
+    --color-slate-100: oklch(0.948 0.01 95);
+    --color-slate-200: oklch(0.9 0.013 95);
+    --color-slate-300: oklch(0.83 0.015 95);
+    --color-slate-400: oklch(0.7 0.015 95);
+    --color-slate-500: oklch(0.56 0.015 95);
+    --color-slate-600: oklch(0.45 0.04 160);
+    --color-slate-700: oklch(0.33 0.04 160);
+    --color-slate-800: oklch(0.245 0.04 160);
+    --color-slate-900: oklch(0.185 0.04 160);
+    --color-slate-950: oklch(0.14 0.04 160);
+
+    --color-brand-50: oklch(0.95 0.019 92);
+    --color-brand-100: oklch(0.9 0.042 92);
+    --color-brand-200: oklch(0.84 0.073 92);
+    --color-brand-300: oklch(0.76 0.104 92);
+    --color-brand-400: oklch(0.67 0.122 92);
+    --color-brand-500: oklch(0.59 0.13 92);
+    --color-brand-600: oklch(0.5 0.126 92);
+    --color-brand-700: oklch(0.42 0.114 92);
+    --color-brand-800: oklch(0.34 0.098 92);
+    --color-brand-900: oklch(0.27 0.078 92);
+    --color-brand-950: oklch(0.19 0.059 92);
+
+    --color-chrome: oklch(0.948 0.01 95);
+    --color-chrome-edge: var(--color-slate-200);
+    --color-chrome-dark: oklch(0.27 0.04 160);
+
+    --color-accent-50: oklch(0.97 0.019 355);
+    --color-accent-100: oklch(0.92 0.042 355);
+    --color-accent-200: oklch(0.86 0.073 355);
+    --color-accent-300: oklch(0.78 0.104 355);
+    --color-accent-400: oklch(0.69 0.122 355);
+    --color-accent-500: oklch(0.61 0.13 355);
+    --color-accent-600: oklch(0.52 0.126 355);
+    --color-accent-700: oklch(0.44 0.114 355);
+    --color-accent-800: oklch(0.36 0.098 355);
+    --color-accent-900: oklch(0.29 0.078 355);
+    --color-accent-950: oklch(0.21 0.059 355);
+
+    --color-on-accent: oklch(0.17 0.03 160); /* the board green is too light to write on chalk pink */
+    --color-edge: var(--color-slate-200);
+    --color-edge-strong: var(--color-slate-300);
+    --color-btn-edge: transparent;
+    --color-track: var(--color-slate-100);
+    --color-pick: var(--color-slate-50);
+    --color-pick-ink: var(--color-slate-900);
+    --color-chip: var(--color-slate-900);
+    --color-chip-ink: var(--color-slate-50);
+    --color-preset: var(--color-accent-500);
+    --color-preset-ink: var(--color-on-accent);
+    --color-title: var(--color-brand-700);
+    --color-badge: transparent;
+    --color-badge-ink: var(--color-slate-100);
+    --color-court-1: var(--color-brand-600);
+    --color-court-2: var(--color-accent-700);
+    --color-court-3: var(--color-brand-800);
+    --color-court-4: var(--color-accent-900);
+    --color-court-5: var(--color-slate-700);
+
+    --line-w: 1.5px;
+    --radius-pill: 1rem;
+    --shadow-card: 0 0 0 1px oklch(1 0 0 / 0.06);
+    --shadow-sheet: 0 25px 50px -12px rgb(0 0 0 / 0.35);
+    --shadow-pick: var(--shadow-card);
+    --shadow-btn: none;
+    --shadow-btn-down: none;
+    --press-shift: 0px;
+    --display-weight: 400;
+    --title-size: 0.875rem;
+    --title-leading: 1.25rem;
+    --title-tracking: normal;
+    --title-case: none;
+    --badge-px: 0;
+    --badge-py: 0;
+    --badge-size: 1rem;
+    --badge-weight: 700;
+    --badge-leading: 1.7;
+    --badge-radius: 9999px;
+    --mascot: none;
+
+    --backdrop: radial-gradient(ellipse 180px 60px at 25% 35%, oklch(0.5 0.04 160 / 0.05), transparent 70%), radial-gradient(ellipse 220px 70px at 75% 70%, oklch(0.5 0.04 160 / 0.05), transparent 70%);
+    --backdrop-size: 420px 320px;
+    --icon-stroke: 1.6;
+    --live-bg: transparent;
+    --live-ink: var(--color-brand-300);
+    --live-border: var(--color-brand-300);
+    --live-radius: 9999px;
+    --live-tilt: -3deg;
+  }
+  :root.dark[data-skin='chalk'] {
+    --color-slate-950: oklch(0.27 0.04 160);
+    --color-slate-900: oklch(0.31 0.042 160);
+    --color-slate-800: oklch(0.36 0.04 160);
+    --color-slate-700: oklch(0.45 0.035 160);
+    --color-edge: var(--color-slate-700);
+    --color-edge-strong: var(--color-slate-600);
+    --color-btn-edge: transparent;
+    --color-track: var(--color-slate-800);
+    --color-pick: var(--color-slate-950);
+    --color-pick-ink: var(--color-slate-50);
+    --color-chip: var(--color-slate-100);
+    --color-chip-ink: var(--color-slate-900);
+    --color-title: var(--color-brand-300);
+    --color-chrome-edge: var(--color-slate-800);
+    --backdrop: radial-gradient(ellipse 180px 60px at 25% 35%, oklch(1 0 0 / 0.045), transparent 70%), radial-gradient(ellipse 220px 70px at 75% 70%, oklch(1 0 0 / 0.04), transparent 70%);
+  }
+
+  /* --------------------------------------------------- Gym floor
+     Gym floor: maple boards, a green court with white lines, a scoreboard plate. */
+  :root[data-skin='gym'] {
+    --font-display: 'Prompt', 'Noto Sans Thai', sans-serif;
+
+    --color-slate-50: oklch(0.965 0.022 80);
+    --color-slate-100: oklch(0.885 0.055 72);
+    --color-slate-200: oklch(0.905 0.038 70);
+    --color-slate-300: oklch(0.835 0.045 70);
+    --color-slate-400: oklch(0.7 0.045 70);
+    --color-slate-500: oklch(0.56 0.045 70);
+    --color-slate-600: oklch(0.45 0.03 60);
+    --color-slate-700: oklch(0.36 0.03 60);
+    --color-slate-800: oklch(0.285 0.03 60);
+    --color-slate-900: oklch(0.225 0.03 60);
+    --color-slate-950: oklch(0.17 0.03 60);
+
+    --color-brand-50: oklch(0.95 0.019 152);
+    --color-brand-100: oklch(0.9 0.042 152);
+    --color-brand-200: oklch(0.84 0.073 152);
+    --color-brand-300: oklch(0.76 0.104 152);
+    --color-brand-400: oklch(0.67 0.122 152);
+    --color-brand-500: oklch(0.59 0.13 152);
+    --color-brand-600: oklch(0.5 0.126 152);
+    --color-brand-700: oklch(0.42 0.114 152);
+    --color-brand-800: oklch(0.34 0.098 152);
+    --color-brand-900: oklch(0.27 0.078 152);
+    --color-brand-950: oklch(0.19 0.059 152);
+
+    --color-chrome: oklch(0.885 0.055 72);
+    --color-chrome-edge: var(--color-slate-200);
+    --color-chrome-dark: oklch(0.17 0.03 60);
+
+    --color-accent-50: oklch(0.93 0.026 30);
+    --color-accent-100: oklch(0.88 0.054 30);
+    --color-accent-200: oklch(0.82 0.095 30);
+    --color-accent-300: oklch(0.74 0.136 30);
+    --color-accent-400: oklch(0.65 0.16 30);
+    --color-accent-500: oklch(0.57 0.17 30);
+    --color-accent-600: oklch(0.48 0.165 30);
+    --color-accent-700: oklch(0.4 0.15 30);
+    --color-accent-800: oklch(0.32 0.128 30);
+    --color-accent-900: oklch(0.25 0.102 30);
+    --color-accent-950: oklch(0.17 0.077 30);
+
+    --color-on-accent: white;
+    --color-edge: var(--color-slate-200);
+    --color-edge-strong: var(--color-slate-300);
+    --color-btn-edge: transparent;
+    --color-track: var(--color-slate-100);
+    --color-pick: var(--color-slate-50);
+    --color-pick-ink: var(--color-slate-900);
+    --color-chip: var(--color-slate-900);
+    --color-chip-ink: var(--color-slate-50);
+    --color-preset: var(--color-accent-500);
+    --color-preset-ink: var(--color-on-accent);
+    --color-title: var(--color-brand-700);
+    --color-badge: var(--color-brand-700);
+    --color-badge-ink: white;
+    --color-court-1: var(--color-brand-600);
+    --color-court-2: var(--color-accent-700);
+    --color-court-3: var(--color-brand-800);
+    --color-court-4: var(--color-accent-900);
+    --color-court-5: var(--color-slate-700);
+
+    --line-w: 2px;
+    --radius-pill: 0.375rem;
+    --shadow-card: 0 2px 0 0 oklch(0.55 0.08 60 / 0.35);
+    --shadow-sheet: 0 25px 50px -12px rgb(0 0 0 / 0.35);
+    --shadow-pick: var(--shadow-card);
+    --shadow-btn: 0 2px 0 0 oklch(0.3 0.06 150);
+    --shadow-btn-down: 0 2px 0 0 oklch(0.3 0.06 150);
+    --press-shift: 0px;
+    --display-weight: 700;
+    --title-size: 0.875rem;
+    --title-leading: 1.25rem;
+    --title-tracking: 0.06em;
+    --title-case: uppercase;
+    --badge-px: 0.75rem;
+    --badge-py: 0;
+    --badge-size: 1rem;
+    --badge-weight: 700;
+    --badge-leading: 1.7;
+    --badge-radius: 9999px;
+    --mascot: none;
+
+    --backdrop: repeating-linear-gradient(90deg, oklch(0.5 0.08 60 / 0.16) 0 1px, transparent 1px 72px), repeating-linear-gradient(0deg, oklch(0.55 0.07 65 / 0.06) 0 2px, transparent 2px 11px);
+    --backdrop-size: auto;
+    --icon-stroke: 2.2;
+    --live-bg: var(--color-brand-700);
+    --live-ink: white;
+    --live-border: white;
+    --live-radius: 0.2rem;
+    --live-shadow: 0 0 0 1px var(--color-brand-800);
+  }
+  :root.dark[data-skin='gym'] {
+    --color-edge: var(--color-slate-700);
+    --color-edge-strong: var(--color-slate-600);
+    --color-btn-edge: transparent;
+    --color-track: var(--color-slate-800);
+    --color-pick: var(--color-slate-950);
+    --color-pick-ink: var(--color-slate-50);
+    --color-chip: var(--color-slate-100);
+    --color-chip-ink: var(--color-slate-900);
+    --color-title: var(--color-brand-300);
+    --color-chrome-edge: var(--color-slate-800);
+    --backdrop: repeating-linear-gradient(90deg, oklch(1 0 0 / 0.05) 0 1px, transparent 1px 72px), repeating-linear-gradient(0deg, oklch(1 0 0 / 0.02) 0 2px, transparent 2px 11px);
+  }
+
+  /* --------------------------------------------------- Retro 80s
+     Retro 80s: a sunset in stripes, hot pink and orange, stacked offset shadows. */
+  :root[data-skin='retro'] {
+    --font-display: 'Pattaya', 'Noto Sans Thai', sans-serif;
+
+    --color-slate-50: oklch(0.982 0.013 330);
+    --color-slate-100: oklch(0.955 0.019 330);
+    --color-slate-200: oklch(0.905 0.025 330);
+    --color-slate-300: oklch(0.835 0.03 330);
+    --color-slate-400: oklch(0.7 0.03 330);
+    --color-slate-500: oklch(0.56 0.03 330);
+    --color-slate-600: oklch(0.45 0.05 300);
+    --color-slate-700: oklch(0.36 0.05 300);
+    --color-slate-800: oklch(0.285 0.05 300);
+    --color-slate-900: oklch(0.225 0.05 300);
+    --color-slate-950: oklch(0.17 0.05 300);
+
+    --color-brand-50: oklch(0.95 0.03 330);
+    --color-brand-100: oklch(0.9 0.064 330);
+    --color-brand-200: oklch(0.84 0.112 330);
+    --color-brand-300: oklch(0.76 0.16 330);
+    --color-brand-400: oklch(0.67 0.188 330);
+    --color-brand-500: oklch(0.59 0.2 330);
+    --color-brand-600: oklch(0.5 0.194 330);
+    --color-brand-700: oklch(0.42 0.176 330);
+    --color-brand-800: oklch(0.34 0.15 330);
+    --color-brand-900: oklch(0.27 0.12 330);
+    --color-brand-950: oklch(0.19 0.09 330);
+
+    --color-chrome: oklch(0.955 0.019 330);
+    --color-chrome-edge: var(--color-slate-900);
+    --color-chrome-dark: oklch(0.17 0.05 300);
+
+    --color-accent-50: oklch(0.97 0.026 50);
+    --color-accent-100: oklch(0.92 0.054 50);
+    --color-accent-200: oklch(0.86 0.095 50);
+    --color-accent-300: oklch(0.78 0.136 50);
+    --color-accent-400: oklch(0.69 0.16 50);
+    --color-accent-500: oklch(0.61 0.17 50);
+    --color-accent-600: oklch(0.52 0.165 50);
+    --color-accent-700: oklch(0.44 0.15 50);
+    --color-accent-800: oklch(0.36 0.128 50);
+    --color-accent-900: oklch(0.29 0.102 50);
+    --color-accent-950: oklch(0.21 0.077 50);
+
+    --color-on-accent: var(--color-slate-950);
+    --color-edge: var(--color-slate-900);
+    --color-edge-strong: var(--color-slate-900);
+    --color-btn-edge: var(--color-slate-900);
+    --color-track: var(--color-slate-100);
+    --color-pick: var(--color-slate-50);
+    --color-pick-ink: var(--color-slate-900);
+    --color-chip: var(--color-slate-900);
+    --color-chip-ink: var(--color-slate-50);
+    --color-preset: var(--color-accent-500);
+    --color-preset-ink: var(--color-on-accent);
+    --color-title: var(--color-brand-700);
+    --color-badge: var(--color-brand-600);
+    --color-badge-ink: white;
+    --color-court-1: var(--color-brand-600);
+    --color-court-2: var(--color-accent-700);
+    --color-court-3: var(--color-brand-800);
+    --color-court-4: var(--color-accent-900);
+    --color-court-5: var(--color-slate-700);
+
+    --line-w: 2px;
+    --radius-pill: 0.5rem;
+    --shadow-card: 4px 4px 0 0 oklch(0.76 0.16 330 / 0.55);
+    --shadow-sheet: 0 25px 50px -12px rgb(0 0 0 / 0.35);
+    --shadow-pick: var(--shadow-card);
+    --shadow-btn: 3px 3px 0 0 oklch(0.42 0.15 300);
+    --shadow-btn-down: 3px 3px 0 0 oklch(0.42 0.15 300);
+    --press-shift: 0px;
+    --display-weight: 400;
+    --title-size: 0.875rem;
+    --title-leading: 1.25rem;
+    --title-tracking: normal;
+    --title-case: none;
+    --badge-px: 0.75rem;
+    --badge-py: 0;
+    --badge-size: 1rem;
+    --badge-weight: 700;
+    --badge-leading: 1.7;
+    --badge-radius: 9999px;
+    --mascot: none;
+
+    --backdrop: linear-gradient(180deg, transparent 62%, oklch(0.82 0.12 60 / 0.22) 62% 65%, transparent 65% 70%, oklch(0.76 0.15 20 / 0.2) 70% 72.5%, transparent 72.5% 77%, oklch(0.7 0.18 340 / 0.18) 77% 78.5%, transparent 78.5%);
+    --backdrop-size: 100% 100%;
+    --icon-stroke: 2;
+    --live-bg: var(--color-accent-400);
+    --live-ink: var(--color-slate-950);
+    --live-border: var(--color-slate-950);
+    --live-radius: 0.25rem;
+    --live-shadow: 3px 3px 0 0 var(--color-brand-500), 6px 6px 0 0 oklch(0.45 0.15 290);
+  }
+  :root.dark[data-skin='retro'] {
+    --color-edge: var(--color-slate-700);
+    --color-edge-strong: var(--color-slate-600);
+    --color-btn-edge: var(--color-slate-950);
+    --color-track: var(--color-slate-800);
+    --color-pick: var(--color-slate-950);
+    --color-pick-ink: var(--color-slate-50);
+    --color-chip: var(--color-slate-100);
+    --color-chip-ink: var(--color-slate-900);
+    --color-title: var(--color-brand-300);
+    --color-chrome-edge: var(--color-slate-800);
+    --backdrop: linear-gradient(180deg, transparent 62%, oklch(0.75 0.14 60 / 0.16) 62% 65%, transparent 65% 70%, oklch(0.68 0.17 20 / 0.15) 70% 72.5%, transparent 72.5% 77%, oklch(0.62 0.19 340 / 0.14) 77% 78.5%, transparent 78.5%);
+  }
+
+  /* ------------------------------------------------------- Manga
+     Manga: black ink on white, screentone dots, a speech-bubble badge, a red pop. */
+  :root[data-skin='manga'] {
+    --font-display: 'Itim', 'Noto Sans Thai', sans-serif;
+
+    --color-slate-50: oklch(1 0 0);
+    --color-slate-100: oklch(0.97 0 0);
+    --color-slate-200: oklch(0.905 0 0);
+    --color-slate-300: oklch(0.835 0 0);
+    --color-slate-400: oklch(0.7 0 0);
+    --color-slate-500: oklch(0.56 0 0);
+    --color-slate-600: oklch(0.45 0 0);
+    --color-slate-700: oklch(0.36 0 0);
+    --color-slate-800: oklch(0.285 0 0);
+    --color-slate-900: oklch(0.225 0 0);
+    --color-slate-950: oklch(0.17 0 0);
+
+    --color-brand-50: oklch(0.95 0.03 25);
+    --color-brand-100: oklch(0.9 0.064 25);
+    --color-brand-200: oklch(0.84 0.112 25);
+    --color-brand-300: oklch(0.76 0.16 25);
+    --color-brand-400: oklch(0.67 0.188 25);
+    --color-brand-500: oklch(0.59 0.2 25);
+    --color-brand-600: oklch(0.5 0.194 25);
+    --color-brand-700: oklch(0.42 0.176 25);
+    --color-brand-800: oklch(0.34 0.15 25);
+    --color-brand-900: oklch(0.27 0.12 25);
+    --color-brand-950: oklch(0.19 0.09 25);
+
+    --color-chrome: oklch(0.97 0 0);
+    --color-chrome-edge: var(--color-slate-950);
+    --color-chrome-dark: oklch(0.17 0 0);
+
+    --color-accent-50: oklch(0.96 0.022 255);
+    --color-accent-100: oklch(0.91 0.048 255);
+    --color-accent-200: oklch(0.85 0.084 255);
+    --color-accent-300: oklch(0.77 0.12 255);
+    --color-accent-400: oklch(0.68 0.141 255);
+    --color-accent-500: oklch(0.6 0.15 255);
+    --color-accent-600: oklch(0.51 0.145 255);
+    --color-accent-700: oklch(0.43 0.132 255);
+    --color-accent-800: oklch(0.35 0.112 255);
+    --color-accent-900: oklch(0.28 0.09 255);
+    --color-accent-950: oklch(0.2 0.068 255);
+
+    --color-on-accent: var(--color-slate-950);
+    --color-edge: var(--color-slate-950);
+    --color-edge-strong: var(--color-slate-950);
+    --color-btn-edge: var(--color-slate-950);
+    --color-track: var(--color-slate-100);
+    --color-pick: var(--color-slate-50);
+    --color-pick-ink: var(--color-slate-900);
+    --color-chip: var(--color-slate-900);
+    --color-chip-ink: var(--color-slate-50);
+    --color-preset: var(--color-accent-500);
+    --color-preset-ink: var(--color-on-accent);
+    --color-title: var(--color-brand-700);
+    --color-badge: var(--color-slate-950);
+    --color-badge-ink: white;
+    --color-court-1: var(--color-brand-600);
+    --color-court-2: var(--color-accent-700);
+    --color-court-3: var(--color-brand-800);
+    --color-court-4: var(--color-accent-900);
+    --color-court-5: var(--color-slate-700);
+
+    --line-w: 2px;
+    --radius-pill: 0.75rem;
+    --shadow-card: 3px 3px 0 0 var(--color-slate-950);
+    --shadow-sheet: 0 25px 50px -12px rgb(0 0 0 / 0.35);
+    --shadow-pick: var(--shadow-card);
+    --shadow-btn: 2px 2px 0 0 var(--color-slate-950);
+    --shadow-btn-down: 2px 2px 0 0 var(--color-slate-950);
+    --press-shift: 0px;
+    --display-weight: 400;
+    --title-size: 0.875rem;
+    --title-leading: 1.25rem;
+    --title-tracking: normal;
+    --title-case: none;
+    --badge-px: 0.75rem;
+    --badge-py: 0;
+    --badge-size: 1rem;
+    --badge-weight: 700;
+    --badge-leading: 1.7;
+    --badge-radius: 9999px;
+    --mascot: none;
+
+    --backdrop: radial-gradient(oklch(0 0 0 / 0.13) 0.9px, transparent 1.15px);
+    --backdrop-size: 6px 6px;
+    --icon-stroke: 2.4;
+    --live-bg: white;
+    --live-ink: oklch(0.17 0 0);
+    --live-border: oklch(0.17 0 0);
+    --live-radius: 9999px;
+    --live-shadow: 2px 2px 0 0 oklch(0.17 0 0);
+    --live-suffix: "!";
+  }
+  :root.dark[data-skin='manga'] {
+    --color-edge: var(--color-slate-700);
+    --color-edge-strong: var(--color-slate-600);
+    --color-btn-edge: var(--color-slate-950);
+    --color-track: var(--color-slate-800);
+    --color-pick: var(--color-slate-950);
+    --color-pick-ink: var(--color-slate-50);
+    --color-chip: var(--color-slate-100);
+    --color-chip-ink: var(--color-slate-900);
+    --color-title: var(--color-brand-300);
+    --color-chrome-edge: var(--color-slate-800);
+    --backdrop: radial-gradient(oklch(1 0 0 / 0.07) 0.9px, transparent 1.15px);
+  }
+
+  /* ------------------------------------------------- Pha khao ma
+     Pha khao ma: the Thai cotton plaid, indigo and red checks on cream. */
+  :root[data-skin='plaid'] {
+    --font-display: 'Kodchasan', 'Noto Sans Thai', sans-serif;
+
+    --color-slate-50: oklch(0.982 0.011 85);
+    --color-slate-100: oklch(0.955 0.016 85);
+    --color-slate-200: oklch(0.905 0.021 85);
+    --color-slate-300: oklch(0.835 0.025 85);
+    --color-slate-400: oklch(0.7 0.025 85);
+    --color-slate-500: oklch(0.56 0.025 85);
+    --color-slate-600: oklch(0.45 0.03 265);
+    --color-slate-700: oklch(0.36 0.03 265);
+    --color-slate-800: oklch(0.285 0.03 265);
+    --color-slate-900: oklch(0.225 0.03 265);
+    --color-slate-950: oklch(0.17 0.03 265);
+
+    --color-brand-50: oklch(0.95 0.022 265);
+    --color-brand-100: oklch(0.9 0.048 265);
+    --color-brand-200: oklch(0.84 0.084 265);
+    --color-brand-300: oklch(0.76 0.12 265);
+    --color-brand-400: oklch(0.67 0.141 265);
+    --color-brand-500: oklch(0.59 0.15 265);
+    --color-brand-600: oklch(0.5 0.145 265);
+    --color-brand-700: oklch(0.42 0.132 265);
+    --color-brand-800: oklch(0.34 0.112 265);
+    --color-brand-900: oklch(0.27 0.09 265);
+    --color-brand-950: oklch(0.19 0.068 265);
+
+    --color-chrome: oklch(0.955 0.016 85);
+    --color-chrome-edge: var(--color-slate-200);
+    --color-chrome-dark: oklch(0.17 0.03 265);
+
+    --color-accent-50: oklch(0.93 0.026 25);
+    --color-accent-100: oklch(0.88 0.054 25);
+    --color-accent-200: oklch(0.82 0.095 25);
+    --color-accent-300: oklch(0.74 0.136 25);
+    --color-accent-400: oklch(0.65 0.16 25);
+    --color-accent-500: oklch(0.57 0.17 25);
+    --color-accent-600: oklch(0.48 0.165 25);
+    --color-accent-700: oklch(0.4 0.15 25);
+    --color-accent-800: oklch(0.32 0.128 25);
+    --color-accent-900: oklch(0.25 0.102 25);
+    --color-accent-950: oklch(0.17 0.077 25);
+
+    --color-on-accent: white;
+    --color-edge: var(--color-slate-200);
+    --color-edge-strong: var(--color-slate-300);
+    --color-btn-edge: transparent;
+    --color-track: var(--color-slate-100);
+    --color-pick: var(--color-slate-50);
+    --color-pick-ink: var(--color-slate-900);
+    --color-chip: var(--color-slate-900);
+    --color-chip-ink: var(--color-slate-50);
+    --color-preset: var(--color-accent-500);
+    --color-preset-ink: var(--color-on-accent);
+    --color-title: var(--color-brand-700);
+    --color-badge: transparent;
+    --color-badge-ink: currentColor;
+    --color-court-1: var(--color-brand-600);
+    --color-court-2: var(--color-accent-700);
+    --color-court-3: var(--color-brand-800);
+    --color-court-4: var(--color-accent-900);
+    --color-court-5: var(--color-slate-700);
+
+    --line-w: 1.5px;
+    --radius-pill: 0.625rem;
+    --shadow-card: 0 2px 8px -3px oklch(0.4 0.08 265 / 0.3);
+    --shadow-sheet: 0 25px 50px -12px rgb(0 0 0 / 0.35);
+    --shadow-pick: var(--shadow-card);
+    --shadow-btn: 0 2px 6px -2px oklch(0.4 0.1 265 / 0.45);
+    --shadow-btn-down: 0 2px 6px -2px oklch(0.4 0.1 265 / 0.45);
+    --press-shift: 0px;
+    --display-weight: 600;
+    --title-size: 0.875rem;
+    --title-leading: 1.25rem;
+    --title-tracking: normal;
+    --title-case: none;
+    --badge-px: 0;
+    --badge-py: 0;
+    --badge-size: 1rem;
+    --badge-weight: 700;
+    --badge-leading: 1.7;
+    --badge-radius: 9999px;
+    --mascot: none;
+
+    --backdrop: repeating-linear-gradient(0deg, oklch(0.55 0.17 25 / 0.07) 0 8px, transparent 8px 26px, oklch(0.45 0.15 265 / 0.07) 26px 30px, transparent 30px 48px), repeating-linear-gradient(90deg, oklch(0.55 0.17 25 / 0.07) 0 8px, transparent 8px 26px, oklch(0.45 0.15 265 / 0.07) 26px 30px, transparent 30px 48px);
+    --backdrop-size: auto;
+    --icon-stroke: 1.8;
+    --live-bg: var(--color-accent-600);
+    --live-ink: white;
+    --live-border: white;
+    --live-radius: 0.375rem;
+    --live-shadow: 0 0 0 2px var(--color-brand-600);
+  }
+  :root.dark[data-skin='plaid'] {
+    --color-edge: var(--color-slate-700);
+    --color-edge-strong: var(--color-slate-600);
+    --color-btn-edge: transparent;
+    --color-track: var(--color-slate-800);
+    --color-pick: var(--color-slate-950);
+    --color-pick-ink: var(--color-slate-50);
+    --color-chip: var(--color-slate-100);
+    --color-chip-ink: var(--color-slate-900);
+    --color-title: var(--color-brand-300);
+    --color-chrome-edge: var(--color-slate-800);
+    --backdrop: repeating-linear-gradient(0deg, oklch(0.6 0.17 25 / 0.06) 0 8px, transparent 8px 26px, oklch(0.6 0.15 265 / 0.06) 26px 30px, transparent 30px 48px), repeating-linear-gradient(90deg, oklch(0.6 0.17 25 / 0.06) 0 8px, transparent 8px 26px, oklch(0.6 0.15 265 / 0.06) 26px 30px, transparent 30px 48px);
+  }
+
+  /* ---------------------------------------------------- Champion
+     Champion: black velvet, gold medal, a spotlight from above. */
+  :root[data-skin='champ'] {
+    --font-display: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif;
+
+    --color-slate-50: oklch(0.975 0.009 85);
+    --color-slate-100: oklch(0.948 0.013 85);
+    --color-slate-200: oklch(0.9 0.017 85);
+    --color-slate-300: oklch(0.83 0.02 85);
+    --color-slate-400: oklch(0.7 0.02 85);
+    --color-slate-500: oklch(0.56 0.02 85);
+    --color-slate-600: oklch(0.45 0.012 75);
+    --color-slate-700: oklch(0.33 0.012 75);
+    --color-slate-800: oklch(0.245 0.012 75);
+    --color-slate-900: oklch(0.185 0.012 75);
+    --color-slate-950: oklch(0.14 0.012 75);
+
+    --color-brand-50: oklch(0.95 0.018 80);
+    --color-brand-100: oklch(0.9 0.038 80);
+    --color-brand-200: oklch(0.84 0.067 80);
+    --color-brand-300: oklch(0.76 0.096 80);
+    --color-brand-400: oklch(0.67 0.113 80);
+    --color-brand-500: oklch(0.59 0.12 80);
+    --color-brand-600: oklch(0.5 0.116 80);
+    --color-brand-700: oklch(0.42 0.106 80);
+    --color-brand-800: oklch(0.34 0.09 80);
+    --color-brand-900: oklch(0.27 0.072 80);
+    --color-brand-950: oklch(0.19 0.054 80);
+
+    --color-chrome: oklch(0.948 0.013 85);
+    --color-chrome-edge: var(--color-slate-200);
+    --color-chrome-dark: oklch(0.14 0.012 75);
+
+    --color-accent-50: oklch(0.93 0.026 20);
+    --color-accent-100: oklch(0.88 0.054 20);
+    --color-accent-200: oklch(0.82 0.095 20);
+    --color-accent-300: oklch(0.74 0.136 20);
+    --color-accent-400: oklch(0.65 0.16 20);
+    --color-accent-500: oklch(0.57 0.17 20);
+    --color-accent-600: oklch(0.48 0.165 20);
+    --color-accent-700: oklch(0.4 0.15 20);
+    --color-accent-800: oklch(0.32 0.128 20);
+    --color-accent-900: oklch(0.25 0.102 20);
+    --color-accent-950: oklch(0.17 0.077 20);
+
+    --color-on-accent: white;
+    --color-edge: var(--color-slate-200);
+    --color-edge-strong: var(--color-slate-300);
+    --color-btn-edge: transparent;
+    --color-track: var(--color-slate-100);
+    --color-pick: var(--color-slate-50);
+    --color-pick-ink: var(--color-slate-900);
+    --color-chip: var(--color-slate-900);
+    --color-chip-ink: var(--color-slate-50);
+    --color-preset: var(--color-accent-500);
+    --color-preset-ink: var(--color-on-accent);
+    --color-title: var(--color-brand-700);
+    --color-badge: transparent;
+    --color-badge-ink: var(--color-brand-300);
+    --color-court-1: var(--color-brand-600);
+    --color-court-2: var(--color-accent-700);
+    --color-court-3: var(--color-brand-800);
+    --color-court-4: var(--color-accent-900);
+    --color-court-5: var(--color-slate-700);
+
+    --line-w: 1px;
+    --radius-pill: 0.5rem;
+    --shadow-card: 0 0 0 1px oklch(0.8 0.12 85 / 0.22), 0 10px 24px -14px oklch(0 0 0 / 0.8);
+    --shadow-sheet: 0 25px 50px -12px rgb(0 0 0 / 0.35);
+    --shadow-pick: var(--shadow-card);
+    --shadow-btn: 0 6px 16px -8px oklch(0.8 0.13 85 / 0.5);
+    --shadow-btn-down: 0 6px 16px -8px oklch(0.8 0.13 85 / 0.5);
+    --press-shift: 0px;
+    --display-weight: 600;
+    --title-size: 0.875rem;
+    --title-leading: 1.25rem;
+    --title-tracking: 0.1em;
+    --title-case: uppercase;
+    --badge-px: 0;
+    --badge-py: 0;
+    --badge-size: 1rem;
+    --badge-weight: 700;
+    --badge-leading: 1.7;
+    --badge-radius: 9999px;
+    --mascot: none;
+
+    --backdrop: radial-gradient(ellipse 70% 45% at 50% 0%, oklch(0.85 0.1 85 / 0.25), transparent 70%);
+    --backdrop-size: 100% 100%;
+    --icon-stroke: 1.6;
+    --live-bg: linear-gradient(135deg, oklch(0.9 0.11 92), oklch(0.72 0.13 75));
+    --live-ink: oklch(0.22 0.04 70);
+    --live-border: oklch(0.6 0.11 75);
+    --live-radius: 9999px;
+    --live-shadow: 0 0 12px -3px oklch(0.85 0.12 88 / 0.7);
+  }
+  :root.dark[data-skin='champ'] {
+    --color-edge: var(--color-slate-700);
+    --color-edge-strong: var(--color-slate-600);
+    --color-btn-edge: transparent;
+    --color-track: var(--color-slate-800);
+    --color-pick: var(--color-slate-950);
+    --color-pick-ink: var(--color-slate-50);
+    --color-chip: var(--color-slate-100);
+    --color-chip-ink: var(--color-slate-900);
+    --color-title: var(--color-brand-300);
+    --color-chrome-edge: var(--color-slate-800);
+    --backdrop: radial-gradient(ellipse 70% 45% at 50% 0%, oklch(0.8 0.12 85 / 0.14), transparent 70%);
   }
 }
 
@@ -1224,6 +2068,7 @@
     overscroll-behavior-y: none;
     background-image: var(--backdrop);
     background-size: var(--backdrop-size);
+    background-position: var(--backdrop-position, 0 0);
     background-attachment: fixed;
   }
 
@@ -1271,6 +2116,9 @@
     color: var(--live-ink);
     box-shadow: var(--live-shadow);
     transform: rotate(var(--live-tilt));
+  }
+  .live-badge::after {
+    content: var(--live-suffix, none);
   }
   .live-dot {
     display: var(--live-dot);

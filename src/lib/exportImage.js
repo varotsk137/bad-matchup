@@ -6,47 +6,14 @@
  * drop the Thai webfont when the SVG is rasterised. The canvas 2D context uses
  * the fonts already loaded by the page, so Thai names come out correct.
  *
- * The palette follows whichever theme the app is in, so the PNG looks like
- * what was on screen when the button was pressed.
+ * The colours and display face follow the active skin, always in its light
+ * version (see imageLook.js), so the picture matches the app but stays easy
+ * to read in a group chat.
  */
+import { BODY_FONT, skinLook } from './imageLook'
 
-
-const FONT = '"Noto Sans Thai", "Inter", system-ui, sans-serif'
-
-/** Mirrors the app's own palettes (see index.css) so the PNG matches the screen. */
-const PALETTES = {
-  light: {
-    bg: '#fbfaf6', // ivory paper
-    stripe: '#f3f2ec',
-    line: '#e3e1d8',
-    hairline: '#edebe3',
-    text: '#1c2b24',
-    muted: '#6b7671',
-    faint: '#9aa39e',
-    teamA: '#0b6f9e',
-    teamB: '#be2b4c',
-    brand: '#2f7d55',
-    accent: '#d9762b',
-    onAccent: '#ffffff',
-  },
-  dark: {
-    bg: '#0e1622', // deep navy page
-    stripe: '#152a26', // deep green, the same layering the app uses
-    line: '#2b3d39',
-    hairline: '#1d2e2b',
-    text: '#e8efec',
-    muted: '#93a7a2',
-    faint: '#637874',
-    teamA: '#6cc4ee',
-    teamB: '#f593aa',
-    brand: '#55c98d',
-    accent: '#e8913f',
-    onAccent: '#1a1206',
-  },
-}
-
-const isDarkNow = () =>
-  typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
+// the two sides keep the app's blue and red in every skin
+const TEAM = { teamA: '#0b6f9e', teamB: '#be2b4c' }
 
 /* --- generous by design: the previous pass was cramped and read as squashed */
 const PAD = 40
@@ -64,18 +31,19 @@ const FOOTER_H = 34
 
 const ROW_H = ROW_PAD_Y * 2 + TEAM_LH * 2 + MID_LH
 
-const font = (size, weight = 400) => `${weight} ${size}px ${FONT}`
+const font = (size, weight = 400, family = BODY_FONT) => `${weight} ${size}px ${family}`
 
-const F = {
-  title: font(26, 700),
+/** Names stay in the body face so they read easily; titles, courts and round numbers wear the skin's. */
+const fontsFor = ({ display, displayWeight }) => ({
+  title: font(26, displayWeight, display),
   subtitle: font(14, 400),
-  header: font(12, 700),
+  header: font(12, displayWeight, display),
   team: font(17, 600),
   mid: font(12, 700),
   bench: font(13, 400),
-  chip: font(15, 700),
+  chip: font(15, displayWeight, display),
   footer: font(11, 400),
-}
+})
 
 /** Team as one line: "สมชาย + หมู". */
 function teamLine(ids, playersById) {
@@ -118,9 +86,10 @@ export function drawSchedule({
   title,
   subtitle,
   labels,
-  dark = isDarkNow(),
+  look = skinLook(),
 }) {
-  const C = dark ? PALETTES.dark : PALETTES.light
+  const C = { ...TEAM, ...look.colors }
+  const F = fontsFor(look)
 
   // ---- columns, in the same order the on-screen table uses ---------------
   const columns = []

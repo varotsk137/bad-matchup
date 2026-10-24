@@ -15,9 +15,11 @@
         const saved = JSON.parse(localStorage.getItem('bad-matchup:v1') || '{}')
         const root = document.documentElement
         root.dataset.skin = saved.skin || 'classic'
-        const dark = saved.theme
-          ? saved.theme === 'dark'
-          : matchMedia('(prefers-color-scheme: dark)').matches
+        // keep in step with `darkOnly` in src/lib/skins.js
+        const darkOnly = ['neon', 'chalk', 'champ'].includes(saved.skin)
+        const dark =
+          darkOnly ||
+          (saved.theme ? saved.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches)
         root.classList.toggle('dark', dark)
       } catch {
         document.documentElement.dataset.skin = 'classic'

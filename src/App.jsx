@@ -139,6 +139,7 @@ function Header({
   onRoomClick,
   onHistory,
 }) {
+  const darkOnly = !!skinById(state.skin).darkOnly
   return (
     <header className="sticky top-0 z-40 border-b-(length:--line-w) border-chrome-edge bg-chrome/95 backdrop-blur-md dark:bg-chrome-dark/95">
       <div className="mx-auto flex h-14 max-w-3xl items-center gap-3 px-4">
@@ -190,11 +191,12 @@ function Header({
         </button>
         <button
           onClick={() => actions.set({ theme: state.theme === 'dark' ? 'light' : 'dark' })}
-          className="grid h-11 w-11 place-items-center rounded-lg border border-chrome-edge bg-slate-50/60 text-slate-700 dark:border-slate-700 dark:bg-transparent dark:text-slate-300"
+          disabled={darkOnly}
+          className="grid h-11 w-11 place-items-center rounded-lg border border-chrome-edge bg-slate-50/60 text-slate-700 disabled:opacity-50 dark:border-slate-700 dark:bg-transparent dark:text-slate-300"
           aria-label={t('theme')}
-          title={t(state.theme === 'dark' ? 'themeDark' : 'themeLight')}
+          title={darkOnly ? t('themeLockedDark') : t(state.theme === 'dark' ? 'themeDark' : 'themeLight')}
         >
-          <LineIcon name={state.theme === 'dark' ? 'moon' : 'sun'} className="h-5 w-5" />
+          <LineIcon name={darkOnly || state.theme === 'dark' ? 'moon' : 'sun'} className="h-5 w-5" />
         </button>
       </div>
     </header>
@@ -479,9 +481,11 @@ export default function App() {
   const endInvite = useCallback(() => setInviting(false), [])
 
   /* ----------------------------------------------------------------- theme */
+  // a dark-only skin (neon, chalkboard, champion) keeps the page dark whatever the theme
+  const darkNow = skinById(state.skin).darkOnly || state.theme === 'dark'
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', state.theme === 'dark')
-  }, [state.theme])
+    document.documentElement.classList.toggle('dark', darkNow)
+  }, [darkNow])
 
   /* ------------------------------------------------------------------ skin */
   useEffect(() => {
@@ -490,8 +494,8 @@ export default function App() {
     loadSkinFont(skin)
     document
       .querySelector('meta[name="theme-color"]')
-      ?.setAttribute('content', skin.bar[state.theme === 'dark' ? 'dark' : 'light'])
-  }, [state.skin, state.theme])
+      ?.setAttribute('content', skin.bar[darkNow ? 'dark' : 'light'])
+  }, [state.skin, darkNow])
 
   useEffect(() => {
     document.documentElement.lang = state.lang

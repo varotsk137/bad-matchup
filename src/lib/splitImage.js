@@ -6,37 +6,22 @@
  * image (see exportImage.js): no library, and the page's Thai font is used
  * as-is. Kept in its own file so the two renderers can change independently.
  */
+import { BODY_FONT, skinLook } from './imageLook'
 import { drawQr, qrModules } from './qr'
 
-const FONT = '"Noto Sans Thai", "Inter", system-ui, sans-serif'
-const font = (size, weight = 400) => `${weight} ${size}px ${FONT}`
+const font = (size, weight = 400, family = BODY_FONT) => `${weight} ${size}px ${family}`
 
-/** Same palettes as the schedule image, so both pictures look like the app. */
-const PALETTES = {
-  light: {
-    bg: '#fbfaf6',
-    panel: '#f3f2ec',
-    line: '#e3e1d8',
-    hairline: '#edebe3',
-    text: '#1c2b24',
-    muted: '#6b7671',
-    brand: '#2f7d55',
-    owe: '#be2b4c',
-  },
-  dark: {
-    bg: '#0e1622',
-    panel: '#152a26',
-    line: '#2b3d39',
-    hairline: '#1d2e2b',
-    text: '#e8efec',
-    muted: '#93a7a2',
-    brand: '#55c98d',
-    owe: '#f593aa',
-  },
-}
-
-const isDarkNow = () =>
-  typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
+/** The skin's colours on light paper, like the schedule image (see imageLook.js). */
+const billColours = ({ colors }) => ({
+  bg: colors.bg,
+  panel: colors.stripe,
+  line: colors.line,
+  hairline: colors.hairline,
+  text: colors.text,
+  muted: colors.muted,
+  brand: colors.brand,
+  owe: '#be2b4c',
+})
 
 const W = 560
 const PAD = 36
@@ -81,12 +66,13 @@ const loadImage = (src) =>
  *   headline: string, working: string,
  *   people?: { name: string, paid: boolean }[], amount: string, paidLabel: string,
  *   pay?: { qr?: string, image?: HTMLImageElement, lines: string[] },
- *   footer: string, dark?: boolean,
+ *   footer: string,
  * }} bill
  * @returns {HTMLCanvasElement}
  */
 export function drawBill(bill) {
-  const C = (bill.dark ?? isDarkNow()) ? PALETTES.dark : PALETTES.light
+  const look = skinLook()
+  const C = billColours(look)
   const people = bill.people || []
   const height =
     PAD * 2 +
@@ -112,7 +98,7 @@ export function drawBill(bill) {
   // ---- title -------------------------------------------------------------
   let y = PAD + 26
   ctx.fillStyle = C.text
-  ctx.font = font(24, 700)
+  ctx.font = font(24, look.displayWeight, look.display)
   ctx.fillText(ellipsize(ctx, `💰 ${bill.title}`, inner), PAD, y)
   y += 24
   ctx.fillStyle = C.muted

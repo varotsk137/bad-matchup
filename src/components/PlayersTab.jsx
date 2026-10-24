@@ -178,7 +178,7 @@ export default function PlayersTab({ state, stats, t, lang, actions, setToast })
                 })
                 if (ok) actions.clearPlayers()
               }}
-              className="ml-auto h-11 rounded-xl px-2 text-sm text-rose-700 transition hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-950/40"
+              className="ml-auto h-11 rounded-xl px-2 text-sm text-rose-800 transition hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-950/40"
             >
               {t('clearPlayers')}
             </button>
