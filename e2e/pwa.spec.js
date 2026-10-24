@@ -6,7 +6,7 @@ const OFFLINE_BAR = 'No internet found · matchmaking only'
 
 const start = (page) => page.getByRole('button', { name: /^Start \d+ rounds$/ })
 const finish = (page) => page.getByRole('button', { name: 'Finish', exact: true })
-const live = (page) => page.getByRole('button', { name: 'Live', exact: true })
+const live = (page) => page.getByRole('button', { name: 'Share', exact: true })
 
 test('opens with no internet in matchmaking-only mode, and comes back on "try again"', async ({
   page,

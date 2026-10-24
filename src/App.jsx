@@ -11,7 +11,6 @@ import {
 } from './components/PwaBits'
 import SettingsTab from './components/SettingsTab'
 import LiveRoomSheet, { RoomStatus } from './components/LiveRoomSheet'
-import ShareSheet from './components/ShareSheet'
 import StatsTab from './components/StatsTab'
 import { Button, Toast, cx } from './components/ui'
 import { makeT } from './lib/i18n'
@@ -36,6 +35,7 @@ import {
   resultOf,
   saveOwnRoom,
 } from './lib/room'
+import { recordVisit, summarize } from './lib/roomHistory'
 import { clearShareHash, decodeShare, readShareHash } from './lib/share'
 import { loadSkinFont, skinById } from './lib/skins'
 import { clearState, defaultState } from './lib/storage'
@@ -188,7 +188,6 @@ export default function App() {
   const [tab, setTab] = useState('play')
   const [toast, setToastState] = useState(null)
   const toastTimer = useRef(null)
-  const [shareOpen, setShareOpen] = useState(false)
   const [liveOpen, setLiveOpen] = useState(false)
   // lives here, not in PlayTab, so the round count survives a tab switch
   const roundCounts = useState(DEFAULT_COUNTS)
@@ -399,8 +398,18 @@ export default function App() {
       .then((remote) => {
         if (!alive) return
         off = remote.watchRoom(liveId, {
-          onChange: (data) =>
-            setLive((cur) => (cur?.id === liveId ? { ...cur, ...data } : cur)),
+          onChange: (data) => {
+            setLive((cur) => (cur?.id === liveId ? { ...cur, ...data } : cur))
+            if (data.session)
+              recordVisit({
+                id: liveId,
+                key: liveKey,
+                role: liveKey ? 'edit' : 'watch',
+                updatedAt: data.updatedAt,
+                closedAt: data.closedAt,
+                ...summarize(data.session),
+              })
+          },
           onMissing: () => fail('roomGone'),
           onError: () => fail('roomFailed'),
         })
@@ -711,6 +720,7 @@ export default function App() {
     const room = { id, openedAt: Date.now() }
     saveOwnRoom(room)
     setOwnRoom(room)
+    recordVisit({ id, role: 'own', updatedAt: room.openedAt, ...summarize(store.getState()) })
   }
 
   /**
@@ -732,6 +742,7 @@ export default function App() {
     const { id } = ownRoom
     saveOwnRoom(null)
     setOwnRoom(null)
+    recordVisit({ id, closedAt: Date.now(), ...summarize(store.getState()) })
     setLiveOpen(false)
     try {
       await (await loadRemote()).closeRoom(id)
@@ -1001,9 +1012,6 @@ export default function App() {
             actions={actions}
             goTo={goTo}
             setToast={setToast}
-            onShare={() =>
-              state.rounds.length ? setShareOpen(true) : setToast(t('shareEmpty'), 'error')
-            }
             onLive={
               online
                 ? () =>
@@ -1041,14 +1049,6 @@ export default function App() {
           <SettingsTab state={state} t={t} actions={actions} setToast={setToast} />
         )}
       </main>
-
-      <ShareSheet
-        open={shareOpen}
-        onClose={() => setShareOpen(false)}
-        state={state}
-        t={t}
-        setToast={setToast}
-      />
 
       <LiveRoomSheet
         open={liveOpen}

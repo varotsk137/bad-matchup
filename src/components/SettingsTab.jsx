@@ -7,6 +7,7 @@ import { RestModeHelp } from './HelpSheet'
 import PaymentCard from './PaymentCard'
 import PresetCard from './PresetCard'
 import { InstallRow } from './PwaBits'
+import RoomHistoryCard from './RoomHistoryCard'
 import { Button, Card, SectionTitle, Segmented, Slider, Toggle, cx } from './ui'
 
 export default function SettingsTab({ state, t, actions, setToast }) {
@@ -192,38 +193,41 @@ export default function SettingsTab({ state, t, actions, setToast }) {
       </div>
 
       {/* --------------------------------------------------- gender + effort */}
-      <Card className="p-4">
-        <label className="mb-1.5 block text-sm font-medium">{t('genderMode')}</label>
-        <Segmented
-          size="sm"
-          value={o.genderMode}
-          onChange={(v) => actions.setOption('genderMode', v)}
-          options={[
-            { value: 'off', label: t('genderOff') },
-            { value: 'mixed', label: t('genderMixed') },
-            { value: 'same', label: t('genderSame') },
-          ]}
-        />
-        <label className="mt-4 mb-1.5 block text-sm font-medium">{t('effort')}</label>
-        <Segmented
-          size="sm"
-          value={o.effort}
-          onChange={(v) => actions.setOption('effort', v)}
-          options={[
-            { value: 'fast', label: t('effortFast') },
-            { value: 'normal', label: t('effortNormal') },
-            { value: 'thorough', label: t('effortThorough') },
-          ]}
-        />
-        <div className="mt-3 -mx-4 border-t border-slate-100 px-4 dark:border-slate-800">
-          <Toggle
-            label={t('fairestOfThree')}
-            hint={t('fairestOfThreeHint')}
-            checked={o.fairestOfThree !== false}
-            onChange={(v) => actions.setOption('fairestOfThree', v)}
+      <div>
+        <SectionTitle hint={t('matchingHint')}>{t('matchingTitle')}</SectionTitle>
+        <Card className="p-4">
+          <label className="mb-1.5 block text-sm font-medium">{t('genderMode')}</label>
+          <Segmented
+            size="sm"
+            value={o.genderMode}
+            onChange={(v) => actions.setOption('genderMode', v)}
+            options={[
+              { value: 'off', label: t('genderOff') },
+              { value: 'mixed', label: t('genderMixed') },
+              { value: 'same', label: t('genderSame') },
+            ]}
           />
-        </div>
-      </Card>
+          <label className="mt-4 mb-1.5 block text-sm font-medium">{t('effort')}</label>
+          <Segmented
+            size="sm"
+            value={o.effort}
+            onChange={(v) => actions.setOption('effort', v)}
+            options={[
+              { value: 'fast', label: t('effortFast') },
+              { value: 'normal', label: t('effortNormal') },
+              { value: 'thorough', label: t('effortThorough') },
+            ]}
+          />
+          <div className="mt-3 -mx-4 border-t border-slate-100 px-4 dark:border-slate-800">
+            <Toggle
+              label={t('fairestOfThree')}
+              hint={t('fairestOfThreeHint')}
+              checked={o.fairestOfThree !== false}
+              onChange={(v) => actions.setOption('fairestOfThree', v)}
+            />
+          </div>
+        </Card>
+      </div>
 
       {/* --------------------------------------------------- weights */}
       <div>
@@ -279,6 +283,8 @@ export default function SettingsTab({ state, t, actions, setToast }) {
 
       {/* saving a setup comes after every setting it would save */}
       <PresetCard state={state} t={t} actions={actions} setToast={setToast} />
+
+      <RoomHistoryCard t={t} lang={state.lang} />
 
       <InstallRow t={t} state={state} />
 

@@ -258,32 +258,10 @@ const dict = {
   },
   coveredLink: { th: 'ดูการเกลี่ย', en: 'See how even' },
   polishing: { th: 'กำลังเกลี่ยคู่ให้ทั่วถึง…', en: 'Evening out partners…' },
-  share: { th: 'แชร์', en: 'Share' },
-  shareTitle: { th: 'แชร์ตารางแข่ง', en: 'Share the schedule' },
-  shareMode: { th: 'ให้คนรับทำอะไรได้บ้าง', en: 'What the recipient can do' },
-  shareModeView: { th: 'ดูอย่างเดียว', en: 'View only' },
-  shareModeEdit: { th: 'รับไปแก้ต่อ', en: 'Take a copy' },
-  shareModeViewHint: {
-    th: 'เปิดดูตารางได้ เซฟรูปได้ แต่แก้อะไรไม่ได้',
-    en: 'They can read the schedule and save the image, but not change anything.',
-  },
-  shareModeEditHint: {
-    th: 'ผู้รับกดรับตารางไปไว้ในเครื่องตัวเองแล้วแก้ต่อได้ — แต่สิ่งที่เขาแก้จะไม่ส่งกลับมาหาคุณ ถ้าอยากให้เห็นตรงกันสองทางต้องมีเซิร์ฟเวอร์',
-    en: 'They can adopt the schedule onto their own device and edit it — but their changes never come back to you. Two-way sync would need a server.',
-  },
   copyLink: { th: 'คัดลอกลิงก์', en: 'Copy link' },
   copied: { th: 'คัดลอกแล้ว', en: 'Copied' },
   copyFailed: { th: 'คัดลอกไม่สำเร็จ', en: 'Could not copy' },
   shareVia: { th: 'แชร์…', en: 'Share…' },
-  charsUnit: { th: 'ตัวอักษร', en: 'characters' },
-  shareLinkLong: {
-    th: 'ลิงก์ค่อนข้างยาว บางแอปอาจตัด ลองแชร์เป็นรูปแทน',
-    en: 'Quite a long link — some apps truncate. The image export may travel better.',
-  },
-  shareLinkNote: {
-    th: 'ลิงก์พกตารางไปทั้งก้อนในตัว ไม่ได้เก็บอะไรไว้บนเซิร์ฟเวอร์ ใช้งานได้แม้คุณปิดแอป — แต่ใครที่มีลิงก์ก็เห็นรายชื่อทั้งหมด',
-    en: 'The link carries the whole schedule inside it. Nothing is stored on a server and it keeps working after you close the app — but anyone holding the link can read every name.',
-  },
   shareEmpty: { th: 'ยังไม่มีตารางให้แชร์', en: 'No schedule to share yet' },
 
   /* the app on its own: connection, LINE, install, updates */
@@ -334,8 +312,36 @@ const dict = {
   updateReload: { th: 'โหลดใหม่', en: 'Reload' },
 
   /* live rooms */
-  liveButton: { th: 'ดูสด', en: 'Live' },
-  liveTitle: { th: 'ห้องดูสด', en: 'Live room' },
+  liveButton: { th: 'แชร์ตาราง', en: 'Share' },
+  liveButtonOn: { th: 'กำลังแชร์', en: 'Sharing' },
+  liveTitle: { th: 'แชร์ตาราง', en: 'Share the schedule' },
+
+  /* rooms this device has opened */
+  historyTitle: { th: 'ห้องที่เคยเข้า', en: 'Rooms you have opened' },
+  historyHint: {
+    th: 'เก็บไว้ในเครื่องนี้เท่านั้น แตะเพื่อเปิดดูอีกครั้ง',
+    en: 'Kept on this device only. Tap one to open it again.',
+  },
+  historyEmpty: {
+    th: 'ยังไม่มี เมื่อเปิดลิงก์ตารางที่มีคนแชร์มา หรือแชร์ตารางของคุณเอง ห้องจะมาอยู่ที่นี่',
+    en: 'Nothing yet. Rooms show up here once you open a shared schedule link or share your own.',
+  },
+  historyClear: { th: 'ล้างประวัติ', en: 'Clear' },
+  historyClearConfirm: {
+    th: 'ล้างประวัติห้องทั้งหมดในเครื่องนี้? ห้องจะยังอยู่ เปิดได้จากลิงก์เดิม',
+    en: 'Clear the whole list on this device? The rooms themselves stay and their links still work.',
+  },
+  historyRemove: { th: 'ลบออกจากประวัติ', en: 'Remove from the list' },
+  historyRole_own: { th: 'ของฉัน', en: 'Mine' },
+  historyRole_watch: { th: 'ดูอย่างเดียว', en: 'View only' },
+  historyRole_edit: { th: 'ติ๊กผลได้', en: 'Can tick' },
+  historyOpen: { th: 'เปิดอยู่', en: 'Open' },
+  historyClosed: { th: 'ปิดแล้ว', en: 'Closed' },
+  historySharing: { th: 'กำลังแชร์', en: 'Sharing now' },
+  historyRounds: { th: '{n} รอบ', en: '{n} rounds' },
+  historyUnnamed: { th: 'ห้อง {id}…', en: 'Room {id}…' },
+  historyMore: { th: 'ดูทั้งหมด ({n})', en: 'See all ({n})' },
+  historyLess: { th: 'ย่อ', en: 'Show fewer' },
   liveIntro1: {
     th: '📡 ทุกคนเห็นตารางเปลี่ยนตามทันที ไม่ต้องส่งรูปใหม่ — ส่งลิงก์ครั้งเดียวพอ',
     en: '📡 Everyone sees the schedule change as it happens — send the link once, no new images.',
@@ -715,6 +721,11 @@ const dict = {
   restStrictHint: {
     th: 'ไม่มีใครลงเกินสตามินาเลย สลับจำนวนคอร์ทให้ได้เล่นมากที่สุดเท่าที่พักทัน',
     en: 'No one ever goes past the limit; the number of courts varies to fit as much play as rests allow',
+  },
+  matchingTitle: { th: 'การจับคู่', en: 'Matching' },
+  matchingHint: {
+    th: 'เงื่อนไขเรื่องเพศ และความละเอียดตอนจัดตาราง',
+    en: 'Gender rules, and how hard the app searches for a schedule',
   },
   genderMode: { th: 'โหมดเพศ', en: 'Gender mode' },
   genderOff: { th: 'ไม่สนใจ', en: 'Ignore' },

@@ -157,7 +157,9 @@ export default function MatchCard({
   return (
     <div
       className={cx(
-        'rounded-xl border-(length:--line-w) p-2 transition',
+        // min-w-0: a grid item, so a very long name truncates instead of
+        // stretching the card past the round and hiding its other team
+        'min-w-0 rounded-xl border-(length:--line-w) p-2 transition',
         match.done
           ? 'border-slate-200 bg-slate-50/60 dark:border-slate-800 dark:bg-slate-800/20'
           : 'border-edge bg-slate-50 dark:bg-slate-900'
@@ -168,9 +170,10 @@ export default function MatchCard({
       <div className="flex items-center gap-2 py-1">
         <span
           className={cx(
-            'font-display shrink-0 rounded-[var(--radius-pill)] border-(length:--line-w) border-btn-edge px-2 py-0.5 text-[10px]',
+            'font-display max-w-[60%] min-w-0 truncate rounded-[var(--radius-pill)] border-(length:--line-w) border-btn-edge px-2 py-0.5 text-[10px]',
             courtTone(courtIndex)
           )}
+          title={match.courtName}
         >
           {match.courtName}
         </span>

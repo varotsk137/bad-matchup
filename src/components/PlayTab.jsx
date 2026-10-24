@@ -39,7 +39,6 @@ export default function PlayTab({
   // with readOnly: still lets this person tick matches done and enter scores
   // (an edit link to a live room) while the schedule itself stays locked
   canScore = false,
-  onShare,
   // the live room: open its sheet, and whether one is running
   onLive,
   liveOn = false,
@@ -635,36 +634,34 @@ export default function PlayTab({
                         : 'border-edge-strong bg-slate-50 text-slate-900 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700'
                     )}
                   >
-                    <span
-                      className={cx(
-                        'inline-block h-2 w-2 rounded-full',
-                        liveOn ? 'animate-pulse bg-rose-500' : 'bg-rose-400/70'
-                      )}
-                      aria-hidden
-                    />
-                    {t('liveButton')}
+                    {liveOn ? (
+                      <span
+                        className="inline-block h-2 w-2 animate-pulse rounded-full bg-rose-500"
+                        aria-hidden
+                      />
+                    ) : (
+                      <svg
+                        viewBox="0 0 20 20"
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        aria-hidden
+                      >
+                        <path
+                          d="M10 13V3m0 0L6.5 6.5M10 3l3.5 3.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M4 12v3a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-3"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                    )}
+                    {t(liveOn ? 'liveButtonOn' : 'liveButton')}
                   </button>
                 )}
-                <button
-                  onClick={onShare}
-                  className="press inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl border-(length:--line-w) border-edge-strong bg-slate-50 px-3 text-sm text-slate-900 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
-                >
-                  <svg
-                    viewBox="0 0 20 20"
-                    className="h-4 w-4"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                  >
-                    <path
-                      d="M10 13V3m0 0L6.5 6.5M10 3l3.5 3.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path d="M4 12v3a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-3" strokeLinecap="round" />
-                  </svg>
-                  {t('share')}
-                </button>
                 <button
                   onClick={() => setSplitOpen(true)}
                   className="press inline-flex h-10 shrink-0 items-center rounded-xl border-(length:--line-w) border-btn-edge bg-accent-500 px-3 text-sm text-white hover:bg-accent-600"
