@@ -36,6 +36,33 @@ test('refuses a name already taken, and one past 12 characters', async ({ page }
   expect((await savedState(page)).players.map((p) => p.name)).toContain('Ann B.')
 })
 
+test('lists rooms opened before from the header', async ({ page }) => {
+  await seed(page, {})
+  await page.addInitScript(() =>
+    localStorage.setItem(
+      'bad-matchup:room-history',
+      JSON.stringify([
+        {
+          id: 'k7QmAbCdEfGh12345678',
+          key: null,
+          role: 'watch',
+          lastAt: Date.now(),
+          updatedAt: Date.now(),
+          closedAt: null,
+          names: ['Ann', 'Bee', 'Cat'],
+          players: 8,
+          rounds: 12,
+        },
+      ])
+    )
+  )
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Rooms you have opened' }).click()
+  await expect(page.getByRole('dialog')).toContainText('Ann, Bee, Cat +5')
+  await page.getByRole('button', { name: 'Ann, Bee, Cat +5' }).click()
+  await expect(page).toHaveURL(/#room=k7QmAbCdEfGh12345678/)
+})
+
 test('builds a schedule, ticks a match and keeps both after a reload', async ({ page }) => {
   await seed(page, { players: players(EIGHT) })
   await page.goto('/')

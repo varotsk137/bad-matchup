@@ -1,17 +1,17 @@
-# Graph Report - v31-polish  (2026-10-24)
+# Graph Report - v3  (2026-10-24)
 
 ## Corpus Check
-- 77 files · ~68,631 words
+- 77 files · ~69,099 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 7 file(s) not represented in the graph (top: (none) 4, .example 1, .rules 1)
 
 ## Summary
-- 545 nodes · 1530 edges · 21 communities (20 shown, 1 thin omitted)
+- 546 nodes · 1530 edges · 18 communities (17 shown, 1 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 11 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `decf403f`
+- Built from commit: `176198f9`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -19,12 +19,10 @@
 - matchmaker.js
 - App.jsx
 - rooms.rules.test.js
-- PlayTab.jsx
 - exportImage.js
 - 🏸 Bad Matchup
 - HelpSheet.jsx
 - CostSplitSheet.jsx
-- share.js
 - package.json
 - dependencies
 - devDependencies
@@ -34,21 +32,20 @@
 - rooms.rules.test.js
 - make-icons.mjs
 - ui.jsx
-- RoomHistoryCard.jsx
-- roomRemote.js
+- room.js
 - App.jsx
 
 ## God Nodes (most connected - your core abstractions)
 1. `cx()` - 72 edges
-2. `App()` - 46 edges
+2. `App()` - 47 edges
 3. `Button()` - 32 edges
-4. `CostSplitSheet()` - 27 edges
-5. `Card()` - 26 edges
-6. `Sheet()` - 26 edges
-7. `PlayTab()` - 24 edges
+4. `Sheet()` - 28 edges
+5. `CostSplitSheet()` - 27 edges
+6. `PlayTab()` - 24 edges
+7. `Card()` - 24 edges
 8. `react` - 21 edges
 9. `PlayersTab()` - 21 edges
-10. `SettingsTab()` - 21 edges
+10. `SettingsTab()` - 20 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Icon()` --calls--> `cx()`  [EXTRACTED]
@@ -57,35 +54,31 @@
   src/components/CourtsTab.jsx → src/lib/matchmaker.js
 - `PaymentCard()` --indirect_call--> `loadPayment()`  [INFERRED]
   src/components/PaymentCard.jsx → src/lib/payment.js
-- `newPlayer()` --calls--> `uid()`  [EXTRACTED]
-  src/lib/ops.js → src/lib/matchmaker.js
 - `App()` --calls--> `CourtsTab()`  [EXTRACTED]
   src/App.jsx → src/components/CourtsTab.jsx
+- `App()` --calls--> `PlayersTab()`  [EXTRACTED]
+  src/App.jsx → src/components/PlayersTab.jsx
 
 ## Import Cycles
 - None detected.
 
-## Communities (21 total, 1 thin omitted)
+## Communities (18 total, 1 thin omitted)
 
 ### Community 0 - "matchmaker.js"
-Cohesion: 0.09
-Nodes (53): vitest, attempts(), buildOnce(), buildOnceAsync(), compareKeys(), cost(), courtSize(), createRefiner() (+45 more)
+Cohesion: 0.07
+Nodes (71): vitest, analyse(), Chevron(), isArchived(), MODES, PlayTab(), RoundCard(), Stepper() (+63 more)
 
 ### Community 1 - "App.jsx"
 Cohesion: 0.08
-Nodes (34): pickTuning(), SettingsTab(), SkinSwatch(), SkinTile(), Slider(), Toggle(), DEFAULT_LEVEL, DEFAULT_OPTIONS (+26 more)
+Nodes (31): createEmptyRound(), DEFAULT_LEVEL, DEFAULT_OPTIONS, DEFAULT_WEIGHTS, uid(), newPlayer(), ops, player() (+23 more)
 
 ### Community 2 - "rooms.rules.test.js"
 Cohesion: 0.19
 Nodes (10): players(), PREVIEW_URL, savedState(), seed(), shareHash(), STORAGE_KEY, EIGHT, EIGHT (+2 more)
 
-### Community 3 - "PlayTab.jsx"
-Cohesion: 0.13
-Nodes (26): analyse(), MatchCard(), SCORE_BOX, ScoreBox(), Slot(), TEAM_TEXT, Chevron(), DEFAULT_COUNTS (+18 more)
-
 ### Community 4 - "exportImage.js"
 Cohesion: 0.20
-Nodes (16): ImageSheet(), ScheduleTable(), asFile(), canSharePng(), downloadPng(), drawSchedule(), ellipsize(), F (+8 more)
+Nodes (15): ImageSheet(), asFile(), canSharePng(), downloadPng(), drawSchedule(), ellipsize(), F, filename() (+7 more)
 
 ### Community 5 - "🏸 Bad Matchup"
 Cohesion: 0.09
@@ -98,10 +91,6 @@ Nodes (31): PAIRINGS, REST, Heatmap(), HelpInsight(), LEVEL, OPTIONS, PairArt(),
 ### Community 7 - "CostSplitSheet.jsx"
 Cohesion: 0.10
 Nodes (41): uqr, CostSplitSheet(), MoneyInput(), ROUNDINGS, sessionPlayers(), Working(), QrCode(), loadPaid() (+33 more)
-
-### Community 8 - "share.js"
-Cohesion: 0.33
-Nodes (10): buildShareUrl(), canCompress(), decodeShare(), deflate(), encodeShare(), fromB64Url(), inflate(), packSession() (+2 more)
 
 ### Community 9 - "package.json"
 Cohesion: 0.13
@@ -132,20 +121,16 @@ Cohesion: 0.40
 Nodes (3): icons, square, svg
 
 ### Community 17 - "ui.jsx"
-Cohesion: 0.11
-Nodes (56): react, CourtIcon(), CourtsTab(), FairnessReport(), MeetGrid(), PaymentCard(), Avatar(), GenderDot() (+48 more)
+Cohesion: 0.08
+Nodes (73): react, CourtIcon(), CourtsTab(), FairnessReport(), MeetGrid(), MatchCard(), SCORE_BOX, ScoreBox() (+65 more)
 
-### Community 18 - "RoomHistoryCard.jsx"
-Cohesion: 0.37
-Nodes (11): Chip(), RoomHistoryCard(), clearHistory(), forgetVisit(), HISTORY_KEY, HISTORY_MAX, loadHistory(), recordVisit() (+3 more)
-
-### Community 38 - "roomRemote.js"
-Cohesion: 0.19
-Nodes (16): firebase, app, auth, config, db, closeRoom(), createRoom(), deleteRoom() (+8 more)
+### Community 38 - "room.js"
+Cohesion: 0.09
+Nodes (43): firebase, loadRemote(), Chip(), HistoryList(), RoomHistorySheet(), app, auth, config (+35 more)
 
 ### Community 51 - "App.jsx"
-Cohesion: 0.06
-Nodes (63): react-dom, App(), Header(), Icon(), ICONS, loadRemote(), TABS, LinkCard() (+55 more)
+Cohesion: 0.07
+Nodes (53): react-dom, App(), Header(), Icon(), ICONS, TABS, LinkCard(), LiveRoomSheet() (+45 more)
 
 ## Knowledge Gaps
 - **7 isolated node(s):** `@fontsource/kanit`, `@fontsource/mali`, `@fontsource/mitr`, `@fontsource/noto-serif-thai`, `@fontsource/taviraj` (+2 more)
@@ -155,17 +140,17 @@ Nodes (63): react-dom, App(), Header(), Icon(), ICONS, loadRemote(), TABS, LinkC
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `cx()` connect `ui.jsx` to `App.jsx`, `PlayTab.jsx`, `exportImage.js`, `HelpSheet.jsx`, `CostSplitSheet.jsx`, `RoomHistoryCard.jsx`, `App.jsx`?**
+- **Why does `cx()` connect `ui.jsx` to `matchmaker.js`, `room.js`, `HelpSheet.jsx`, `CostSplitSheet.jsx`, `App.jsx`?**
   _High betweenness centrality (0.125) - this node is a cross-community bridge._
 - **Are the 2 inferred relationships involving `CostSplitSheet()` (e.g. with `loadPayment()` and `loadSplitView()`) actually correct?**
   _`CostSplitSheet()` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `@fontsource/kanit`, `@fontsource/mali`, `@fontsource/mitr` to the rest of the system?**
   _7 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `matchmaker.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.09209039548022599 - nodes in this community are weakly interconnected._
-- **Why does `react` connect `ui.jsx` to `App.jsx`, `PlayTab.jsx`, `exportImage.js`, `HelpSheet.jsx`, `CostSplitSheet.jsx`, `package.json`, `RoomHistoryCard.jsx`, `App.jsx`?**
-  _High betweenness centrality (0.102) - this node is a cross-community bridge._
+  _Cohesion score 0.07037037037037037 - nodes in this community are weakly interconnected._
+- **Why does `react` connect `ui.jsx` to `matchmaker.js`, `exportImage.js`, `HelpSheet.jsx`, `CostSplitSheet.jsx`, `room.js`, `package.json`, `App.jsx`?**
+  _High betweenness centrality (0.104) - this node is a cross-community bridge._
 - **Should `App.jsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.08163265306122448 - nodes in this community are weakly interconnected._
-- **Why does `vitest` connect `matchmaker.js` to `App.jsx`, `CostSplitSheet.jsx`, `package.json`, `vite.config.js`, `rooms.rules.test.js`, `ui.jsx`, `RoomHistoryCard.jsx`, `App.jsx`?**
+  _Cohesion score 0.0797979797979798 - nodes in this community are weakly interconnected._
+- **Why does `vitest` connect `matchmaker.js` to `App.jsx`, `room.js`, `CostSplitSheet.jsx`, `package.json`, `vite.config.js`, `rooms.rules.test.js`, `ui.jsx`, `App.jsx`?**
   _High betweenness centrality (0.084) - this node is a cross-community bridge._

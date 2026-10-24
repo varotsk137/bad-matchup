@@ -102,7 +102,7 @@ The interface is available in Thai and English.
   room up when the signal returns. Firebase is only downloaded once a room is opened or watched.
 - A room closes when the organiser closes it, or by itself after 12 hours without an update. It is
   kept as it ended, so the link still shows the final results.
-- Settings → *Rooms you have opened* lists the last 30 rooms this device shared or watched, with
+- The clock button in the header lists the last 30 rooms this device shared or watched, with
   role and open/closed state; tap one to open it again. The list stays on the device.
 - Backed by Firestore with anonymous sign-in; see `firestore.rules`, tested on the emulator with
   `npm run test:rules`. `npm run emulators` + `npm run dev:emulator` run the app against local

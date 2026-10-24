@@ -11,6 +11,7 @@ import {
 } from './components/PwaBits'
 import SettingsTab from './components/SettingsTab'
 import LiveRoomSheet, { RoomStatus } from './components/LiveRoomSheet'
+import RoomHistorySheet from './components/RoomHistorySheet'
 import StatsTab from './components/StatsTab'
 import { Button, Toast, cx } from './components/ui'
 import { makeT } from './lib/i18n'
@@ -135,6 +136,7 @@ function Header({
   shared = false,
   roomStatus = null,
   onRoomClick,
+  onHistory,
 }) {
   return (
     <header className="sticky top-0 z-40 border-b-(length:--line-w) border-chrome-edge bg-chrome/95 backdrop-blur-md dark:bg-chrome-dark/95">
@@ -159,6 +161,25 @@ function Header({
             </p>
           )}
         </div>
+        <button
+          onClick={onHistory}
+          className="grid h-8 w-8 place-items-center rounded-lg border border-chrome-edge bg-slate-50/60 text-slate-700 dark:border-slate-700 dark:bg-transparent dark:text-slate-300"
+          aria-label={t('historyTitle')}
+          title={t('historyTitle')}
+        >
+          {/* a clock with an arrow running back round it: rooms opened before */}
+          <svg
+            viewBox="0 0 20 20"
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+          >
+            <path d="M3.5 10a6.5 6.5 0 1 0 1.9-4.6" strokeLinecap="round" />
+            <path d="M3.5 3.5v2.4h2.4" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M10 6.5V10l2.3 1.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
         <button
           onClick={() => actions.set({ lang: state.lang === 'th' ? 'en' : 'th' })}
           className="h-8 rounded-lg border border-chrome-edge bg-slate-50/60 px-2 text-xs font-bold text-slate-700 dark:border-slate-700 dark:bg-transparent dark:text-slate-300"
@@ -189,6 +210,7 @@ export default function App() {
   const [toast, setToastState] = useState(null)
   const toastTimer = useRef(null)
   const [liveOpen, setLiveOpen] = useState(false)
+  const [historyOpen, setHistoryOpen] = useState(false)
   // lives here, not in PlayTab, so the round count survives a tab switch
   const roundCounts = useState(DEFAULT_COUNTS)
   // a session that arrived through a link — held apart from the user's own data
@@ -783,6 +805,15 @@ export default function App() {
   const topBars = <TopBars t={t} offline={!online} retrying={retrying} onRetry={retryOnline} />
   // one message at a time: the update waits while another toast is up
   const updateToast = pwa.updateReady && !toast && <UpdateToast t={t} onReload={applyUpdate} />
+  const historySheet = (
+    <RoomHistorySheet
+      open={historyOpen}
+      onClose={() => setHistoryOpen(false)}
+      t={t}
+      lang={state.lang}
+      onOwnRoom={() => online && setLiveOpen(true)}
+    />
+  )
 
   /* ------------------------------------------------------ live room view */
   if (live) {
@@ -827,7 +858,15 @@ export default function App() {
 
     return (
       <div className="min-h-dvh">
-        <Header t={t} state={state} actions={actions} readyCount={0} roundCount={0} shared />
+        <Header
+          onHistory={() => setHistoryOpen(true)}
+          t={t}
+          state={state}
+          actions={actions}
+          readyCount={0}
+          roundCount={0}
+          shared
+        />
         {topBars}
 
         <div className="mx-auto max-w-3xl px-3 pt-3">
@@ -886,6 +925,7 @@ export default function App() {
           onAction={onToastAction}
         />
         {updateToast}
+        {historySheet}
       </div>
     )
   }
@@ -902,7 +942,15 @@ export default function App() {
 
     return (
       <div className="min-h-dvh">
-        <Header t={t} state={state} actions={actions} readyCount={0} roundCount={0} shared />
+        <Header
+          onHistory={() => setHistoryOpen(true)}
+          t={t}
+          state={state}
+          actions={actions}
+          readyCount={0}
+          roundCount={0}
+          shared
+        />
         {topBars}
 
         <div className="mx-auto max-w-3xl px-3 pt-3">
@@ -950,6 +998,7 @@ export default function App() {
           onAction={onToastAction}
         />
         {updateToast}
+        {historySheet}
       </div>
     )
   }
@@ -958,6 +1007,7 @@ export default function App() {
     <div className="min-h-dvh">
       {/* ------------------------------------------------------- header */}
       <Header
+        onHistory={() => setHistoryOpen(true)}
         t={t}
         state={state}
         actions={actions}
@@ -1079,6 +1129,7 @@ export default function App() {
         onAction={onToastAction}
       />
       {updateToast}
+      {historySheet}
     </div>
   )
 }
