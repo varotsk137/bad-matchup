@@ -17,6 +17,25 @@ test('adds a player and keeps them after a reload', async ({ page }) => {
   await expect(page.getByText('Somchai')).toBeVisible()
 })
 
+test('refuses a name already taken, and one past 12 characters', async ({ page }) => {
+  await seed(page, { players: players(EIGHT) })
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Players', exact: true }).click()
+
+  const name = page.getByRole('textbox', { name: 'Add player' })
+  const add = page.getByRole('button', { name: 'Add', exact: true })
+  await name.fill('ann ')
+  await expect(page.getByRole('alert')).toContainText('already here')
+  await expect(add).toBeDisabled()
+
+  await name.fill('Abcdefghijklmnop')
+  await expect(name).toHaveValue('Abcdefghijkl')
+
+  await name.fill('Ann B.')
+  await add.click()
+  expect((await savedState(page)).players.map((p) => p.name)).toContain('Ann B.')
+})
+
 test('builds a schedule, ticks a match and keeps both after a reload', async ({ page }) => {
   await seed(page, { players: players(EIGHT) })
   await page.goto('/')

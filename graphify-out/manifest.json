@@ -18,9 +18,9 @@
     "semantic_hash": ""
   },
   "src/components/CourtsTab.jsx": {
-    "mtime": 1792821058.4543276,
-    "seen": 1792821694.4859858,
-    "ast_hash": "c6d8408ab442f4e693197716765fd103",
+    "mtime": 1792824046.953617,
+    "seen": 1792824236.642197,
+    "ast_hash": "51598c2d52f583975925530fb7aa8993",
     "semantic_hash": ""
   },
   "src/components/HelpSheet.jsx": {
@@ -48,15 +48,15 @@
     "semantic_hash": ""
   },
   "src/components/PlayersTab.jsx": {
-    "mtime": 1792821058.4583278,
-    "seen": 1792821694.4859958,
-    "ast_hash": "a45a262fb63d021f66b6b2aa1971fa36",
+    "mtime": 1792824046.9342492,
+    "seen": 1792824236.6422164,
+    "ast_hash": "fab8b552d94e8e87abf157c6b889734d",
     "semantic_hash": ""
   },
   "src/components/RosterSheet.jsx": {
-    "mtime": 1792821058.4603279,
-    "seen": 1792821694.4860015,
-    "ast_hash": "7c57f433cdcc37a2604bb8ba8cae036a",
+    "mtime": 1792824007.5418725,
+    "seen": 1792824236.6422257,
+    "ast_hash": "df567e19f02ecfa6583a10d013fac7f2",
     "semantic_hash": ""
   },
   "src/components/ScheduleTable.jsx": {
@@ -90,9 +90,9 @@
     "semantic_hash": ""
   },
   "src/lib/i18n.js": {
-    "mtime": 1792821336.317088,
-    "seen": 1792821694.4860106,
-    "ast_hash": "e3cf58ca7c8aeeb444195fbf1a197444",
+    "mtime": 1792824043.1606255,
+    "seen": 1792824236.6422436,
+    "ast_hash": "18b715c5f9d36b41c667dc399f26bac8",
     "semantic_hash": ""
   },
   "src/lib/matchmaker.js": {
@@ -252,9 +252,9 @@
     "semantic_hash": ""
   },
   "e2e/session.spec.js": {
-    "mtime": 1792821058.433839,
-    "seen": 1792821694.4859748,
-    "ast_hash": "d40f3c3de8888ed87da15fb7a06ad9b9",
+    "mtime": 1792824138.8049755,
+    "seen": 1792824236.6421733,
+    "ast_hash": "126dae87a8a4a45d7a2913a4521c850d",
     "semantic_hash": ""
   },
   "playwright.config.js": {
@@ -495,6 +495,18 @@
     "mtime": 1792821406.0681798,
     "seen": 1792821694.4860268,
     "ast_hash": "56c6ffd1be7d5335f4b17989da3a3598",
+    "semantic_hash": ""
+  },
+  "src/lib/names.js": {
+    "mtime": 1792823960.696102,
+    "seen": 1792824236.6422505,
+    "ast_hash": "4dfde8a771d6a26bebdc60a730a6486d",
+    "semantic_hash": ""
+  },
+  "src/lib/names.test.js": {
+    "mtime": 1792823960.7670214,
+    "seen": 1792824236.6422522,
+    "ast_hash": "eacbb0a4ce2bf30f6629886d91be885b",
     "semantic_hash": ""
   }
 }

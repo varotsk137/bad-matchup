@@ -1,4 +1,5 @@
 import { courtSize, isAvailable, totalCapacity } from '../lib/matchmaker'
+import { MAX_COURT_NAME, cleanName, clipName } from '../lib/names'
 import { Button, Card, Empty, Input, Segmented, cx } from './ui'
 
 function CourtIcon({ type, on }) {
@@ -72,8 +73,9 @@ export default function CourtsTab({ state, t, actions }) {
         </Card>
       ) : (
         <div className="space-y-3">
-          {state.courts.map((c) => {
+          {state.courts.map((c, i) => {
             const on = c.enabled !== false
+            const blank = !cleanName(c.name)
             return (
               <Card key={c.id} className={cx('p-3.5', !on && 'opacity-60')}>
                 <div className="flex items-center gap-3">
@@ -81,10 +83,24 @@ export default function CourtsTab({ state, t, actions }) {
                   <div className="min-w-0 flex-1">
                     <Input
                       value={c.name}
-                      onChange={(e) => actions.updateCourt(c.id, { name: e.target.value })}
+                      onChange={(e) =>
+                        actions.updateCourt(c.id, {
+                          name: clipName(e.target.value, MAX_COURT_NAME),
+                        })
+                      }
+                      // a court is never left nameless: an emptied field goes back to its number
+                      onBlur={() =>
+                        actions.updateCourt(c.id, { name: cleanName(c.name) || String(i + 1) })
+                      }
                       aria-label={t('courtName')}
-                      className="h-9 font-semibold"
+                      aria-invalid={blank}
+                      className={cx('h-9 font-semibold', blank && 'border-rose-400')}
                     />
+                    {blank && (
+                      <p className="mt-1 text-xs text-rose-600 dark:text-rose-400" role="alert">
+                        {t('courtNameEmpty', { n: i + 1 })}
+                      </p>
+                    )}
                     <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                       {t(c.type === 'singles' ? 'singles' : 'doubles')} · {courtSize(c)}{' '}
                       {t('playersUnit')}

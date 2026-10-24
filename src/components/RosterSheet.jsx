@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { PLAYER_MAX } from '../lib/names'
 import { Button, Empty, Input, Sheet, cx } from './ui'
 
 /**
@@ -25,6 +26,15 @@ export default function RosterSheet({ open, onClose, state, t, actions, setToast
   }
 
   const load = (roster, mode) => {
+    const here = new Set(current.map((p) => p.name))
+    const after =
+      mode === 'append'
+        ? current.length + roster.players.filter((p) => !here.has(p.name)).length
+        : roster.players.length
+    if (after > PLAYER_MAX) {
+      setToast?.(t('playersMaxReached', { max: PLAYER_MAX }), 'error')
+      return
+    }
     if (mode === 'replace') {
       const risky = current.length > 0 || state.rounds.length > 0
       if (risky && !confirm(t('rosterLoadConfirm', { name: roster.name }))) return

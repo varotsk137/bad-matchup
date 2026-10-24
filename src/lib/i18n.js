@@ -40,6 +40,40 @@ const dict = {
     th: 'พิมพ์ชื่อบรรทัดละคน (หรือคั่นด้วยจุลภาค)',
     en: 'One name per line (or comma separated)',
   },
+  bulkAddRules: {
+    th: 'ชื่อละไม่เกิน {max} ตัวอักษร ห้ามซ้ำ · เพิ่มได้อีก {room} คน',
+    en: 'Up to {max} characters each, no repeats · room for {room} more',
+  },
+  bulkFix: {
+    th: 'ยังไม่ได้เพิ่มใคร แก้รายการเหล่านี้ก่อน',
+    en: 'Nobody was added yet. Fix these first:',
+  },
+  bulkOver: {
+    th: 'เกินไป {n} คน รวมแล้วมีได้ไม่เกิน {max} คน',
+    en: '{n} too many: there can be at most {max} players',
+  },
+  name_empty: { th: 'ใส่ชื่อก่อน', en: 'Type a name first' },
+  name_tooLong: {
+    th: '"{name}" ยาวเกิน {max} ตัวอักษร',
+    en: '"{name}" is longer than {max} characters',
+  },
+  name_duplicate: {
+    th: 'มี "{name}" อยู่แล้ว เติมอะไรต่อท้ายให้ไม่ซ้ำ เช่น "{name} ก."',
+    en: '"{name}" is already here. Add something to tell them apart, e.g. "{name} B."',
+  },
+  playersMany: {
+    th: 'มี {n} คนแล้ว ตารางจะยาวขึ้นและจัดช้าลง (เพิ่มได้สูงสุด {max} คน)',
+    en: '{n} players: the schedule gets long and slower to build (at most {max})',
+  },
+  playersMaxReached: {
+    th: 'ครบ {max} คนแล้ว ลบคนที่ไม่มาออกก่อนจึงจะเพิ่มได้',
+    en: 'That is the {max}-player limit. Remove someone who is not here to add more.',
+  },
+  playersFull: { th: 'ครบ {max} คนแล้ว', en: '{max} players: full' },
+  courtNameEmpty: {
+    th: 'ชื่อคอร์ทว่างไม่ได้ ถ้าปล่อยว่างจะใช้ "{n}"',
+    en: 'A court needs a name. Left empty, it becomes "{n}".',
+  },
   level: { th: 'ระดับฝีมือ', en: 'Skill level' },
   gender: { th: 'เพศ', en: 'Gender' },
   male: { th: 'ชาย', en: 'Male' },
