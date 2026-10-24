@@ -10,11 +10,11 @@ import {
 import CostSplitSheet from './CostSplitSheet'
 import MatchCard from './MatchCard'
 import ScheduleTable from './ScheduleTable'
+import SwapSheet from './SwapSheet'
 import { analyse } from './FairnessReport'
 import HelpSheet from './HelpSheet'
 import { rosterChange } from '../lib/roster'
 import RoundAdvisor from './RoundAdvisor'
-import { GenderDot, LevelBadge } from './PlayerBits'
 import { Button, Card, Empty, Sheet, cx } from './ui'
 
 const MAX_AHEAD = 100
@@ -71,7 +71,10 @@ export default function PlayTab({
   const [splitOpen, setSplitOpen] = useState(false)
   // undefined = "follow the play" (open the first unfinished round); a string id
   // pins one open; null = everything shut
-  const [openId, setOpenId] = useState(undefined)
+  // which rounds are open; undefined means the default: the round being
+  // played and the one after it
+  const [openIds, setOpenId] = useState(undefined)
+  const [swapRoundId, setSwapRoundId] = useState(null)
 
   const mode = state.options.mode
 
@@ -128,9 +131,14 @@ export default function PlayTab({
       setSel({ roundId, slot })
       return
     }
+    setSel(null)
+    doSwap(roundId, a, b)
+  }
+
+  /** Swaps two places in a round, with an undo in the toast. */
+  const doSwap = (roundId, a, b) => {
     const before = state.rounds.find((r) => r.id === roundId)
     actions.swapInRound(roundId, a, b)
-    setSel(null)
     if (before)
       setToast(t('swapped', { a: slotName(before, a), b: slotName(before, b) }), 'info', {
         label: t('undo'),
@@ -243,8 +251,14 @@ export default function PlayTab({
   const indexed = state.rounds.map((round, i) => ({ round, number: i + 1 }))
   const active = indexed.filter((x) => !isArchived(x.round))
   const archived = indexed.filter((x) => isArchived(x.round))
-  const firstActiveId = active[0]?.round.id
-  const effectiveOpen = openId === undefined ? firstActiveId : openId
+  const nowId = active[0]?.round.id
+  const nextId = active[1]?.round.id
+  const openSet = new Set(openIds ?? [nowId, nextId].filter(Boolean))
+  const toggleOpen = (id) => {
+    const next = new Set(openSet)
+    next.has(id) ? next.delete(id) : next.add(id)
+    setOpenId([...next])
+  }
 
   /**
    * Finishing the last match of the round you were looking at hands the focus
@@ -252,7 +266,7 @@ export default function PlayTab({
    */
   const onMatchDone = (round, matchId) => {
     const willFinish = round.matches.every((m) => (m.id === matchId ? !m.done : m.done))
-    if (willFinish && openId === round.id) setOpenId(undefined)
+    if (willFinish && round.id === nowId) setOpenId(undefined)
     actions.toggleMatchDone(round.id, matchId)
   }
 
@@ -263,8 +277,10 @@ export default function PlayTab({
   const roundProps = ({ round, number }) => ({
     round,
     number,
-    open: effectiveOpen === round.id,
-    onToggleOpen: () => setOpenId(effectiveOpen === round.id ? null : round.id),
+    open: openSet.has(round.id),
+    onToggleOpen: () => toggleOpen(round.id),
+    tag: round.id === nowId ? 'now' : round.id === nextId ? 'next' : null,
+    onSwap: readOnly ? null : () => setSwapRoundId(round.id),
     priorRounds: state.rounds.slice(0, number - 1),
     players: state.players,
     playersById,
@@ -329,6 +345,16 @@ export default function PlayTab({
             </button>
           </div>
           <HelpSheet open={helpOpen} onClose={() => setHelpOpen(false)} t={t} />
+          {swapRoundId && (
+            <SwapSheet
+              round={state.rounds.find((r) => r.id === swapRoundId)}
+              number={state.rounds.findIndex((r) => r.id === swapRoundId) + 1}
+              playersById={playersById}
+              t={t}
+              onSwap={(a, b) => doSwap(swapRoundId, a, b)}
+              onClose={() => setSwapRoundId(null)}
+            />
+          )}
           <Sheet
             open={reshuffleOpen}
             onClose={() => setReshuffleOpen(false)}
@@ -848,6 +874,8 @@ function RoundCard({
   readOnly = false,
   canScore = false,
   courtOrder = new Map(),
+  tag = null,
+  onSwap = null,
 }) {
   const quality = useMemo(
     () => (open ? roundQuality(round, players, priorRounds) : null),
@@ -861,41 +889,66 @@ function RoundCard({
     <Card
       className={cx(
         'animate-pop overflow-hidden',
-        open && 'ring-1 ring-brand-500/30',
+        tag === 'now' ? 'ring-2 ring-brand-500/70' : open && 'ring-1 ring-brand-500/30',
         archived && !open && 'opacity-75'
       )}
     >
-      <button
-        onClick={onToggleOpen}
-        className="flex w-full items-center gap-2 px-3 py-2.5 text-left"
-      >
-        {/* label before the number: Thai reads "รอบที่ 6", not "6 รอบที่" */}
-        <span className="shrink-0 text-sm font-bold">
-          {t('round')} {number}
-        </span>
-        {allDone && (
-          <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-brand-600 text-[10px] font-bold text-white">
-            ✓
+      <div className="flex items-center">
+        <button
+          onClick={onToggleOpen}
+          className="flex min-w-0 flex-1 items-center gap-2 py-2.5 pl-3 text-left"
+        >
+          {/* label before the number: Thai reads "รอบที่ 6", not "6 รอบที่" */}
+          <span className="shrink-0 text-sm font-bold">
+            {t('round')} {number}
           </span>
-        )}
-        {!open && (
-          <span className="min-w-0 flex-1 truncate text-xs text-slate-400 dark:text-slate-500">
-            {round.matches
-              .map((m) =>
-                [...m.teamA, ...m.teamB].map((id) => playersById.get(id)?.name ?? '—').join(' ')
-              )
-              .join(' · ')}
+          {allDone && (
+            <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-brand-600 text-[10px] font-bold text-white">
+              ✓
+            </span>
+          )}
+          {tag && !allDone && (
+            <span
+              className={cx(
+                'shrink-0 rounded-full px-2 py-px text-[10.5px] font-bold',
+                tag === 'now'
+                  ? 'bg-brand-600 text-white'
+                  : 'bg-accent-100 text-accent-800 dark:bg-accent-900/50 dark:text-accent-200'
+              )}
+            >
+              {t(tag === 'now' ? 'roundNow' : 'roundNext')}
+            </span>
+          )}
+          {!open && (
+            <span className="min-w-0 flex-1 truncate text-xs text-slate-400 dark:text-slate-500">
+              {round.matches
+                .map((m) =>
+                  [...m.teamA, ...m.teamB]
+                    .map((id) => playersById.get(id)?.name ?? '—')
+                    .join(' ')
+                )
+                .join(' · ')}
+            </span>
+          )}
+          <span className="ml-auto shrink-0 text-[11px] text-slate-400 tabular-nums dark:text-slate-500">
+            {t('matchesDone', { a: doneCount, b: round.matches.length })}
           </span>
+          <Chevron open={open} />
+        </button>
+        {open && onSwap && !allDone && (
+          <button
+            onClick={onSwap}
+            className="press mr-2 ml-1 inline-flex h-8 shrink-0 items-center gap-1 rounded-lg border-(length:--line-w) border-edge-strong bg-slate-50 px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+          >
+            <span aria-hidden>⇄</span>
+            {t('swapButton')}
+          </button>
         )}
-        <span className="ml-auto shrink-0 text-[11px] text-slate-400 tabular-nums dark:text-slate-500">
-          {t('matchesDone', { a: doneCount, b: round.matches.length })}
-        </span>
-        <Chevron open={open} />
-      </button>
+      </div>
 
       {open && (
         <div className="space-y-2.5 px-3 pb-3">
-          <div className="grid gap-2.5 sm:grid-cols-2">
+          <div className="grid gap-2 md:grid-cols-2">
             {round.matches.map((m) => (
               <MatchCard
                 key={m.id}
@@ -933,20 +986,12 @@ function RoundCard({
                 const p = playersById.get(id)
                 if (!p) return null
                 const isSel = sel?.bench && sel.playerId === id
-                // same height and make-up as a court seat, so swapping one
-                // for the other reads as moving a chip between two places
+                // plain names, like the seats above: no boxes to read past
                 const chip =
-                  'inline-flex h-10 items-center gap-1.5 rounded-lg border bg-slate-50 px-2.5 text-sm font-semibold dark:bg-slate-900'
-                const body = (
-                  <>
-                    <GenderDot gender={p.gender} />
-                    {p.name}
-                    <LevelBadge level={p.level} />
-                  </>
-                )
+                  'inline-flex h-8 items-center rounded-md px-1.5 text-sm font-medium text-slate-600 dark:text-slate-300'
                 return readOnly ? (
-                  <span key={id} className={cx(chip, 'border-slate-200 dark:border-slate-700')}>
-                    {body}
+                  <span key={id} className={chip}>
+                    {p.name}
                   </span>
                 ) : (
                   <button
@@ -955,12 +1000,10 @@ function RoundCard({
                     className={cx(
                       chip,
                       'transition active:scale-95',
-                      isSel
-                        ? 'border-accent-500 ring-2 ring-accent-500 ring-offset-1 dark:ring-offset-slate-900'
-                        : 'border-slate-200 dark:border-slate-700'
+                      isSel && 'bg-accent-100 ring-2 ring-accent-500 dark:bg-accent-900/40'
                     )}
                   >
-                    {body}
+                    {p.name}
                   </button>
                 )
               })}

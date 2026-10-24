@@ -1,20 +1,17 @@
-import { GenderDot, LevelBadge } from './PlayerBits'
 import { courtTone, cx } from './ui'
 
-const SIDE = {
-  A: {
-    wrap: 'bg-sky-50 border-sky-200 dark:bg-sky-950/30 dark:border-sky-900/60',
-    chip: 'border-sky-200/80 bg-slate-50 dark:border-sky-900/60 dark:bg-slate-900',
-    win: 'ring-2 ring-sky-500',
-  },
-  B: {
-    wrap: 'bg-rose-50 border-rose-200 dark:bg-rose-950/30 dark:border-rose-900/60',
-    chip: 'border-rose-200/80 bg-slate-50 dark:border-rose-900/60 dark:bg-slate-900',
-    win: 'ring-2 ring-rose-500',
-  },
+/** Team colours live in the text, like the table view — no tinted boxes. */
+export const TEAM_TEXT = {
+  A: 'text-sky-700 dark:text-sky-300',
+  B: 'text-rose-700 dark:text-rose-300',
 }
 
-function Slot({ player, team, idx, matchId, selected, onTap, locked, t }) {
+const SCORE_BOX = {
+  A: 'border-sky-300 text-sky-800 focus:border-sky-500 focus:ring-sky-500/30 dark:border-sky-800 dark:text-sky-200',
+  B: 'border-rose-300 text-rose-800 focus:border-rose-500 focus:ring-rose-500/30 dark:border-rose-800 dark:text-rose-200',
+}
+
+function Slot({ player, team, idx, matchId, selected, onTap, locked, winner, t }) {
   const isSelected =
     selected &&
     !selected.bench &&
@@ -23,6 +20,7 @@ function Slot({ player, team, idx, matchId, selected, onTap, locked, t }) {
     selected.idx === idx
 
   const handle = () => onTap({ matchId, team, idx })
+  const ring = isSelected && 'bg-accent-100 ring-2 ring-accent-500 dark:bg-accent-900/40'
 
   if (!player) {
     return (
@@ -30,11 +28,9 @@ function Slot({ player, team, idx, matchId, selected, onTap, locked, t }) {
         disabled={locked}
         onClick={handle}
         className={cx(
-          'flex h-10 flex-1 items-center justify-center rounded-lg border border-dashed text-xs font-medium transition',
-          isSelected
-            ? 'border-accent-500 bg-accent-50 text-accent-700 dark:bg-accent-900/40 dark:text-accent-200'
-            : 'border-slate-300 text-slate-400 dark:border-slate-700 dark:text-slate-500',
-          !locked && 'hover:border-brand-400 active:scale-[0.98]'
+          'w-full truncate rounded-md border border-dashed border-slate-300 px-1 py-0.5 text-xs text-slate-400 dark:border-slate-700 dark:text-slate-500',
+          team === 'B' ? 'text-right' : 'text-left',
+          ring
         )}
       >
         + {t('emptySlot')}
@@ -46,65 +42,52 @@ function Slot({ player, team, idx, matchId, selected, onTap, locked, t }) {
     <button
       disabled={locked}
       onClick={handle}
+      title={player.name}
       className={cx(
-        'flex h-10 min-w-0 flex-1 items-center gap-1.5 rounded-lg border px-2 text-left transition',
-        SIDE[team].chip,
-        isSelected && 'ring-2 ring-accent-500 ring-offset-1 dark:ring-offset-slate-900',
-        !locked && 'active:scale-[0.98]'
+        'block w-full truncate rounded-md px-1 py-0.5 text-sm leading-snug transition',
+        team === 'B' ? 'text-right' : 'text-left',
+        TEAM_TEXT[team],
+        winner ? 'font-extrabold' : 'font-semibold',
+        !locked && 'active:scale-[0.98]',
+        ring
       )}
     >
-      <GenderDot gender={player.gender} />
-      <span className="min-w-0 flex-1 truncate text-sm font-semibold">{player.name}</span>
-      <LevelBadge level={player.level} />
+      {player.name}
     </button>
   )
 }
 
-const SCORE_TONE = {
-  A: {
-    marker: '🟦',
-    box: 'border-sky-300 bg-sky-50 text-sky-800 focus:border-sky-500 focus:ring-sky-500/30 dark:border-sky-800 dark:bg-sky-950/50 dark:text-sky-200',
-  },
-  B: {
-    marker: '🟥',
-    box: 'border-rose-300 bg-rose-50 text-rose-800 focus:border-rose-500 focus:ring-rose-500/30 dark:border-rose-800 dark:bg-rose-950/50 dark:text-rose-200',
-  },
-}
-
-/** Carries its team's colour and marker, so nobody keys the score into the wrong side. */
+/** Optional: a match can be finished with both boxes left empty. */
 function ScoreBox({ value, onChange, disabled, side }) {
-  const tone = SCORE_TONE[side]
   return (
-    <span className="inline-flex shrink-0 items-center gap-0.5">
-      <span className="text-[9px] leading-none" aria-hidden>
-        {tone.marker}
-      </span>
-      <input
-        type="number"
-        inputMode="numeric"
-        min={0}
-        max={99}
-        disabled={disabled}
-        value={value ?? ''}
-        onChange={(e) => {
-          const raw = e.target.value
-          if (raw === '') return onChange(null)
-          const n = Math.max(0, Math.min(99, Number(raw)))
-          onChange(Number.isNaN(n) ? null : n)
-        }}
-        placeholder="–"
-        aria-label={`score ${side}`}
-        className={cx(
-          'h-8 w-10 rounded-md border text-center text-base font-bold tabular-nums',
-          'focus:ring-2 focus:outline-none',
-          'disabled:opacity-80',
-          tone.box
-        )}
-      />
-    </span>
+    <input
+      type="number"
+      inputMode="numeric"
+      min={0}
+      max={99}
+      disabled={disabled}
+      value={value ?? ''}
+      onChange={(e) => {
+        const raw = e.target.value
+        if (raw === '') return onChange(null)
+        const n = Math.max(0, Math.min(99, Number(raw)))
+        onChange(Number.isNaN(n) ? null : n)
+      }}
+      placeholder="–"
+      aria-label={`score ${side}`}
+      className={cx(
+        'h-9 w-9 shrink-0 rounded-lg border bg-slate-50 text-center text-base font-bold tabular-nums dark:bg-slate-950',
+        'focus:ring-2 focus:outline-none disabled:opacity-80',
+        SCORE_BOX[side]
+      )}
+    />
   )
 }
 
+/**
+ * One match on one row: the blue side (players 1, 2), its score, "vs", the
+ * red side's score and the red side (players 3, 4), then the finish button.
+ */
 export default function MatchCard({
   match,
   playersById,
@@ -126,17 +109,10 @@ export default function MatchCard({
         : 'B'
       : null
 
-  const renderTeam = (team) => {
+  const side = (team) => {
     const ids = team === 'A' ? match.teamA : match.teamB
-    const isWinner = match.done && winner === team
     return (
-      <div
-        className={cx(
-          'flex items-center gap-1.5 rounded-xl border p-1',
-          SIDE[team].wrap,
-          isWinner && SIDE[team].win
-        )}
-      >
+      <div className="min-w-0 flex-1 space-y-0.5">
         {ids.map((id, idx) => (
           <Slot
             key={`${team}-${idx}`}
@@ -147,6 +123,7 @@ export default function MatchCard({
             selected={selected}
             onTap={onTap}
             locked={!editable}
+            winner={winner === team}
             t={t}
           />
         ))}
@@ -154,88 +131,82 @@ export default function MatchCard({
     )
   }
 
+  const check = (
+    <svg
+      viewBox="0 0 20 20"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+    >
+      <path d="m5 10.5 3.5 3.5L15 7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+
   return (
     <div
       className={cx(
-        // min-w-0: a grid item, so a very long name truncates instead of
-        // stretching the card past the round and hiding its other team
-        'min-w-0 rounded-xl border-(length:--line-w) p-2 transition',
+        // min-w-0: a grid item, so a long name truncates instead of
+        // stretching the row past the round
+        'flex min-w-0 items-center gap-1.5 rounded-xl border-(length:--line-w) px-1.5 py-1.5 transition',
         match.done
-          ? 'border-slate-200 bg-slate-50/60 dark:border-slate-800 dark:bg-slate-800/20'
+          ? 'border-slate-200 bg-slate-50/60 opacity-70 dark:border-slate-800 dark:bg-slate-800/20'
           : 'border-edge bg-slate-50 dark:bg-slate-900'
       )}
     >
-      {renderTeam('A')}
+      <span
+        className={cx(
+          'font-display max-w-[3.25rem] shrink-0 truncate rounded-[var(--radius-pill)] border-(length:--line-w) border-btn-edge px-1.5 py-0.5 text-[10px]',
+          courtTone(courtIndex)
+        )}
+        title={match.courtName}
+      >
+        {match.courtName}
+      </span>
 
-      <div className="flex items-center gap-2 py-1">
+      {side('A')}
+
+      <ScoreBox
+        value={match.scoreA}
+        onChange={(v) => onScore(match.id, { scoreA: v })}
+        disabled={readOnly}
+        side="A"
+      />
+      <span className="shrink-0 text-[10px] font-bold text-slate-400">vs</span>
+      <ScoreBox
+        value={match.scoreB}
+        onChange={(v) => onScore(match.id, { scoreB: v })}
+        disabled={readOnly}
+        side="B"
+      />
+
+      {side('B')}
+
+      {readOnly ? (
         <span
           className={cx(
-            'font-display max-w-[60%] min-w-0 truncate rounded-[var(--radius-pill)] border-(length:--line-w) border-btn-edge px-2 py-0.5 text-[10px]',
-            courtTone(courtIndex)
+            'grid h-10 w-10 shrink-0 place-items-center rounded-lg',
+            match.done ? 'bg-brand-600 text-white' : 'text-transparent'
           )}
-          title={match.courtName}
+          aria-label={match.done ? t('finishGame') : undefined}
         >
-          {match.courtName}
+          {match.done && check}
         </span>
-        {match.type === 'singles' && (
-          <span className="shrink-0 text-[10px] font-medium text-slate-400">
-            {t('singles')}
-          </span>
-        )}
-        <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
-        <ScoreBox
-          value={match.scoreA}
-          onChange={(v) => onScore(match.id, { scoreA: v })}
-          disabled={match.done || readOnly}
-          side="A"
-        />
-        <span className="text-[10px] font-bold text-slate-400">:</span>
-        <ScoreBox
-          value={match.scoreB}
-          onChange={(v) => onScore(match.id, { scoreB: v })}
-          disabled={match.done || readOnly}
-          side="B"
-        />
-        {readOnly ? (
-          match.done && (
-            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-brand-600 text-white">
-              <svg
-                viewBox="0 0 20 20"
-                className="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-              >
-                <path d="m5 10.5 3.5 3.5L15 7" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </span>
-          )
-        ) : (
-          <button
-            onClick={() => onToggleDone(match.id)}
-            aria-label={t(match.done ? 'reopen' : 'finishGame')}
-            title={t(match.done ? 'reopen' : 'finishGame')}
-            className={cx(
-              'grid h-8 w-8 shrink-0 place-items-center rounded-md transition active:scale-95',
-              match.done
-                ? 'bg-brand-600 text-white'
-                : 'border border-slate-300 text-slate-400 hover:border-brand-500 hover:text-brand-600 dark:border-slate-700'
-            )}
-          >
-            <svg
-              viewBox="0 0 20 20"
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-            >
-              <path d="m5 10.5 3.5 3.5L15 7" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-        )}
-      </div>
-
-      {renderTeam('B')}
+      ) : (
+        <button
+          onClick={() => onToggleDone(match.id)}
+          aria-label={t(match.done ? 'reopen' : 'finishGame')}
+          title={t(match.done ? 'reopen' : 'finishGame')}
+          className={cx(
+            'grid h-10 w-10 shrink-0 place-items-center rounded-lg text-xs font-bold transition active:scale-95',
+            match.done
+              ? 'bg-brand-600 text-white'
+              : 'border border-slate-300 text-slate-600 hover:border-brand-500 hover:text-brand-700 dark:border-slate-700 dark:text-slate-300'
+          )}
+        >
+          {match.done ? check : t('finishShort')}
+        </button>
+      )}
     </div>
   )
 }
