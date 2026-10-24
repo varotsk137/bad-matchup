@@ -163,7 +163,7 @@ function Header({
         </div>
         <button
           onClick={onHistory}
-          className="grid h-8 w-8 place-items-center rounded-lg border border-chrome-edge bg-slate-50/60 text-slate-700 dark:border-slate-700 dark:bg-transparent dark:text-slate-300"
+          className="grid h-11 w-11 place-items-center rounded-lg border border-chrome-edge bg-slate-50/60 text-slate-700 dark:border-slate-700 dark:bg-transparent dark:text-slate-300"
           aria-label={t('historyTitle')}
           title={t('historyTitle')}
         >
