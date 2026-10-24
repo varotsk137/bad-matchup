@@ -1,18 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
 import { version } from '../../package.json'
 import { DEFAULT_OPTIONS, DEFAULT_WEIGHTS } from '../lib/matchmaker'
-import { DEFAULT_SKIN, SKINS, loadSkinFont } from '../lib/skins'
+import { BASE_SKINS, DEFAULT_SKIN, EXTRA_SKINS, SKINS, loadSkinFont } from '../lib/skins'
 import { exportState, importState } from '../lib/storage'
 import { RestModeHelp } from './HelpSheet'
 import PaymentCard from './PaymentCard'
 import PresetCard from './PresetCard'
 import { InstallRow } from './PwaBits'
 import RoomHistoryCard from './RoomHistoryCard'
-import { Button, Card, SectionTitle, Segmented, Slider, Toggle, cx } from './ui'
+import { Button, Card, SectionTitle, Segmented, Sheet, Slider, Toggle, cx } from './ui'
 
 export default function SettingsTab({ state, t, actions, setToast }) {
   const fileRef = useRef(null)
   const [restHelp, setRestHelp] = useState(false)
+  const [moreSkins, setMoreSkins] = useState(false)
+  const activeSkin = state.skin || DEFAULT_SKIN
+  const activeExtra = EXTRA_SKINS.find((s) => s.id === activeSkin)
 
   // the skin picker names each skin in its own font
   useEffect(() => SKINS.forEach(loadSkinFont), [])
@@ -63,45 +66,58 @@ export default function SettingsTab({ state, t, actions, setToast }) {
           role="radiogroup"
           aria-label={t('skin')}
         >
-          {SKINS.map((s) => {
-            const on = (state.skin || DEFAULT_SKIN) === s.id
-            return (
-              <button
-                key={s.id}
-                type="button"
-                role="radio"
-                aria-checked={on}
-                onClick={() => actions.set({ skin: s.id })}
-                className={cx(
-                  'rounded-xl border-(length:--line-w) p-1.5 text-left transition active:scale-[0.98]',
-                  on
-                    ? 'border-brand-600 ring-2 ring-brand-500/40'
-                    : 'border-edge hover:border-slate-400'
-                )}
-              >
-                <SkinSwatch preview={s.preview} />
-                <span
-                  className="flex items-center justify-between gap-1 px-1 pt-1.5 text-sm"
-                  style={{ fontFamily: s.font }}
-                >
-                  {t(s.label)}
-                  {on && (
-                    <svg
-                      viewBox="0 0 20 20"
-                      className="h-4 w-4 text-brand-600"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.7 5.3a1 1 0 0 1 0 1.4l-8 8a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.4L8 12.6l7.3-7.3a1 1 0 0 1 1.4 0Z"
-                      />
-                    </svg>
-                  )}
-                </span>
-              </button>
-            )
-          })}
+          {BASE_SKINS.map((s) => (
+            <SkinTile
+              key={s.id}
+              skin={s}
+              on={activeSkin === s.id}
+              t={t}
+              onPick={() => actions.set({ skin: s.id })}
+            />
+          ))}
+          {/* the sixth tile: the extra skin in use, or the way into the sheet */}
+          {activeExtra ? (
+            <SkinTile
+              skin={activeExtra}
+              on
+              t={t}
+              note={t('skinMoreChange')}
+              onPick={() => setMoreSkins(true)}
+            />
+          ) : (
+            <button
+              type="button"
+              onClick={() => setMoreSkins(true)}
+              className="grid min-h-[5.25rem] place-content-center rounded-xl border-(length:--line-w) border-dashed border-edge-strong p-1.5 text-center transition hover:border-slate-400 active:scale-[0.98]"
+            >
+              <span className="text-sm font-semibold">+ {t('skinMore')}</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400">
+                {t('skinMoreCount', { n: EXTRA_SKINS.length })}
+              </span>
+            </button>
+          )}
         </div>
+        <Sheet open={moreSkins} onClose={() => setMoreSkins(false)} title={t('skinMore')}>
+          <p className="mb-2 text-sm text-slate-500 dark:text-slate-400">{t('skinMoreHint')}</p>
+          <div
+            className="grid grid-cols-2 gap-2 sm:grid-cols-3"
+            role="radiogroup"
+            aria-label={t('skinMore')}
+          >
+            {EXTRA_SKINS.map((s) => (
+              <SkinTile
+                key={s.id}
+                skin={s}
+                on={activeSkin === s.id}
+                t={t}
+                onPick={() => {
+                  actions.set({ skin: s.id })
+                  setMoreSkins(false)
+                }}
+              />
+            ))}
+          </div>
+        </Sheet>
       </Card>
 
       <PaymentCard t={t} setToast={setToast} />
@@ -321,6 +337,47 @@ export default function SettingsTab({ state, t, actions, setToast }) {
         🏸 {t('appName')} · v{version}
       </p>
     </div>
+  )
+}
+
+/** One skin in a picker: its swatch, its name in its own font, a tick when in use. */
+function SkinTile({ skin: s, on, t, onPick, note }) {
+  return (
+    <button
+      type="button"
+      role="radio"
+      aria-checked={on}
+      onClick={onPick}
+      className={cx(
+        'rounded-xl border-(length:--line-w) p-1.5 text-left transition active:scale-[0.98]',
+        on ? 'border-brand-600 ring-2 ring-brand-500/40' : 'border-edge hover:border-slate-400'
+      )}
+    >
+      <SkinSwatch preview={s.preview} />
+      <span
+        className="flex items-center justify-between gap-1 px-1 pt-1.5 text-sm"
+        style={{ fontFamily: s.font }}
+      >
+        <span className="min-w-0 truncate">{t(s.label)}</span>
+        {note && (
+          <span className="ml-auto shrink-0 text-[11px] font-sans text-brand-700 underline dark:text-brand-300">
+            {note}
+          </span>
+        )}
+        {on && (
+          <svg
+            viewBox="0 0 20 20"
+            className="h-4 w-4 shrink-0 text-brand-600"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M16.7 5.3a1 1 0 0 1 0 1.4l-8 8a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.4L8 12.6l7.3-7.3a1 1 0 0 1 1.4 0Z"
+            />
+          </svg>
+        )}
+      </span>
+    </button>
   )
 }
 

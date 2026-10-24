@@ -1,7 +1,7 @@
 /**
  * The skins the app can wear. Each one is a block of token values in
  * src/index.css (selected by <html data-skin="…">); this list is what the
- * settings picker shows. A skin only changes the look — layout, wording and
+ * settings picker shows (`extra` ones in their own sheet). A skin only changes the look — layout, wording and
  * matchmaking stay the same.
  *
  * `preview` is a tiny swatch of the skin drawn with inline styles, so the
@@ -127,9 +127,133 @@ export const SKINS = [
       pick: 'oklch(0.89 0.1 170)',
     },
   },
+  // the extra skins: picked from their own sheet, so the main grid stays five
+  {
+    id: 'night',
+    label: 'skinNight',
+    extra: true,
+    font: "'Kanit', 'Noto Sans Thai', sans-serif",
+    fonts: () =>
+      Promise.all([
+        import('@fontsource/kanit/thai-400.css'),
+        import('@fontsource/kanit/thai-500.css'),
+        import('@fontsource/kanit/thai-600.css'),
+        import('@fontsource/kanit/latin-400.css'),
+        import('@fontsource/kanit/latin-500.css'),
+        import('@fontsource/kanit/latin-600.css'),
+      ]),
+    bar: { light: '#cad9eb', dark: '#040c22' },
+    preview: {
+      page: 'oklch(0.915 0.018 250)',
+      card: 'oklch(0.955 0.012 250)',
+      line: '1px solid oklch(0.86 0.024 252)',
+      shadow: '0 1px 0 0 oklch(0.88 0.2 125 / 0.5), 0 2px 8px -2px oklch(0.2 0.05 262 / 0.35)',
+      radius: '0.375rem',
+      brand: 'oklch(0.53 0.165 135)',
+      accent: 'oklch(0.625 0.13 220)',
+      pick: 'oklch(0.9 0.2 125)',
+    },
+  },
+  {
+    id: 'contrast',
+    label: 'skinContrast',
+    extra: true,
+    font: "'Noto Sans Thai', sans-serif",
+    bar: { light: '#ffffff', dark: '#000000' },
+    preview: {
+      page: 'oklch(0.985 0 0)',
+      card: 'oklch(1 0 0)',
+      line: '2px solid oklch(0 0 0)',
+      shadow: 'none',
+      radius: '0.375rem',
+      brand: 'oklch(0.48 0.194 265)',
+      accent: 'oklch(0.565 0.19 35)',
+      pick: 'oklch(0.92 0.19 103)',
+    },
+  },
+  {
+    id: 'feather',
+    label: 'skinFeather',
+    extra: true,
+    font: "'Noto Sans Thai', sans-serif",
+    bar: { light: '#fcfdff', dark: '#0b0f17' },
+    preview: {
+      page: 'oklch(0.975 0.005 250)',
+      card: 'oklch(0.995 0.002 250)',
+      line: '1px solid oklch(0.925 0.008 252)',
+      shadow: '0 1px 2px 0 oklch(0.3 0.02 260 / 0.08)',
+      radius: '0.5rem',
+      brand: 'oklch(0.52 0.165 260)',
+      accent: 'oklch(0.575 0.06 250)',
+      pick: 'oklch(0.995 0.002 250)',
+    },
+  },
+  {
+    id: 'sakura',
+    label: 'skinSakura',
+    extra: true,
+    font: "'Noto Sans Thai', sans-serif",
+    bar: { light: '#fff8fb', dark: '#190b15' },
+    preview: {
+      page: 'oklch(0.958 0.016 352)',
+      card: 'oklch(0.985 0.008 350)',
+      line: '1px solid oklch(0.91 0.024 354)',
+      shadow: '0 6px 18px -10px oklch(0.5 0.15 350 / 0.35)',
+      radius: '9999px',
+      brand: 'oklch(0.51 0.155 350)',
+      accent: 'oklch(0.605 0.16 8)',
+      pick: 'oklch(0.9 0.06 355)',
+    },
+  },
+  {
+    id: 'thai',
+    label: 'skinThai',
+    extra: true,
+    font: "'Taviraj', 'Noto Serif Thai', serif",
+    fonts: () =>
+      Promise.all([
+        import('@fontsource/taviraj/thai-500.css'),
+        import('@fontsource/taviraj/thai-600.css'),
+        import('@fontsource/taviraj/thai-700.css'),
+        import('@fontsource/taviraj/latin-500.css'),
+        import('@fontsource/taviraj/latin-600.css'),
+        import('@fontsource/taviraj/latin-700.css'),
+      ]),
+    bar: { light: '#f5ecda', dark: '#1b0a07' },
+    preview: {
+      page: 'oklch(0.945 0.026 85)',
+      card: 'oklch(0.975 0.016 85)',
+      line: '1px solid oklch(0.89 0.036 84)',
+      shadow: '0 0 0 1px oklch(0.75 0.11 82 / 0.55), 0 2px 6px -2px oklch(0.3 0.06 40 / 0.25)',
+      radius: '0.25rem',
+      brand: 'oklch(0.49 0.155 25)',
+      accent: 'oklch(0.555 0.13 75)',
+      pick: 'oklch(0.82 0.12 85)',
+    },
+  },
+  {
+    id: 'ocean',
+    label: 'skinOcean',
+    extra: true,
+    font: "'Noto Sans Thai', sans-serif",
+    bar: { light: '#d2efec', dark: '#001218' },
+    preview: {
+      page: 'oklch(0.955 0.014 190)',
+      card: 'oklch(0.982 0.008 195)',
+      line: '1px solid oklch(0.905 0.02 188)',
+      shadow: '0 2px 10px -4px oklch(0.4 0.06 205 / 0.3)',
+      radius: '0.75rem',
+      brand: 'oklch(0.5 0.116 195)',
+      accent: 'oklch(0.605 0.15 45)',
+      pick: 'oklch(0.982 0.008 195)',
+    },
+  },
 ]
 
 export const DEFAULT_SKIN = 'classic'
+
+export const BASE_SKINS = SKINS.filter((s) => !s.extra)
+export const EXTRA_SKINS = SKINS.filter((s) => s.extra)
 
 export const isSkin = (id) => SKINS.some((s) => s.id === id)
 
