@@ -2,7 +2,7 @@
   "0": "matchmaker.js",
   "1": "App.jsx",
   "2": "rooms.rules.test.js",
-  "3": "cx",
+  "3": "PlayTab.jsx",
   "4": "exportImage.js",
   "5": "🏸 Bad Matchup",
   "6": "HelpSheet.jsx",
@@ -17,6 +17,7 @@
   "15": "rooms.rules.test.js",
   "16": "make-icons.mjs",
   "17": "ui.jsx",
+  "18": "RoomHistoryCard.jsx",
   "38": "roomRemote.js",
   "51": "App.jsx"
 }
