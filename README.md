@@ -29,6 +29,10 @@ The interface is available in Thai and English.
 ### Players and courts
 - Add players one at a time or in bulk, with gender and a five-step level ladder
   (🐣 NB · 🌱 BG · ⭐ N · 🔥 S · 👑 P). New players start at NB.
+- Names are checked as they are typed: up to 12 characters (counted as they appear on screen, so
+  Thai vowels and tone marks do not use up the limit), never empty, and never the same as a name
+  already in the list. A pasted list adds nobody until every name passes. A note appears from 20
+  players, and 50 is the most a session takes. Court names are up to 12 characters too.
 - Doubles and singles courts. Courts can be switched on and off mid-session.
 - Saved **rosters** (for example "Tuesday group") can replace the current list or be merged into it.
 - Saved **setups** store every setting plus the courts, so a regular session is one tap away.
@@ -61,8 +65,16 @@ The interface is available in Thai and English.
   counting it), with a chosen number of rounds, or starts over.
 - When someone leaves or arrives after the schedule was built, a banner names them and offers a
   one-tap rebuild of the remaining rounds.
-- Swap any two players, including someone on the bench, by tapping their names.
-- Scores are optional. When entered they feed win/loss statistics.
+- The card view shows each match on one row: the blue side, its score, *vs*, the red side's
+  score, the red side, and a large *Done* button. The round being played is outlined and tagged
+  *Playing*, the next one is open and tagged *Next*, and finished rounds drop to the bottom.
+- Swap any two players, including someone on the bench, by tapping their names, or with
+  **Swap players** on a round: pick who comes out, then who goes in, read the summary, swap.
+- Scores are optional and can be corrected after *Done*. When entered they feed win/loss
+  statistics.
+- **Split the bill** (💰): a price per hour for each court, the shuttles used, split evenly and
+  rounded up to the satang (or to whole baht or 5 baht). Show one amount or a list with who has
+  paid, and collect with a PromptPay QR (amount built in) or the organiser's own bank QR image.
 - A **Stamina** view in the schedule table shows each player's streak and rest count.
 
 ### Statistics
@@ -74,14 +86,14 @@ The interface is available in Thai and English.
   players are compared with their fair share.
 
 ### Sharing
-- **Share links** carry the whole schedule inside the URL fragment, in *view only* or
-  *copy and edit* mode. No server is involved.
+- **Share schedule** opens a live room (below). Share links from earlier versions, which carried
+  the schedule inside the URL, still open.
 - **Save as image** renders a clean PNG of the plan (rounds, courts, names and who sits out) for
   the group chat. Levels, stamina, scores and ticks stay on the organiser's screen. On phones the
   image can be saved with a long press, downloaded, or sent through the share sheet.
 
 ### Live rooms (optional, online)
-- **● Live** next to Share opens a live room: everyone holding the link watches the schedule
+- **Share schedule** (*แชร์ตาราง*, *Sharing* while a room is open) opens a live room: everyone holding the link watches the schedule
   change as the organiser edits or ticks matches, instead of waiting for a new image.
 - Two kinds of link: 👀 *watch only*, and ✍️ *tick & score* — which can tick games done and enter
   scores but never change rounds, swap people or edit the list. The tick link can be switched off
@@ -90,6 +102,8 @@ The interface is available in Thai and English.
   room up when the signal returns. Firebase is only downloaded once a room is opened or watched.
 - A room closes when the organiser closes it, or by itself after 12 hours without an update. It is
   kept as it ended, so the link still shows the final results.
+- Settings → *Rooms you have opened* lists the last 30 rooms this device shared or watched, with
+  role and open/closed state; tap one to open it again. The list stays on the device.
 - Backed by Firestore with anonymous sign-in; see `firestore.rules`, tested on the emulator with
   `npm run test:rules`. `npm run emulators` + `npm run dev:emulator` run the app against local
   emulators.
@@ -100,9 +114,10 @@ The interface is available in Thai and English.
 ### Everything else
 - Thai and English, light and dark themes. The first visit follows the system; afterwards the
   user's choice sticks.
-- Five skins — Classic (the default), League, Scoreboard, Editorial and Candy — that change
-  colours, fonts, outlines, shadows and corner shapes. Only the look changes; everything works
-  the same.
+- Eleven skins that change colours, fonts, outlines, shadows and corner shapes. Five sit in
+  Settings — Classic (the default), League, Scoreboard, Editorial and Candy — and *More skins*
+  opens six more: Night court, High contrast, Feather, Sakura, Thai gold and Ocean. A skin picked
+  there takes the sixth tile. Only the look changes; everything works the same.
 - JSON backup export and import.
 - Installable as an app (a service worker via `vite-plugin-pwa`): a one-line invite shows once
   per device for a few seconds, and Settings → *Install as an app* is always there; on iPhone it
