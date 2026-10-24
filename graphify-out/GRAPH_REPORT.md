@@ -1,17 +1,17 @@
-# Graph Report - v3  (2026-10-24)
+# Graph Report - proto-ux-a-c  (2026-10-24)
 
 ## Corpus Check
-- 77 files · ~69,099 words
+- 77 files · ~69,334 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 7 file(s) not represented in the graph (top: (none) 4, .example 1, .rules 1)
 
 ## Summary
-- 546 nodes · 1530 edges · 18 communities (17 shown, 1 thin omitted)
+- 546 nodes · 1530 edges · 19 communities (18 shown, 1 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 11 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `176198f9`
+- Built from commit: `f097a767`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -19,6 +19,7 @@
 - matchmaker.js
 - App.jsx
 - rooms.rules.test.js
+- matchmaker.rules.test.js
 - exportImage.js
 - 🏸 Bad Matchup
 - HelpSheet.jsx
@@ -41,7 +42,7 @@
 3. `Button()` - 32 edges
 4. `Sheet()` - 28 edges
 5. `CostSplitSheet()` - 27 edges
-6. `PlayTab()` - 24 edges
+6. `PlayTab()` - 26 edges
 7. `Card()` - 24 edges
 8. `react` - 21 edges
 9. `PlayersTab()` - 21 edges
@@ -62,11 +63,11 @@
 ## Import Cycles
 - None detected.
 
-## Communities (18 total, 1 thin omitted)
+## Communities (19 total, 1 thin omitted)
 
 ### Community 0 - "matchmaker.js"
-Cohesion: 0.07
-Nodes (71): vitest, analyse(), Chevron(), isArchived(), MODES, PlayTab(), RoundCard(), Stepper() (+63 more)
+Cohesion: 0.08
+Nodes (56): analyse(), Chevron(), isArchived(), MODES, PlayTab(), RoundCard(), Stepper(), HOURS (+48 more)
 
 ### Community 1 - "App.jsx"
 Cohesion: 0.08
@@ -75,6 +76,10 @@ Nodes (31): createEmptyRound(), DEFAULT_LEVEL, DEFAULT_OPTIONS, DEFAULT_WEIGHTS,
 ### Community 2 - "rooms.rules.test.js"
 Cohesion: 0.19
 Nodes (10): players(), PREVIEW_URL, savedState(), seed(), shareHash(), STORAGE_KEY, EIGHT, EIGHT (+2 more)
+
+### Community 3 - "matchmaker.rules.test.js"
+Cohesion: 0.30
+Nodes (15): vitest, generateRounds(), QUICK, situation(), session(), analyse(), build(), courts() (+7 more)
 
 ### Community 4 - "exportImage.js"
 Cohesion: 0.20
@@ -141,16 +146,16 @@ Nodes (53): react-dom, App(), Header(), Icon(), ICONS, TABS, LinkCard(), LiveRoo
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `cx()` connect `ui.jsx` to `matchmaker.js`, `room.js`, `HelpSheet.jsx`, `CostSplitSheet.jsx`, `App.jsx`?**
-  _High betweenness centrality (0.125) - this node is a cross-community bridge._
+  _High betweenness centrality (0.121) - this node is a cross-community bridge._
 - **Are the 2 inferred relationships involving `CostSplitSheet()` (e.g. with `loadPayment()` and `loadSplitView()`) actually correct?**
   _`CostSplitSheet()` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `@fontsource/kanit`, `@fontsource/mali`, `@fontsource/mitr` to the rest of the system?**
   _7 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `matchmaker.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.07037037037037037 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08135593220338982 - nodes in this community are weakly interconnected._
 - **Why does `react` connect `ui.jsx` to `matchmaker.js`, `exportImage.js`, `HelpSheet.jsx`, `CostSplitSheet.jsx`, `room.js`, `package.json`, `App.jsx`?**
-  _High betweenness centrality (0.104) - this node is a cross-community bridge._
+  _High betweenness centrality (0.098) - this node is a cross-community bridge._
 - **Should `App.jsx` be split into smaller, more focused modules?**
   _Cohesion score 0.0797979797979798 - nodes in this community are weakly interconnected._
-- **Why does `vitest` connect `matchmaker.js` to `App.jsx`, `room.js`, `CostSplitSheet.jsx`, `package.json`, `vite.config.js`, `rooms.rules.test.js`, `ui.jsx`, `App.jsx`?**
+- **Why does `vitest` connect `matchmaker.rules.test.js` to `App.jsx`, `room.js`, `CostSplitSheet.jsx`, `package.json`, `vite.config.js`, `rooms.rules.test.js`, `ui.jsx`, `App.jsx`?**
   _High betweenness centrality (0.084) - this node is a cross-community bridge._
