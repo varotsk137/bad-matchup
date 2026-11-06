@@ -1,17 +1,17 @@
-# Graph Report - proto-ux-a-c  (2026-10-24)
+# Graph Report - reload-skills-f78f93  (2026-11-07)
 
 ## Corpus Check
-- 79 files · ~72,456 words
+- 79 files · ~72,883 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 7 file(s) not represented in the graph (top: (none) 4, .example 1, .rules 1)
 
 ## Summary
-- 579 nodes · 1626 edges · 18 communities (17 shown, 1 thin omitted)
+- 579 nodes · 1627 edges · 18 communities (17 shown, 1 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 11 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `1f80dd1f`
+- Built from commit: `a421ad31`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -36,7 +36,7 @@
 - App.jsx
 
 ## God Nodes (most connected - your core abstractions)
-1. `cx()` - 72 edges
+1. `cx()` - 73 edges
 2. `App()` - 49 edges
 3. `Button()` - 33 edges
 4. `Sheet()` - 29 edges
@@ -56,8 +56,8 @@
   src/components/PaymentCard.jsx → src/lib/payment.js
 - `Header()` --calls--> `RoomStatus()`  [EXTRACTED]
   src/App.jsx → src/components/LiveRoomSheet.jsx
-- `App()` --calls--> `CourtsTab()`  [EXTRACTED]
-  src/App.jsx → src/components/CourtsTab.jsx
+- `Header()` --calls--> `cx()`  [EXTRACTED]
+  src/App.jsx → src/components/ui.jsx
 
 ## Import Cycles
 - None detected.
@@ -141,7 +141,7 @@ Nodes (73): firebase, App(), Header(), Icon(), ICONS, loadRemote(), TABS, DEFAUL
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `cx()` connect `cx` to `matchmaker.js`, `PlayersTab.jsx`, `exportImage.js`, `HelpSheet.jsx`, `CostSplitSheet.jsx`, `ui.jsx`, `App.jsx`?**
-  _High betweenness centrality (0.110) - this node is a cross-community bridge._
+  _High betweenness centrality (0.111) - this node is a cross-community bridge._
 - **What connects `@fontsource/bai-jamjuree`, `@fontsource/chakra-petch`, `@fontsource/itim` to the rest of the system?**
   _14 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `matchmaker.js` be split into smaller, more focused modules?**
