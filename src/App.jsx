@@ -145,10 +145,13 @@ function Header({
 }) {
   const darkOnly = !!skinById(state.skin).darkOnly
   return (
-    <header className="sticky top-0 z-40 border-b-(length:--line-w) border-chrome-edge bg-chrome/95 backdrop-blur-md dark:bg-chrome-dark/95">
-      <div className="mx-auto flex h-14 max-w-3xl items-center gap-3 px-4">
-        <span className="app-mascot text-brand-600 dark:text-brand-300">
-          <LineIcon name="shuttle" className="h-6 w-6" />
+    <header className="sticky top-0 z-40 bg-slate-100/80 backdrop-blur-xl backdrop-saturate-150 dark:bg-slate-950/80">
+      <div className="mx-auto flex h-16 max-w-3xl items-center gap-3 px-4">
+        {/* the app mark: a shuttle on an ink tile */}
+        <span className="app-mascot">
+          <span className="grid h-10 w-10 place-items-center rounded-xl bg-slate-900 text-accent-300 shadow-[var(--shadow-btn)] dark:bg-slate-50 dark:text-slate-900">
+            <LineIcon name="shuttle" className="h-5 w-5" />
+          </span>
         </span>
         <div className="min-w-0 flex-1">
           {/* the skin dresses the name: an ink pill in League, plain bold in Classic */}
@@ -168,7 +171,7 @@ function Header({
             </p>
           )}
         </div>
-        <div className="flex shrink-0 items-center rounded-full border border-chrome-edge/40 bg-slate-50/60 p-0.5 dark:border-slate-700 dark:bg-slate-900/40">
+        <div className="flex shrink-0 items-center rounded-full border-(length:--line-w) border-edge bg-slate-50 p-0.5 shadow-[var(--shadow-btn)] dark:bg-slate-900">
           <button
             onClick={onHistory}
             className={HEAD_BTN}
@@ -191,7 +194,7 @@ function Header({
           <button
             onClick={() => actions.set({ lang: state.lang === 'th' ? 'en' : 'th' })}
             className={cx(HEAD_BTN, 'text-xs font-bold tracking-wide')}
-            aria-label={t('language')}
+            aria-label={`${t('language')} ${state.lang === 'th' ? 'TH' : 'EN'}`}
           >
             {state.lang === 'th' ? 'TH' : 'EN'}
           </button>
@@ -200,6 +203,7 @@ function Header({
             disabled={darkOnly}
             className={cx(HEAD_BTN, 'disabled:opacity-50')}
             aria-label={t('theme')}
+            aria-pressed={darkOnly || state.theme === 'dark'}
             title={
               darkOnly ? t('themeLockedDark') : t(state.theme === 'dark' ? 'themeDark' : 'themeLight')
             }
@@ -897,13 +901,13 @@ export default function App() {
                 <span
                   className={cx(
                     'inline-block h-2 w-2 rounded-full',
-                    live.offline || closed ? 'bg-slate-400' : 'animate-pulse bg-rose-500'
+                    live.offline || closed ? 'bg-slate-400' : 'motion-safe:animate-pulse bg-rose-500'
                   )}
                   aria-hidden
                 />
                 {t(closed ? 'liveClosed' : 'liveView')}
               </p>
-              <p className="text-xs text-accent-800/80 dark:text-accent-200/80">
+              <p className="text-xs text-accent-800 dark:text-accent-200">
                 {!closed &&
                   t(live.offline ? 'liveOffline' : canScore ? 'liveMember' : 'liveUpdating')}
                 {time ? `${closed ? '' : ' · '}${t('liveUpdated', { time })}` : ''}
@@ -982,7 +986,7 @@ export default function App() {
                 <LineIcon name="link" />
                 {t('sharedView')}
               </p>
-              <p className="text-xs text-accent-800/80 dark:text-accent-200/80">
+              <p className="text-xs text-accent-800 dark:text-accent-200">
                 {t(shared.mode === 'edit' ? 'sharedEditHint' : 'sharedViewHint')}
                 {shared.session.createdAt
                   ? ` · ${new Date(shared.session.createdAt).toLocaleDateString()}`
@@ -1044,20 +1048,20 @@ export default function App() {
 
       {/* --------------------------------------------------------- tabs */}
       <nav
+        aria-label={t('appName')}
         className={cx(
-          'safe-b fixed inset-x-0 bottom-0 z-40 border-t border-chrome-edge bg-chrome/95 backdrop-blur-md',
-          'md:sticky md:top-14 md:bottom-auto md:border-t-0 md:border-b',
-          'dark:bg-chrome-dark/95'
+          'fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom,0px)+0.75rem)] z-40',
+          'md:sticky md:inset-x-auto md:top-16 md:bottom-auto md:px-3'
         )}
       >
-        <div className="relative mx-auto flex max-w-3xl">
-          {/* one pill that slides to the open tab */}
+        <div className="relative mx-auto flex max-w-md rounded-[1.75rem] border-(length:--line-w) border-edge bg-chrome/90 p-1.5 shadow-[0_12px_32px_-12px_oklch(0.2_0.03_265/0.35)] backdrop-blur-xl backdrop-saturate-150 md:max-w-xl dark:bg-chrome-dark/90">
+          {/* one ink pill that slides to the open tab */}
           <span
             aria-hidden
-            className="nav-pill pointer-events-none absolute inset-y-0 left-0 flex w-1/5 justify-center pt-1.5 md:items-center md:pt-0"
+            className="nav-pill pointer-events-none absolute inset-y-1.5 left-1.5 w-[calc((100%-0.75rem)/5)]"
             style={{ transform: `translateX(${TABS.findIndex((x) => x.key === tab) * 100}%)` }}
           >
-            <span className="h-8 w-14 rounded-full bg-brand-100 md:h-9 md:w-[88%] dark:bg-brand-900/60" />
+            <span className="block h-full w-full rounded-[1.375rem] bg-slate-900 shadow-[var(--shadow-pick)] dark:bg-slate-50" />
           </span>
           {TABS.map((tb) => {
             const active = tab === tb.key
@@ -1067,14 +1071,16 @@ export default function App() {
                 onClick={() => goTo(tb.key)}
                 aria-current={active ? 'page' : undefined}
                 className={cx(
-                  'group relative flex flex-1 flex-col items-center gap-1 pt-1.5 pb-2 text-xs font-medium transition-colors duration-200 md:flex-row md:justify-center md:gap-2 md:py-3 md:text-sm',
-                  active ? 'text-brand-800 dark:text-brand-200' : 'text-slate-500 dark:text-slate-400'
+                  'group relative flex h-14 flex-1 basis-0 flex-col items-center justify-center gap-0.5 rounded-[1.375rem] text-xs font-medium transition-colors duration-200 md:h-11 md:flex-row md:gap-2 md:text-sm',
+                  active
+                    ? 'text-accent-300 dark:text-slate-900'
+                    : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100'
                 )}
               >
-                <span className="grid h-8 w-14 place-items-center transition-transform duration-150 ease-snap group-active:scale-90 md:h-auto md:w-auto">
+                <span className="transition-transform duration-150 ease-snap group-active:scale-90">
                   {ICONS[tb.key]}
                 </span>
-                <span>{t(tb.labelKey)}</span>
+                <span className="leading-4">{t(tb.labelKey)}</span>
               </button>
             )
           })}
@@ -1082,7 +1088,7 @@ export default function App() {
       </nav>
 
       {/* --------------------------------------------------------- body */}
-      <main key={tab} className="animate-tab mx-auto max-w-3xl px-3 pt-4 pb-28 md:pb-10">
+      <main key={tab} className="animate-tab mx-auto max-w-3xl px-4 pt-2 pb-32 md:pt-6 md:pb-12">
         {tab === 'play' && (
           <PlayTab
             state={state}

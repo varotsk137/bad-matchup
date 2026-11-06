@@ -70,7 +70,7 @@ export function TopBars({ t, offline, retrying, onRetry }) {
             setLineBar(false)
           }}
           aria-label={t('close')}
-          className="grid h-7 w-7 shrink-0 place-items-center rounded-full hover:bg-slate-200/70 dark:hover:bg-slate-800"
+          className="-m-2 grid h-11 w-11 shrink-0 place-items-center rounded-full hover:bg-slate-200/70 dark:hover:bg-slate-800"
         >
           <svg
             viewBox="0 0 20 20"

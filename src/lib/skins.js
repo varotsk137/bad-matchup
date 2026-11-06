@@ -16,6 +16,31 @@
  */
 export const SKINS = [
   {
+    id: 'matchday',
+    label: 'skinMatchday',
+    font: "'Kanit', 'Noto Sans Thai', sans-serif",
+    fonts: () =>
+      Promise.all([
+        import('@fontsource/kanit/thai-500.css'),
+        import('@fontsource/kanit/thai-600.css'),
+        import('@fontsource/kanit/latin-500.css'),
+        import('@fontsource/kanit/latin-600.css'),
+        import('@fontsource/kanit/latin-600-italic.css'),
+      ]),
+    bar: { light: '#fcfcfe', dark: '#0e1220' },
+    preview: {
+      page: 'oklch(0.968 0.005 260)',
+      card: 'oklch(0.995 0.002 260)',
+      line: '1px solid oklch(0.925 0.008 260)',
+      shadow: '0 4px 12px -6px oklch(0.2 0.03 265 / 0.25)',
+      radius: '0.75rem',
+      brand: 'oklch(0.36 0.1 264)',
+      accent: 'oklch(0.89 0.2 125)',
+      pick: 'oklch(0.2 0.03 265)',
+      live: { bg: 'oklch(0.89 0.2 125)', ink: 'oklch(0.2 0.03 265)', radius: '9999px' },
+    },
+  },
+  {
     id: 'classic',
     label: 'skinClassic',
     font: "'Noto Sans Thai', sans-serif",
@@ -555,7 +580,7 @@ export const SKINS = [
   },
 ]
 
-export const DEFAULT_SKIN = 'classic'
+export const DEFAULT_SKIN = 'matchday'
 
 export const BASE_SKINS = SKINS.filter((s) => !s.extra)
 export const EXTRA_SKINS = SKINS.filter((s) => s.extra)

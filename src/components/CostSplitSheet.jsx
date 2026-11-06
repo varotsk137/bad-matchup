@@ -331,7 +331,7 @@ export default function CostSplitSheet({ state, t, setToast, goTo, onClose }) {
                   onChange={(e) =>
                     setShuttles(Math.min(999, Number(e.target.value.replace(/\D/g, '')) || 0))
                   }
-                  className="h-full w-11 border-x border-slate-300 bg-transparent text-center text-base font-semibold tabular-nums focus:outline-none dark:border-slate-700"
+                  className="h-full w-11 border-x border-slate-300 bg-transparent text-center text-base font-semibold tabular-nums focus:outline-none focus-visible:bg-brand-50 focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-inset dark:border-slate-700 dark:focus-visible:bg-brand-950"
                 />
                 <button
                   type="button"

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import HelpInsight from './HelpInsight'
 import { REST } from './helpData'
-import { Sheet, cx } from './ui'
+import { Segmented, Sheet, cx } from './ui'
 
 /**
  * The "?" manual. One card per matching mode, each with a small drawing of
@@ -15,7 +15,6 @@ export default function HelpSheet({ open, onClose, t }) {
         <p className="text-sm text-slate-600 dark:text-slate-300">{t('helpIntro')}</p>
 
         <Section
-          emoji="⚖️"
           title={t('modeBalanced')}
           points={[t('helpBalanced1'), t('helpBalanced2'), t('helpBalanced3')]}
         >
@@ -23,7 +22,6 @@ export default function HelpSheet({ open, onClose, t }) {
         </Section>
 
         <Section
-          emoji="🎲"
           title={t('modeRandom')}
           points={[t('helpRandom1'), t('helpRandom2')]}
         >
@@ -31,7 +29,6 @@ export default function HelpSheet({ open, onClose, t }) {
         </Section>
 
         <Section
-          emoji="✋"
           title={t('modeManual')}
           points={[t('helpManual1'), t('helpManual2')]}
         >
@@ -41,7 +38,7 @@ export default function HelpSheet({ open, onClose, t }) {
         <HelpInsight t={t} />
 
         <div className="rounded-2xl border border-slate-200 p-3 dark:border-slate-800">
-          <h4 className="mb-1.5 text-sm font-semibold">💡 {t('helpTipsTitle')}</h4>
+          <h4 className="mb-1.5 text-sm font-semibold">{t('helpTipsTitle')}</h4>
           <ul className="list-disc space-y-1 pl-5 text-xs text-slate-600 dark:text-slate-300">
             <li>{t('helpTip1')}</li>
             <li>{t('helpTip2')}</li>
@@ -55,13 +52,10 @@ export default function HelpSheet({ open, onClose, t }) {
   )
 }
 
-function Section({ emoji, title, points, children }) {
+function Section({ title, points, children }) {
   return (
     <section className="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800">
-      <h4 className="flex items-center gap-2 px-3 pt-3 text-sm font-semibold">
-        <span aria-hidden>{emoji}</span>
-        {title}
-      </h4>
+      <h4 className="px-3 pt-3 text-sm font-semibold">{title}</h4>
       <div className="mx-3 mt-2 rounded-xl bg-slate-100 p-2.5 dark:bg-slate-950/60">
         {children}
       </div>
@@ -91,7 +85,7 @@ const TONE = {
 function Dot({ id, dim = false, ring = false, label }) {
   if (!id) {
     return (
-      <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 border-dashed border-slate-400 text-xs text-slate-400 dark:border-slate-600">
+      <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 border-dashed border-slate-400 text-xs text-slate-600 dark:border-slate-600 dark:text-slate-400">
         +
       </span>
     )
@@ -108,7 +102,7 @@ function Dot({ id, dim = false, ring = false, label }) {
     >
       {id}
       {label && (
-        <span className="absolute -right-1.5 -bottom-1 rounded bg-slate-50 px-0.5 text-[9px] leading-tight dark:bg-slate-800">
+        <span className="absolute -right-1.5 -bottom-1 rounded bg-slate-50 px-0.5 text-xs leading-tight dark:bg-slate-800">
           {label}
         </span>
       )}
@@ -136,7 +130,7 @@ function Court({ a, b, ringed = [], labels = {}, className = '' }) {
 function Row({ label, children }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="w-12 shrink-0 text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+      <span className="w-14 shrink-0 text-xs font-semibold text-slate-600 dark:text-slate-400">
         {label}
       </span>
       {children}
@@ -144,12 +138,10 @@ function Row({ label, children }) {
   )
 }
 
-function Bench({ ids }) {
+function Bench({ ids, t }) {
   return (
     <div className="flex min-w-0 flex-wrap items-center gap-1">
-      <span className="text-[10px] text-slate-400" aria-hidden>
-        🪑
-      </span>
+      <span className="text-xs text-slate-600 dark:text-slate-400">{t('bench')}</span>
       {ids.map((id) => (
         <Dot key={id} id={id} dim />
       ))}
@@ -159,7 +151,7 @@ function Bench({ ids }) {
 
 function Arrow() {
   return (
-    <span className="text-slate-400" aria-hidden>
+    <span className="text-slate-600 dark:text-slate-400" aria-hidden>
       →
     </span>
   )
@@ -178,15 +170,15 @@ function BalancedArt({ t }) {
       {rounds.map((r, i) => (
         <Row key={i} label={`${t('round')} ${i + 1}`}>
           <Court a={r.a} b={r.b} ringed={['A']} />
-          <Bench ids={r.bench} />
+          <Bench ids={r.bench} t={t} />
         </Row>
       ))}
-      <p className="pt-1 text-[11px] text-slate-500 dark:text-slate-400">
+      <p className="pt-1 text-xs text-slate-600 dark:text-slate-400">
         {t('helpBalancedArt')}
       </p>
       <div className="flex flex-wrap items-center gap-2 pt-1">
         <Court a={['A', 'B']} b={['C', 'D']} labels={{ A: '👑', B: '🐣', C: '⭐', D: '⭐' }} />
-        <span className="text-[11px] text-slate-500 dark:text-slate-400">
+        <span className="text-xs text-slate-600 dark:text-slate-400">
           {t('helpBalancedLevel')}
         </span>
       </div>
@@ -198,13 +190,9 @@ function RandomArt() {
   return (
     <div className="flex flex-wrap items-center gap-1.5">
       <Court a={['A', 'B']} b={['C', 'D']} />
-      <span className="text-base" aria-hidden>
-        🎲
-      </span>
+      <Arrow />
       <Court a={['D', 'G']} b={['A', 'H']} />
-      <span className="text-base" aria-hidden>
-        🎲
-      </span>
+      <Arrow />
       <Court a={['B', 'A']} b={['F', 'C']} />
     </div>
   )
@@ -215,7 +203,7 @@ function ManualArt({ t }) {
     <div className="flex flex-wrap items-center gap-1.5">
       <Court a={['A', null]} b={['C', null]} />
       <Arrow />
-      <span className="rounded-lg bg-brand-600 px-2 py-1 text-[11px] font-semibold text-white">
+      <span className="rounded-lg bg-brand-600 px-2 py-1 text-xs font-semibold text-white">
         {t('autoFill')}
       </span>
       <Arrow />
@@ -274,7 +262,7 @@ function Fact({ label, value, bad }) {
       >
         {value}
       </p>
-      <p className="text-[10px] leading-tight text-slate-500 dark:text-slate-400">{label}</p>
+      <p className="text-xs leading-tight text-slate-600 dark:text-slate-400">{label}</p>
     </div>
   )
 }
@@ -284,7 +272,7 @@ function Who({ id, n }) {
   return (
     <span
       className={cx(
-        'inline-grid h-5 w-5 place-items-center rounded text-[11px] font-bold',
+        'inline-grid h-6 w-6 place-items-center rounded text-xs font-bold',
         n > EXAMPLE_LIMIT
           ? 'bg-rose-600 text-white'
           : n === EXAMPLE_LIMIT
@@ -300,7 +288,7 @@ function Who({ id, n }) {
 function CourtCell({ court, streak, t }) {
   if (!court)
     return (
-      <span className="block rounded border border-dashed border-slate-300 py-0.5 text-center text-[10px] text-slate-400 dark:border-slate-700">
+      <span className="block rounded border border-dashed border-slate-300 py-0.5 text-center text-xs text-slate-600 dark:border-slate-700 dark:text-slate-400">
         {t('restHelpIdle')}
       </span>
     )
@@ -310,12 +298,12 @@ function CourtCell({ court, streak, t }) {
       {[...a].map((id) => (
         <Who key={id} id={id} n={streak[id]} />
       ))}
-      <span className="px-0.5 text-[9px] text-slate-400">vs</span>
+      <span className="px-0.5 text-xs text-slate-600 dark:text-slate-400">vs</span>
       {[...b].map((id) => (
         <Who key={id} id={id} n={streak[id]} />
       ))}
       {a.length === 1 && (
-        <span className="ml-0.5 text-[9px] text-slate-500 dark:text-slate-400">
+        <span className="ml-0.5 text-xs text-slate-600 dark:text-slate-400">
           {t('restHelpSingles')}
         </span>
       )}
@@ -332,23 +320,13 @@ export function RestModeHelp({ open, onClose, t }) {
     <Sheet open={open} onClose={onClose} title={t('restMode')}>
       <div className="space-y-3">
         <p className="text-sm text-slate-600 dark:text-slate-300">{t('restHelpIntro')}</p>
-        <div className="grid grid-cols-3 gap-1 rounded-xl border-(length:--line-w) border-edge bg-track p-1">
-          {['fill', 'flex', 'strict'].map((m) => (
-            <button
-              key={m}
-              onClick={() => setMode(m)}
-              className={cx(
-                'h-8 rounded-lg text-xs font-semibold transition',
-                mode === m
-                  ? 'bg-pick text-pick-ink shadow-[var(--shadow-pick)]'
-                  : 'text-slate-500 dark:text-slate-400'
-              )}
-            >
-              {t(`rest${cap(m)}`)}
-            </button>
-          ))}
-        </div>
-        <p className="text-xs text-slate-500 dark:text-slate-400">
+        <Segmented
+          label={t('restMode')}
+          value={mode}
+          onChange={setMode}
+          options={['fill', 'flex', 'strict'].map((m) => ({ value: m, label: t(`rest${cap(m)}`) }))}
+        />
+        <p className="text-xs text-slate-600 dark:text-slate-400">
           {t(`rest${cap(mode)}Hint`)}
         </p>
         <div className="grid grid-cols-4 gap-1.5">
@@ -364,7 +342,7 @@ export function RestModeHelp({ open, onClose, t }) {
         <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
           <table className="w-full border-collapse text-left">
             <thead>
-              <tr className="border-b border-slate-200 text-[10px] text-slate-500 dark:border-slate-800 dark:text-slate-400">
+              <tr className="border-b border-slate-200 text-xs text-slate-600 dark:border-slate-800 dark:text-slate-400">
                 <th className="py-1 pr-1 pl-2 font-semibold">#</th>
                 <th className="px-1 py-1 font-semibold">{t('courtLabel')} 1</th>
                 <th className="px-1 py-1 font-semibold">{t('courtLabel')} 2</th>
@@ -380,7 +358,7 @@ export function RestModeHelp({ open, onClose, t }) {
                     i % 2 === 1 && 'bg-slate-100/60 dark:bg-slate-800/20'
                   )}
                 >
-                  <td className="py-1 pr-1 pl-2 text-[10px] font-bold text-slate-400 tabular-nums">
+                  <td className="py-1 pr-1 pl-2 text-xs font-bold text-slate-600 dark:text-slate-400 tabular-nums">
                     {i + 1}
                   </td>
                   {r.courts.map((c, k) => (
@@ -393,7 +371,7 @@ export function RestModeHelp({ open, onClose, t }) {
                       {[...r.bench].map((id) => (
                         <span
                           key={id}
-                          className="inline-grid h-5 w-5 place-items-center rounded border border-dashed border-slate-300 text-[11px] text-slate-500 dark:border-slate-600 dark:text-slate-400"
+                          className="inline-grid h-6 w-6 place-items-center rounded border border-dashed border-slate-300 text-xs text-slate-600 dark:border-slate-600 dark:text-slate-400"
                         >
                           {id}
                         </span>
@@ -405,7 +383,7 @@ export function RestModeHelp({ open, onClose, t }) {
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-slate-500 dark:text-slate-400">{t('restHelpLegend')}</p>
+        <p className="text-xs text-slate-600 dark:text-slate-400">{t('restHelpLegend')}</p>
       </div>
     </Sheet>
   )

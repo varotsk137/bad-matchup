@@ -32,7 +32,7 @@ test('splits the bill, ticks who paid and keeps PromptPay off the shared state',
   await expect(page.getByText('Rounded up +0.03')).toBeVisible()
   await expect(page.getByRole('img', { name: 'PromptPay' })).toBeVisible()
 
-  await page.getByRole('tab', { name: 'Per person' }).click()
+  await page.getByRole('radio', { name: 'Per person' }).click()
   await page.getByRole('button', { name: 'Not yet' }).first().click()
   await expect(page.getByText('Collected 191.67 of 1,725.03')).toBeVisible()
   await expect(page.getByText('1/9 people')).toBeVisible()
@@ -56,8 +56,8 @@ test('splits the bill, ticks who paid and keeps PromptPay off the shared state',
   await page.getByRole('textbox', { name: 'Court 1 Price' }).fill('900')
   await page.getByRole('textbox', { name: 'Court 1 hrs' }).fill('1')
   await page.getByRole('button', { name: 'See who owes what' }).click()
-  await expect(page.getByRole('tab', { name: 'Per person' })).toHaveAttribute(
-    'aria-selected',
+  await expect(page.getByRole('radio', { name: 'Per person' })).toHaveAttribute(
+    'aria-checked',
     'true'
   )
   await expect(page.getByText('1/9 people')).toBeVisible()

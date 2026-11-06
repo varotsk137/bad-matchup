@@ -1,6 +1,5 @@
-import { roundsForTime, suggestRounds } from '../lib/matchmaker'
+import { roundsForTime } from '../lib/matchmaker'
 import Icon from './Icon'
-import { cx } from './ui'
 
 const HOURS = [1, 1.5, 2, 2.5, 3, 4]
 const MINUTES = [10, 12, 15, 20]
@@ -8,10 +7,10 @@ const MINUTES = [10, 12, 15, 20]
 /**
  * Before a session: how many rounds make sense. Two angles — enough for
  * everyone to partner everyone, and what fits the court booking — each with a
- * one-tap "use".
+ * one-tap "use". Lives inside the Play screen's ink setup card, so it is drawn
+ * light-on-ink; `s` is suggestRounds(state), worked out once by the caller.
  */
-export default function RoundAdvisor({ state, t, actions, onUse }) {
-  const s = suggestRounds(state)
+export default function RoundAdvisor({ s, state, t, actions, onUse }) {
   if (!s) return null
   const o = state.options
   const hours = o.bookingHours ?? 2
@@ -21,12 +20,13 @@ export default function RoundAdvisor({ state, t, actions, onUse }) {
   const gamesByTime = Math.round((byTime * s.seats) / Math.max(1, pool))
 
   return (
-    <div className="space-y-2 rounded-xl bg-slate-100 p-2.5 text-xs dark:bg-slate-950/60">
+    <div className="divide-y divide-slate-50/10 border-y border-slate-50/10">
       {s.coverAll && (
         <Row
           icon="users"
           text={t('adviseCover', { n: s.coverAll, g: s.gamesEach })}
-          onUse={() => onUse(Math.min(100, s.coverAll))}
+          n={Math.min(100, s.coverAll)}
+          onUse={onUse}
           t={t}
         />
       )}
@@ -36,18 +36,20 @@ export default function RoundAdvisor({ state, t, actions, onUse }) {
           t('adviseTime', { n: byTime, g: gamesByTime }) +
           (s.coverAll && byTime < s.coverAll ? ` · ${t('adviseTimeShort')}` : '')
         }
-        onUse={() => onUse(Math.min(100, byTime))}
+        n={Math.min(100, byTime)}
+        onUse={onUse}
         t={t}
       >
-        <span className="mt-1 flex flex-wrap items-center gap-1">
+        <span className="mt-2 flex flex-wrap items-center gap-2">
           <Pick
+            label={t('v4BookingHours')}
             values={HOURS}
             value={hours}
             format={(h) => t('hoursN', { n: h })}
             onChange={(v) => actions.setOption('bookingHours', v)}
           />
-          <span className="text-slate-400">·</span>
           <Pick
+            label={t('v4MinutesPerGame')}
             values={MINUTES}
             value={minutes}
             format={(m) => t('minutesPerGameN', { n: m })}
@@ -59,34 +61,33 @@ export default function RoundAdvisor({ state, t, actions, onUse }) {
   )
 }
 
-function Row({ icon, text, onUse, t, children }) {
+function Row({ icon, text, n, onUse, t, children }) {
   return (
-    <div className="flex items-start gap-2">
-      <Icon name={icon} className="mt-0.5 h-4 w-4 text-slate-500 dark:text-slate-400" />
-      <span className="min-w-0 flex-1 text-slate-600 dark:text-slate-300">
+    <div className="flex items-start gap-3 py-3">
+      <Icon name={icon} className="mt-0.5 h-5 w-5 text-slate-300" />
+      <div className="min-w-0 flex-1 text-sm leading-snug text-slate-200">
         {text}
         {children}
-      </span>
+      </div>
       <button
-        onClick={onUse}
-        className="shrink-0 rounded-lg bg-brand-600 px-2.5 py-1 font-semibold text-white active:scale-95"
+        type="button"
+        onClick={() => onUse(n)}
+        className="press h-11 shrink-0 rounded-[var(--radius-pill)] border border-slate-50/30 px-3.5 text-sm font-semibold text-slate-50 hover:bg-slate-50/10 focus-visible:ring-2 focus-visible:ring-accent-400 focus-visible:outline-none"
       >
-        {t('adviseUse')}
+        {t('v4UseN', { n })}
       </button>
     </div>
   )
 }
 
-/** A compact native select styled as a chip — fine-grained enough, tiny on screen. */
-function Pick({ values, value, format, onChange }) {
+/** A native select, labelled, tall enough to hit. */
+function Pick({ label, values, value, format, onChange }) {
   return (
     <select
+      aria-label={label}
       value={value}
       onChange={(e) => onChange(Number(e.target.value))}
-      className={cx(
-        'rounded-md border border-slate-300 bg-slate-50 px-1.5 py-0.5 text-xs font-medium',
-        'dark:border-slate-700 dark:bg-slate-900'
-      )}
+      className="h-11 rounded-xl border border-slate-50/25 bg-slate-800 px-3 text-sm font-medium text-slate-50 focus-visible:ring-2 focus-visible:ring-accent-400 focus-visible:outline-none dark:bg-slate-700"
     >
       {values.map((v) => (
         <option key={v} value={v}>

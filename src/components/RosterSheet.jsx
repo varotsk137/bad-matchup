@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { PLAYER_MAX } from '../lib/names'
 import Icon from './Icon'
-import { Button, Empty, Input, Sheet, askConfirm, cx } from './ui'
+import { Button, Empty, Input, Sheet, askConfirm } from './ui'
 
 /**
  * Named player lists. A group that plays every Tuesday should not have to
@@ -11,6 +11,7 @@ export default function RosterSheet({ open, onClose, state, t, actions, setToast
   const [name, setName] = useState('')
   const [renaming, setRenaming] = useState(null)
   const [renameText, setRenameText] = useState('')
+  const nameId = useId()
 
   if (!open) return null
 
@@ -62,9 +63,12 @@ export default function RosterSheet({ open, onClose, state, t, actions, setToast
     <Sheet open={open} onClose={onClose} title={t('rosters')}>
       <div className="space-y-4">
         <form onSubmit={save}>
-          <label className="mb-1.5 block text-sm font-medium">{t('rosterSaveCurrent')}</label>
+          <label htmlFor={nameId} className="mb-1.5 block text-sm font-medium">
+            {t('rosterSaveCurrent')}
+          </label>
           <div className="flex gap-2">
             <Input
+              id={nameId}
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={t('rosterNamePh')}
@@ -79,25 +83,23 @@ export default function RosterSheet({ open, onClose, state, t, actions, setToast
               {t('save')}
             </Button>
           </div>
-          <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-1.5 text-xs text-slate-600 dark:text-slate-400">
             {current.length ? t('rosterSaveHint', { n: current.length }) : t('rosterSaveEmpty')}
           </p>
         </form>
 
-        <div className="border-t border-slate-200 pt-3 dark:border-slate-800">
+        <div className="border-t border-slate-200 pt-2 dark:border-slate-800">
           {rosters.length === 0 ? (
             <Empty icon="book" title={t('rosterNone')} hint={t('rosterNoneHint')} />
           ) : (
-            <ul className="space-y-2">
+            <ul className="divide-y divide-slate-200 dark:divide-slate-800">
               {rosters.map((r) => (
-                <li
-                  key={r.id}
-                  className="rounded-xl border border-slate-200 p-3 dark:border-slate-700"
-                >
+                <li key={r.id} className="py-3">
                   {renaming === r.id ? (
                     <div className="flex gap-2">
                       <Input
                         autoFocus
+                        aria-label={t('v4RosterNewName', { name: r.name })}
                         value={renameText}
                         onChange={(e) => setRenameText(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && commitRename(r)}
@@ -113,12 +115,14 @@ export default function RosterSheet({ open, onClose, state, t, actions, setToast
                   ) : (
                     <>
                       <div className="flex items-baseline gap-2">
-                        <span className="min-w-0 flex-1 truncate font-semibold">{r.name}</span>
-                        <span className="shrink-0 text-[11px] text-slate-400 tabular-nums">
+                        <span className="min-w-0 flex-1 truncate text-base font-semibold">
+                          {r.name}
+                        </span>
+                        <span className="shrink-0 text-xs text-slate-600 tabular-nums dark:text-slate-400">
                           {r.players.length} {t('playersUnit')}
                         </span>
                       </div>
-                      <p className="mt-0.5 truncate text-[11px] text-slate-400 dark:text-slate-500">
+                      <p className="mt-0.5 truncate text-xs text-slate-600 dark:text-slate-400">
                         {r.players
                           .slice(0, 6)
                           .map((p) => p.name)
@@ -128,33 +132,30 @@ export default function RosterSheet({ open, onClose, state, t, actions, setToast
 
                       <div className="mt-2.5 flex gap-1.5">
                         <Button
-                          size="sm"
                           variant="primary"
                           className="flex-1"
                           onClick={() => load(r, 'replace')}
                         >
                           {t('rosterLoad')}
                         </Button>
-                        <Button size="sm" onClick={() => load(r, 'append')}>
+                        <Button onClick={() => load(r, 'append')}>
                           {t('rosterAppend')}
                         </Button>
                         <Button
-                          size="sm"
                           onClick={() => {
                             setRenaming(r.id)
                             setRenameText(r.name)
                           }}
-                          aria-label={t('rename')}
+                          aria-label={t('v4RenameName', { name: r.name })}
                           title={t('rename')}
-                          className="px-2.5"
+                          className="px-3.5"
                         >
                           <Icon name="pencil" />
                         </Button>
                         <Button
-                          size="sm"
                           variant="danger"
-                          className={cx('px-2.5')}
-                          aria-label={t('delete')}
+                          className="px-3.5"
+                          aria-label={t('v4DeleteName', { name: r.name })}
                           title={t('delete')}
                           onClick={async () => {
                             const ok = await askConfirm({

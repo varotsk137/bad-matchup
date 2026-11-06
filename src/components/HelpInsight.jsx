@@ -9,8 +9,7 @@ import { cx } from './ui'
 export default function HelpInsight({ t }) {
   return (
     <section className="overflow-hidden rounded-2xl border border-brand-600/40 dark:border-brand-500/30">
-      <h4 className="flex items-center gap-2 bg-brand-50 px-3 py-2.5 text-sm font-semibold dark:bg-brand-950/60">
-        <span aria-hidden>🔍</span>
+      <h4 className="bg-brand-50 px-3 py-2.5 text-sm font-semibold dark:bg-brand-950/60">
         {t('insTitle')}
       </h4>
       <div className="space-y-4 p-3">
@@ -33,8 +32,8 @@ export default function HelpInsight({ t }) {
 function Step({ n, title, body, children }) {
   return (
     <div>
-      <h5 className="flex items-center gap-2 text-[13px] font-semibold">
-        <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-brand-600 text-[11px] font-bold text-white">
+      <h5 className="flex items-center gap-2 text-sm font-semibold">
+        <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-brand-600 text-xs font-bold text-white">
           {n}
         </span>
         {title}
@@ -71,25 +70,25 @@ function QueueArt({ t }) {
   const max = Math.max(...QUEUE.map((p) => Math.abs(p.score)))
   return (
     <div>
-      <div className="grid grid-cols-[1.5rem_repeat(3,2.75rem)_1fr] items-center gap-x-1 gap-y-1 text-[11px]">
+      <div className="grid grid-cols-[1.75rem_repeat(3,2.75rem)_1fr] items-center gap-x-1 gap-y-1 text-xs">
         <span />
-        <span className="text-center text-[10px] text-slate-500 dark:text-slate-400">
+        <span className="text-center text-xs text-slate-600 dark:text-slate-400">
           {t('insGames')}
         </span>
-        <span className="text-center text-[10px] text-slate-500 dark:text-slate-400">
+        <span className="text-center text-xs text-slate-600 dark:text-slate-400">
           {t('insWaited')}
         </span>
-        <span className="text-center text-[10px] text-slate-500 dark:text-slate-400">
+        <span className="text-center text-xs text-slate-600 dark:text-slate-400">
           {t('insStreak')}
         </span>
-        <span className="text-[10px] text-slate-500 dark:text-slate-400">{t('insScore')}</span>
+        <span className="text-xs text-slate-600 dark:text-slate-400">{t('insScore')}</span>
         {QUEUE.map((p, i) => {
           const on = i < ON_COURT
           return [
             <span
               key={p.id}
               className={cx(
-                'grid h-5 w-5 place-items-center rounded-full text-[10px] font-bold',
+                'grid h-6 w-6 place-items-center rounded-full text-xs font-bold',
                 on
                   ? 'bg-brand-600 text-white'
                   : 'bg-slate-300 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
@@ -124,7 +123,7 @@ function QueueArt({ t }) {
           ]
         })}
       </div>
-      <p className="mt-2 text-[11px] text-slate-600 dark:text-slate-300">
+      <p className="mt-2 text-xs text-slate-600 dark:text-slate-300">
         {t('insQueueResult')}
       </p>
     </div>
@@ -157,9 +156,9 @@ function PairArt({ t }) {
             i === best && 'bg-brand-100 ring-1 ring-brand-600 dark:bg-brand-950'
           )}
         >
-          <span className="w-28 shrink-0 text-[11px] font-semibold">
+          <span className="w-32 shrink-0 text-xs font-semibold">
             {o.a.map((id) => id + LEVEL[id]).join(' ')}
-            <span className="font-normal text-slate-400"> vs </span>
+            <span className="font-normal text-slate-600 dark:text-slate-400"> vs </span>
             {o.b.map((id) => id + LEVEL[id]).join(' ')}
           </span>
           <span className="flex h-3 min-w-0 flex-1 overflow-hidden rounded-sm bg-slate-200 dark:bg-slate-800">
@@ -172,12 +171,12 @@ function PairArt({ t }) {
               style={{ width: `${(o.repeat / max) * 100}%` }}
             />
           </span>
-          <span className="w-14 shrink-0 text-right text-[10px] text-slate-500 tabular-nums dark:text-slate-400">
+          <span className="w-14 shrink-0 text-right text-xs text-slate-600 tabular-nums dark:text-slate-400">
             {o.sums[0]} : {o.sums[1]}
           </span>
         </div>
       ))}
-      <p className="flex flex-wrap gap-x-3 gap-y-0.5 pt-1 text-[10px] text-slate-500 dark:text-slate-400">
+      <p className="flex flex-wrap gap-x-3 gap-y-0.5 pt-1 text-xs text-slate-600 dark:text-slate-400">
         <span>
           <span className="mr-1 inline-block h-2 w-2 rounded-sm bg-violet-500" />
           {t('insLevelGap')}
@@ -188,7 +187,7 @@ function PairArt({ t }) {
         </span>
         <span>{t('insSums')}</span>
       </p>
-      <p className="text-[11px] text-slate-600 dark:text-slate-300">{t('insPairResult')}</p>
+      <p className="text-xs text-slate-600 dark:text-slate-300">{t('insPairResult')}</p>
     </div>
   )
 }
@@ -234,12 +233,12 @@ function Stage({ label, grid, count }) {
   return (
     <div className="flex flex-col items-center gap-1">
       <Heatmap grid={grid} />
-      <span className="text-center text-[10px] leading-tight font-semibold whitespace-pre-line">
+      <span className="text-center text-xs leading-tight font-semibold whitespace-pre-line">
         {label}
       </span>
       <span
         className={cx(
-          'text-[10px] font-bold tabular-nums',
+          'text-xs font-bold tabular-nums',
           count ? 'text-rose-600 dark:text-rose-400' : 'text-brand-700 dark:text-brand-300'
         )}
       >
@@ -262,7 +261,7 @@ function PolishArt({ t }) {
         ['opponents', t('insOpponentMaps'), t('insNeverFaced')],
       ].map(([kind, title, unit]) => (
         <div key={kind}>
-          <p className="mb-1.5 text-[11px] font-semibold">{title}</p>
+          <p className="mb-1.5 text-xs font-semibold">{title}</p>
           <div className="flex justify-between gap-2 overflow-x-auto">
             {stages.map(([k, label]) => {
               const grid = PAIRINGS[k][kind]
@@ -273,7 +272,7 @@ function PolishArt({ t }) {
           </div>
         </div>
       ))}
-      <p className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] text-slate-500 dark:text-slate-400">
+      <p className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-slate-600 dark:text-slate-400">
         <span className="inline-block h-2 w-2 rounded-sm bg-rose-500" /> 0
         <span className="inline-block h-2 w-2 rounded-sm bg-brand-200 dark:bg-brand-700" /> 1
         <span className="inline-block h-2 w-2 rounded-sm bg-brand-500" /> 2
@@ -281,7 +280,7 @@ function PolishArt({ t }) {
         <span className="inline-block h-2 w-2 rounded-sm bg-amber-500" /> 4+
         <span>· {t('insMapLegend')}</span>
       </p>
-      <p className="text-[11px] text-slate-600 dark:text-slate-300">{t('insPolishResult')}</p>
+      <p className="text-xs text-slate-600 dark:text-slate-300">{t('insPolishResult')}</p>
     </div>
   )
 }

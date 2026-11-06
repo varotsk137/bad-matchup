@@ -74,14 +74,14 @@ test('builds a schedule, ticks a match and keeps both after a reload', async ({ 
   await expect(finish).toHaveCount(10)
 
   await finish.first().click()
-  await expect(page.locator('button[aria-pressed="true"]')).toHaveCount(1)
+  await expect(page.locator('table button[aria-pressed="true"]')).toHaveCount(1)
 
   const saved = await savedState(page)
   expect(saved.rounds).toHaveLength(5)
   expect(saved.rounds[0].matches.filter((m) => m.done)).toHaveLength(1)
 
   await page.reload()
-  await expect(page.locator('button[aria-pressed="true"]')).toHaveCount(1)
+  await expect(page.locator('table button[aria-pressed="true"]')).toHaveCount(1)
   await expect(finish).toHaveCount(9)
 })
 

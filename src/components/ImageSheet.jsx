@@ -34,10 +34,16 @@ export default function ImageSheet({ png, onClose, t, setToast, title }) {
       onClose={onClose}
       title={title || t('imageReady')}
       footer={
+        // the share sheet is the way to LINE, so it leads when the phone has one
         <div className="flex gap-2">
+          {canSharePng(png) && (
+            <Button variant="primary" className="h-12 flex-1" onClick={share}>
+              {t('shareImage')}
+            </Button>
+          )}
           <Button
-            variant="primary"
-            className="h-11 flex-1"
+            variant={canSharePng(png) ? 'outline' : 'primary'}
+            className="h-12 flex-1"
             onClick={() => {
               downloadPng(png)
               setToast?.(t('exportDone'))
@@ -45,20 +51,15 @@ export default function ImageSheet({ png, onClose, t, setToast, title }) {
           >
             {t('saveToDevice')}
           </Button>
-          {canSharePng(png) && (
-            <Button className="h-11 flex-1" onClick={share}>
-              {t('shareImage')}
-            </Button>
-          )}
         </div>
       }
     >
-      <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">{t('longPressHint')}</p>
+      <p className="mb-3 text-xs text-slate-600 dark:text-slate-400">{t('longPressHint')}</p>
       {url && (
         <img
           src={url}
           alt={title || t('imageTitle')}
-          className="w-full rounded-xl border border-slate-200 dark:border-slate-800"
+          className="w-full rounded-xl border-(length:--line-w) border-edge"
         />
       )}
     </Sheet>

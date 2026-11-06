@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import Icon from './Icon'
 
 export const cx = (...parts) => parts.filter(Boolean).join(' ')
@@ -18,17 +18,77 @@ export const courtTone = (index) => COURT_TONES[Math.max(0, index) % COURT_TONES
 
 /* ---------------------------------------------------------------- Card */
 
-export function Card({ className = '', children, ...rest }) {
+export function Card({ className = '', tone, children, ...rest }) {
   return (
     <div
       className={cx(
-        'rounded-2xl border-(length:--line-w) border-edge bg-slate-50 shadow-[var(--shadow-card)] dark:bg-slate-900',
+        'rounded-2xl border-(length:--line-w) shadow-[var(--shadow-card)]',
+        // ink: an inverted scoreboard block for the one thing a screen is about
+        tone === 'ink'
+          ? 'border-transparent bg-slate-900 text-slate-50 dark:bg-slate-800'
+          : 'border-edge bg-slate-50 dark:bg-slate-900',
         className
       )}
       {...rest}
     >
       {children}
     </div>
+  )
+}
+
+/** The large title a screen opens with, a line of context under it, an action on the right. */
+export function ScreenTitle({ title, meta, action }) {
+  return (
+    <div className="mb-4 flex items-end justify-between gap-3 px-1 pt-1">
+      <div className="min-w-0">
+        <h2 className="screen-title truncate text-slate-900 dark:text-slate-50">{title}</h2>
+        {meta && (
+          <p className="mt-0.5 text-sm text-slate-600 dark:text-slate-400">{meta}</p>
+        )}
+      </div>
+      {action && <div className="shrink-0">{action}</div>}
+    </div>
+  )
+}
+
+/** A big scoreboard number with its label; `ink` for use inside an ink Card. */
+export function StatTile({ value, label, hint, ink = false, className = '' }) {
+  return (
+    <div className={cx('min-w-0', className)}>
+      <div className="num text-[2rem]">{value}</div>
+      <div
+        className={cx(
+          'mt-1.5 text-xs font-medium',
+          ink ? 'text-slate-300 dark:text-slate-300' : 'text-slate-600 dark:text-slate-400'
+        )}
+      >
+        {label}
+      </div>
+      {hint && (
+        <div className={cx('mt-0.5 text-xs', ink ? 'text-slate-300' : 'text-slate-600 dark:text-slate-400')}>
+          {hint}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/** A round initial for a person; pass a tone class (bg + text) to colour it. */
+export function Avatar({ name = '', className = '', tone = 'bg-brand-100 text-brand-800 dark:bg-brand-900 dark:text-brand-100' }) {
+  // skip Thai leading vowels (เ แ โ ใ ไ), which are written before the consonant they follow
+  const parts = [...new Intl.Segmenter().segment(name.trim())].map((p) => p.segment)
+  const first = parts.find((g) => !/^[เแโใไ]$/.test(g)) || parts[0] || '?'
+  return (
+    <span
+      aria-hidden
+      className={cx(
+        'font-display grid h-10 w-10 shrink-0 place-items-center rounded-full text-base',
+        tone,
+        className
+      )}
+    >
+      {first}
+    </span>
   )
 }
 
@@ -60,7 +120,7 @@ const VARIANTS = {
 }
 
 const SIZES = {
-  sm: 'h-9 px-3 text-sm rounded-lg gap-1.5',
+  sm: 'h-10 px-3 text-sm rounded-lg gap-1.5',
   md: 'h-11 px-4 text-sm rounded-xl gap-2',
   lg: 'h-14 px-5 text-base rounded-2xl gap-2',
   icon: 'h-10 w-10 rounded-xl justify-center',
@@ -78,7 +138,7 @@ export function Button({
       type="button"
       className={cx(
         'inline-flex shrink-0 items-center justify-center font-medium whitespace-nowrap transition',
-        'focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none',
+        'focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 focus-visible:outline-none dark:focus-visible:ring-brand-300',
         'dark:focus-visible:ring-offset-slate-950',
         'disabled:cursor-not-allowed disabled:opacity-60',
         VARIANTS[variant],
@@ -94,7 +154,7 @@ export function Button({
 
 /* ----------------------------------------------------------- Segmented */
 
-export function Segmented({ options, value, onChange, className = '', size = 'md' }) {
+export function Segmented({ options, value, onChange, className = '', size = 'md', label }) {
   const at = options.findIndex((o) => o.value === value)
   return (
     <div
@@ -102,7 +162,8 @@ export function Segmented({ options, value, onChange, className = '', size = 'md
         'relative inline-flex w-full gap-1 rounded-xl border-(length:--line-w) border-edge bg-track p-1',
         className
       )}
-      role="tablist"
+      role="radiogroup"
+      aria-label={label}
     >
       {/* one pick that slides to the chosen segment (all segments are equal width) */}
       {at >= 0 && (
@@ -121,12 +182,12 @@ export function Segmented({ options, value, onChange, className = '', size = 'md
           <button
             key={o.value}
             type="button"
-            role="tab"
-            aria-selected={active}
+            role="radio"
+            aria-checked={active}
             onClick={() => onChange(o.value)}
             className={cx(
               'relative min-w-0 flex-1 basis-0 rounded-lg font-medium transition-colors duration-200',
-              size === 'sm' ? 'h-8 px-2 text-xs' : 'h-11 px-3 text-sm',
+              size === 'sm' ? 'h-10 px-2 text-xs' : 'h-11 px-3 text-sm',
               active
                 ? 'text-pick-ink'
                 : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'
@@ -166,7 +227,7 @@ export function Toggle({ checked, onChange, label, hint, disabled }) {
         onClick={() => onChange(!checked)}
         className={cx(
           'relative mt-0.5 h-6 w-11 shrink-0 rounded-full transition-colors duration-200',
-          checked ? 'bg-brand-600' : 'bg-slate-300 dark:bg-slate-700'
+          checked ? 'bg-brand-600' : 'bg-slate-400 dark:bg-slate-600'
         )}
       >
         <span
@@ -199,6 +260,7 @@ export function Slider({ label, value, onChange, min = 0, max = 100, step = 5, h
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
+        aria-label={typeof label === 'string' ? label : undefined}
         className="mt-2 h-6 w-full cursor-pointer accent-brand-600"
       />
     </div>
@@ -211,9 +273,9 @@ export function Input({ className = '', ...rest }) {
   return (
     <input
       className={cx(
-        'h-11 w-full rounded-xl border border-slate-300 bg-slate-50 px-3 text-base',
-        'placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30 focus:outline-none',
-        'dark:border-slate-700 dark:bg-slate-950 dark:placeholder:text-slate-600',
+        'h-11 w-full rounded-xl border border-slate-400 bg-slate-50 px-3 text-base',
+        'placeholder:text-slate-500 focus:border-brand-700 focus:ring-2 focus:ring-brand-700/40 focus:outline-none',
+        'dark:border-slate-600 dark:bg-slate-950 dark:placeholder:text-slate-400 dark:focus:border-brand-300',
         className
       )}
       {...rest}
@@ -270,17 +332,40 @@ export function Sheet({ open, onClose, title, children, footer, above = false })
     } else el.style.transform = ''
   }
 
+  const titleId = useId()
   useEffect(() => {
     if (!open) return
-    const onKey = (e) => e.key === 'Escape' && onClose()
-    document.addEventListener('keydown', onKey)
+    const back = document.activeElement
+    panel.current?.focus({ preventScroll: true })
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     return () => {
-      document.removeEventListener('keydown', onKey)
       document.body.style.overflow = prev
+      if (back?.isConnected) back.focus({ preventScroll: true })
     }
-  }, [open, onClose])
+  }, [open])
+  const onKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      e.stopPropagation()
+      onClose()
+    } else if (e.key === 'Tab') {
+      // keep Tab inside the sheet
+      const f = panel.current.querySelectorAll(
+        'button:not([disabled]),input:not([disabled]),select,textarea,a[href],[tabindex]:not([tabindex="-1"])'
+      )
+      if (!f.length) return
+      const first = f[0]
+      const last = f[f.length - 1]
+      const at = document.activeElement
+      if (e.shiftKey && (at === first || at === panel.current)) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && at === last) {
+        e.preventDefault()
+        first.focus()
+      }
+    }
+  }
 
   if (!shown) return null
 
@@ -302,13 +387,16 @@ export function Sheet({ open, onClose, title, children, footer, above = false })
         ref={panel}
         role="dialog"
         aria-modal="true"
+        aria-labelledby={titleId}
+        tabIndex={-1}
+        onKeyDown={onKeyDown}
         onAnimationEnd={(e) => {
           if (e.target !== e.currentTarget) return
           if (closing) setShown(false)
           else e.currentTarget.style.removeProperty('--drag')
         }}
         className={cx(
-          'sheet-panel safe-b relative flex max-h-[85vh] w-full flex-col',
+          'sheet-panel safe-b relative flex outline-none max-h-[85vh] w-full flex-col',
           'rounded-t-3xl border-(length:--line-w) border-edge border-b-0 bg-slate-50 shadow-[var(--shadow-sheet)]',
           'sm:max-w-lg sm:rounded-3xl sm:border-b-(length:--line-w)',
           'dark:bg-slate-900'
@@ -326,12 +414,14 @@ export function Sheet({ open, onClose, title, children, footer, above = false })
             aria-hidden
             className="absolute top-2 left-1/2 h-1 w-9 -translate-x-1/2 rounded-full bg-slate-300 sm:hidden dark:bg-slate-700"
           />
-          <h3 className="text-lg">{view.title}</h3>
+          <h3 id={titleId} className="text-lg">
+            {view.title}
+          </h3>
           <button
             type="button"
             onClick={onClose}
-            aria-label="close"
-            className="grid h-9 w-9 place-items-center rounded-full text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+            aria-label={document.documentElement.lang === 'en' ? 'Close' : 'ปิด'}
+            className="-mr-1.5 grid h-11 w-11 place-items-center rounded-full text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
           >
             <svg
               viewBox="0 0 20 20"
@@ -432,7 +522,7 @@ export function Chip({ children, tone = 'slate', className = '' }) {
   return (
     <span
       className={cx(
-        'inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-semibold',
+        'inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-semibold',
         tones[tone],
         className
       )}
@@ -445,26 +535,32 @@ export function Chip({ children, tone = 'slate', className = '' }) {
 /* ---------------------------------------------------------------- Toast */
 
 export function Toast({ message, tone = 'slate', action, onAction }) {
-  if (!message) return null
+  // the live region stays mounted so screen readers announce each message
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-24 z-60 flex justify-center px-4 sm:bottom-8">
-      <div
-        className={cx(
-          'animate-pop flex max-w-sm items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-white shadow-lg',
-          tone === 'error' ? 'bg-rose-600' : 'bg-slate-900 dark:bg-slate-700',
-          action && 'pointer-events-auto py-1.5 pr-1.5'
-        )}
-      >
-        <span className="min-w-0 flex-1">{message}</span>
-        {action && (
-          <button
-            onClick={onAction}
-            className="h-9 shrink-0 rounded-lg px-3 font-bold text-accent-300 transition hover:bg-white/10 active:scale-95"
-          >
-            {action.label}
-          </button>
-        )}
-      </div>
+    <div
+      role={tone === 'error' ? 'alert' : 'status'}
+      aria-live={tone === 'error' ? 'assertive' : 'polite'}
+      className="pointer-events-none fixed inset-x-0 bottom-28 z-60 flex justify-center px-4 md:bottom-8"
+    >
+      {message && (
+        <div
+          className={cx(
+            'animate-pop flex max-w-sm items-center gap-3 rounded-2xl px-4 py-2.5 text-sm font-medium text-white shadow-lg',
+            tone === 'error' ? 'bg-rose-700' : 'bg-slate-900 dark:bg-slate-700',
+            action && 'pointer-events-auto py-1.5 pr-1.5'
+          )}
+        >
+          <span className="min-w-0 flex-1">{message}</span>
+          {action && (
+            <button
+              onClick={onAction}
+              className="h-10 shrink-0 rounded-xl px-3 font-bold text-accent-300 transition hover:bg-white/10 active:scale-95"
+            >
+              {action.label}
+            </button>
+          )}
+        </div>
+      )}
     </div>
   )
 }

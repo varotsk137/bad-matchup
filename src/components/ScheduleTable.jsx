@@ -1,24 +1,24 @@
-import { Fragment, useMemo } from 'react'
+import { Fragment, useId, useMemo, useRef } from 'react'
 import { levelMeta } from './PlayerBits'
 import { Card, courtTone, cx } from './ui'
 
 /**
  * The whole session on one grid: a row per round (1 → n), a column per court.
- * Deliberately dense — this is the "what's the plan" view, the card list is
- * the "what's happening right now" view.
+ * The "what's the plan" view; the card list is the "what's happening right
+ * now" view.
  */
 export default function ScheduleTable({
   rounds,
   courts,
   playersById,
   t,
-  setToast,
   staminaLimit = 2,
   // checking aids, switched from the view row above; they stay out of the image
   showLevels = false,
   showStamina = false,
   onToggleDone, // absent in the read-only shared view
 }) {
+  const uid = useId()
 
   const columns = []
   const seen = new Set()
@@ -34,6 +34,26 @@ export default function ScheduleTable({
         columns.push({ id: m.courtId, name: m.courtName })
         seen.add(m.courtId)
       }
+    }
+  }
+
+  // rounds that arrive while the table is up (added, reshuffled) rise in;
+  // the ones already there when it mounted stay put
+  const born = useRef(null)
+  if (!born.current) born.current = { known: new Set(rounds.map((r) => r.id)), fresh: new Map() }
+  let batch = 0
+  for (const r of rounds) {
+    if (!born.current.known.has(r.id)) {
+      born.current.known.add(r.id)
+      born.current.fresh.set(r.id, batch++)
+    }
+  }
+  const enter = (id) => {
+    const k = born.current.fresh.get(id)
+    if (k == null) return {}
+    return {
+      className: 'animate-pop [animation-fill-mode:backwards]',
+      style: { animationDelay: `${Math.min(k, 8) * 40}ms` },
     }
   }
 
@@ -92,28 +112,32 @@ export default function ScheduleTable({
   const PlayBadge = ({ n }) => (
     <span
       className={cx(
-        'ml-0.5 inline-block rounded px-1 text-xs leading-4 font-bold tabular-nums',
+        'ml-1 inline-block rounded px-1 text-xs leading-4 font-bold tabular-nums',
         n > staminaLimit
           ? 'bg-rose-600 text-white'
           : n === staminaLimit
             ? 'bg-accent-100 text-accent-800 dark:bg-accent-950 dark:text-accent-300'
-            : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
+            : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200'
       )}
     >
       {n}/{staminaLimit}
     </span>
   )
 
+  // a long rest is said in words too, not only in rose
   const RestBadge = ({ n }) => (
     <span
       className={cx(
-        'ml-0.5 inline-block rounded px-1 text-xs leading-4 font-bold tabular-nums',
+        'ml-1 inline-block rounded px-1 text-xs leading-4 font-bold tabular-nums',
         n >= 3
           ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
           : 'bg-brand-100 text-brand-800 dark:bg-brand-950 dark:text-brand-300'
       )}
     >
-      💤{n}
+      {n >= 3 && <span aria-hidden>! </span>}
+      {t('v4RestShort')}
+      {n}
+      {n >= 3 && <span className="sr-only"> · {t('v4RestLong')}</span>}
     </span>
   )
 
@@ -121,7 +145,7 @@ export default function ScheduleTable({
   const Side = ({ ids, tone, ri }) => (
     <span
       className={cx(
-        'block text-[13px] leading-5 font-semibold [overflow-wrap:anywhere]',
+        'block text-sm leading-5 font-semibold [overflow-wrap:anywhere]',
         tone === 'A' ? 'text-sky-700 dark:text-sky-300' : 'text-rose-700 dark:text-rose-300'
       )}
     >
@@ -132,7 +156,7 @@ export default function ScheduleTable({
             {i > 0 && <span className="font-normal text-slate-600 dark:text-slate-400"> + </span>}
             {p ? p.name : '—'}
             {p && showLevels && (
-              <span className="ml-0.5 text-[10px] font-medium text-slate-400">
+              <span className="ml-1 text-xs font-medium text-slate-600 dark:text-slate-400">
                 {levelMeta(p.level).code}
               </span>
             )}
@@ -143,24 +167,28 @@ export default function ScheduleTable({
     </span>
   )
 
+  const span = 1 + columns.length * (onToggleDone ? 2 : 1)
+
   return (
     <Card className="overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-left">
           <thead>
-            <tr className="border-b border-slate-200 dark:border-slate-800">
-              <th className="sticky left-0 z-10 bg-slate-50 py-1.5 pr-2 pl-3 text-xs font-semibold text-slate-600 dark:bg-slate-900 dark:text-slate-400">
-                #
+            <tr className="border-b-(length:--line-w) border-edge">
+              <th className="sticky left-0 z-10 bg-slate-50 py-3 pr-2 pl-4 text-xs font-semibold text-slate-600 dark:bg-slate-900 dark:text-slate-400">
+                <span className="sr-only">{t('round')}</span>
+                <span aria-hidden>#</span>
               </th>
               {columns.map((c, ci) => (
                 <th
                   key={c.id}
+                  id={`${uid}-c${ci}`}
                   colSpan={onToggleDone ? 2 : 1}
-                  className="px-2 py-1.5 text-left sm:min-w-36"
+                  className="px-2 py-3 text-left sm:min-w-40"
                 >
                   <span
                     className={cx(
-                      'font-display inline-block rounded-[var(--radius-pill)] border-(length:--line-w) border-btn-edge px-2.5 py-0.5 text-xs whitespace-nowrap',
+                      'font-display inline-block rounded-[var(--radius-pill)] border-(length:--line-w) border-btn-edge px-3 py-1 text-xs whitespace-nowrap',
                       courtTone(ci)
                     )}
                   >
@@ -169,7 +197,7 @@ export default function ScheduleTable({
                 </th>
               ))}
               {hasBench && (
-                <th className="hidden min-w-24 px-2 py-1.5 text-xs font-semibold text-slate-600 sm:table-cell dark:text-slate-400">
+                <th className="hidden min-w-28 px-3 py-3 text-xs font-semibold text-slate-600 sm:table-cell dark:text-slate-400">
                   {t('bench')}
                 </th>
               )}
@@ -179,54 +207,60 @@ export default function ScheduleTable({
             {rounds.map((round, i) => {
               const finished = round.matches.length > 0 && round.matches.every((m) => m.done)
               const current = i === currentIdx
-              const tone = cx(
-                current
-                  ? 'bg-brand-50 dark:bg-brand-950/40'
-                  : i % 2 === 1 && 'bg-slate-50/60 dark:bg-slate-800/20',
-                finished && 'opacity-55'
-              )
+              // the round on court: a soft lime wash (ink in dark), opaque so the
+              // sticky number column covers what scrolls under it
+              const wash = current ? 'bg-accent-50 dark:bg-slate-800' : 'bg-slate-50 dark:bg-slate-900'
               const benchLine = hasBench && round.benched.length > 0
+              const rowId = `${uid}-r${i}`
+              const anim = enter(round.id)
               return (
                 <Fragment key={round.id}>
                   <tr
+                    style={anim.style}
                     className={cx(
-                      'border-b border-slate-100 last:border-0 dark:border-slate-800/70',
+                      'border-b-(length:--line-w) border-edge last:border-0',
                       benchLine && 'max-sm:border-b-0',
-                      tone
+                      wash,
+                      anim.className
                     )}
                   >
-                    <td
-                      className={cx(
-                        'sticky left-0 z-10 py-1.5 pr-2 pl-3 align-middle',
-                        current
-                          ? 'border-l-4 border-brand-600 bg-brand-50 pl-2 dark:bg-brand-950'
-                          : 'bg-slate-50 dark:bg-slate-900'
-                      )}
-                    >
-                      <span
-                        className={cx(
-                          'block text-xs font-bold tabular-nums',
-                          current ? 'text-brand-700 dark:text-brand-300' : 'text-slate-600 dark:text-slate-400'
-                        )}
-                      >
-                        {i + 1}
-                      </span>
-                      {current && (
-                        <span className="flex items-start gap-1 text-xs leading-tight font-semibold text-brand-700 dark:text-brand-300">
-                          <span className="live-dot mt-1" aria-hidden />
-                          {t('nowPlaying')}
+                    <td className={cx('sticky left-0 z-10 py-3 pr-2 pl-4 align-middle', wash)}>
+                      <span id={rowId} className="flex flex-col items-start gap-1">
+                        <span className="sr-only">{t('round')} </span>
+                        <span
+                          className={cx(
+                            'num grid h-9 min-w-9 place-items-center rounded-full px-1.5 text-lg',
+                            current
+                              ? 'bg-preset text-preset-ink'
+                              : finished
+                                ? 'text-slate-600 dark:text-slate-400'
+                                : 'text-slate-900 dark:text-slate-100'
+                          )}
+                        >
+                          {i + 1}
                         </span>
-                      )}
+                        {/* the badge needs a wider column than a phone can spare: there
+                            the lime number and row say it, and a reader still hears it */}
+                        {current && (
+                          <>
+                            <span className="live-badge text-xs font-bold whitespace-nowrap max-sm:hidden">
+                              <span className="live-dot" aria-hidden />
+                              {t('nowPlaying')}
+                            </span>
+                            <span className="sr-only sm:hidden">{t('nowPlaying')}</span>
+                          </>
+                        )}
+                      </span>
                     </td>
 
-                    {columns.map((c) => {
+                    {columns.map((c, ci) => {
                       const m = round.matches.find((x) => x.courtId === c.id)
                       if (!m)
                         return (
                           <td
                             key={c.id}
                             colSpan={onToggleDone ? 2 : 1}
-                            className="px-2 py-1.5 text-xs text-slate-300"
+                            className="px-2 py-3 text-sm text-slate-600 dark:text-slate-400"
                           >
                             —
                           </td>
@@ -235,18 +269,13 @@ export default function ScheduleTable({
                         typeof m.scoreA === 'number' && typeof m.scoreB === 'number'
                       return (
                         <Fragment key={c.id}>
-                          <td
-                            className={cx(
-                              'py-1.5 pl-2 align-middle',
-                              onToggleDone ? 'pr-1' : 'pr-2'
-                            )}
-                          >
+                          <td className={cx('py-3 pl-2 align-middle', onToggleDone ? 'pr-1' : 'pr-3')}>
                             <div className="min-w-0">
                               <Side ids={m.teamA} tone="A" ri={i} />
-                              <span className="flex items-center gap-1 text-xs leading-4 font-semibold text-slate-600 dark:text-slate-400">
+                              <span className="my-0.5 flex items-center gap-1.5 text-xs leading-4 font-semibold text-slate-600 dark:text-slate-400">
                                 {t('vs')}
                                 {hasScore && (
-                                  <span className="text-slate-600 tabular-nums dark:text-slate-400">
+                                  <span className="num text-sm text-slate-900 dark:text-slate-100">
                                     {m.scoreA}–{m.scoreB}
                                   </span>
                                 )}
@@ -260,26 +289,24 @@ export default function ScheduleTable({
                           {/* its own narrow column, so the ticks line up row after row and
                               sit right after the longest names on that court */}
                           {onToggleDone && (
-                            <td className="w-px py-0 pr-1 align-middle">
-                              {/* a round tick the size of a thumb, labelled for screen readers */}
+                            <td className="w-px py-0 pr-2 align-middle">
+                              {/* name stays a plain "Finish"; the round and court describe it */}
                               <button
+                                type="button"
                                 onClick={() => onToggleDone(round, m.id)}
                                 aria-pressed={!!m.done}
                                 aria-label={t(m.done ? 'reopen' : 'finishGame')}
+                                aria-describedby={`${rowId} ${uid}-c${ci}`}
                                 title={t(m.done ? 'reopen' : 'finishGame')}
-                                className="group grid h-11 w-11 shrink-0 place-items-center"
+                                className={cx(
+                                  'grid h-11 w-11 shrink-0 place-items-center rounded-full font-semibold transition active:scale-90',
+                                  'focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none',
+                                  m.done
+                                    ? 'bg-brand-600 text-base text-white'
+                                    : 'border-2 border-slate-300 text-xs text-slate-700 hover:border-brand-500 dark:border-slate-600 dark:text-slate-200'
+                                )}
                               >
-                                <span
-                                  className={cx(
-                                    'grid h-9 w-9 place-items-center rounded-full border-2 font-semibold transition group-active:scale-90',
-                                    m.done
-                                      ? 'border-brand-600 bg-brand-600 text-sm text-white'
-                                      : 'border-slate-300 text-xs text-slate-600 group-hover:border-brand-500 dark:border-slate-600 dark:text-slate-300'
-                                  )}
-                                  aria-hidden
-                                >
-                                  {m.done ? '✓' : t('finishGameShort')}
-                                </span>
+                                <span aria-hidden>{m.done ? '✓' : t('finishGameShort')}</span>
                               </button>
                             </td>
                           )}
@@ -288,7 +315,7 @@ export default function ScheduleTable({
                     })}
 
                     {hasBench && (
-                      <td className="hidden px-2 py-1.5 align-middle text-xs leading-4 text-slate-600 sm:table-cell dark:text-slate-400">
+                      <td className="hidden px-3 py-3 align-middle text-xs leading-5 text-slate-600 sm:table-cell dark:text-slate-400">
                         {benchList(round, i)}
                       </td>
                     )}
@@ -296,19 +323,21 @@ export default function ScheduleTable({
                   {/* on a phone the bench gets a line under its round, so two courts fit */}
                   {benchLine && (
                     <tr
+                      style={anim.style}
                       className={cx(
-                        'border-b border-slate-100 last:border-0 sm:hidden dark:border-slate-800/70',
-                        tone
+                        'border-b-(length:--line-w) border-edge last:border-0 sm:hidden',
+                        wash,
+                        anim.className
                       )}
                     >
                       <td
-                        colSpan={1 + columns.length * (onToggleDone ? 2 : 1)}
-                        className={cx(
-                          'pt-0 pr-3 pb-2 pl-3 text-xs leading-5 text-slate-600 dark:text-slate-400',
-                          current && 'border-l-4 border-brand-600 pl-2'
-                        )}
+                        colSpan={span}
+                        className="pt-0 pr-4 pb-3 pl-4 text-xs leading-5 text-slate-600 dark:text-slate-400"
                       >
-                        <span className="font-semibold">{t('bench')}</span> {benchList(round, i)}
+                        <span className="font-semibold text-slate-700 dark:text-slate-300">
+                          {t('bench')}
+                        </span>{' '}
+                        {benchList(round, i)}
                       </td>
                     </tr>
                   )}
@@ -320,8 +349,8 @@ export default function ScheduleTable({
       </div>
       {/* under the table, so switching the badges on never pushes the rounds down */}
       {showStamina && (
-        <p className="border-t border-slate-100 px-3 py-2 text-xs text-slate-600 dark:border-slate-800 dark:text-slate-400">
-          {t('staminaLegend', { a: `1/${staminaLimit}`, b: '💤1' })}
+        <p className="border-t-(length:--line-w) border-edge px-4 py-3 text-xs text-slate-600 dark:text-slate-400">
+          {t('staminaLegend', { a: `1/${staminaLimit}`, b: `${t('v4RestShort')}1` })}
         </p>
       )}
     </Card>

@@ -13,7 +13,7 @@ const SCORE_BOX = {
 
 function Slot({ player, team, idx, matchId, selected, onTap, locked, winner, t }) {
   const isSelected =
-    selected &&
+    !!selected &&
     !selected.bench &&
     selected.matchId === matchId &&
     selected.team === team &&
@@ -21,44 +21,53 @@ function Slot({ player, team, idx, matchId, selected, onTap, locked, winner, t }
 
   const handle = () => onTap({ matchId, team, idx })
   const ring = isSelected && 'bg-accent-100 ring-2 ring-accent-500 dark:bg-accent-900/40'
+  // a full 44px row per name: the whole name is the thing you tap to swap
+  const base = cx(
+    'flex h-11 w-full min-w-0 items-center rounded-lg px-1.5 transition',
+    'focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:outline-none',
+    team === 'B' ? 'justify-end text-right' : 'text-left',
+    !locked && 'active:scale-[0.98]',
+    ring
+  )
 
   if (!player) {
     return (
       <button
+        type="button"
         disabled={locked}
         onClick={handle}
+        aria-pressed={isSelected}
         className={cx(
-          'w-full truncate rounded-md border border-dashed border-slate-300 px-1 py-0.5 text-xs text-slate-400 dark:border-slate-700 dark:text-slate-500',
-          team === 'B' ? 'text-right' : 'text-left',
-          ring
+          base,
+          'border border-dashed border-slate-300 text-xs text-slate-600 dark:border-slate-700 dark:text-slate-400'
         )}
       >
-        + {t('emptySlot')}
+        <span className="truncate">+ {t('emptySlot')}</span>
       </button>
     )
   }
 
   return (
     <button
+      type="button"
       disabled={locked}
       onClick={handle}
       title={player.name}
+      aria-pressed={isSelected}
       className={cx(
-        'block w-full truncate rounded-md px-1 py-0.5 text-sm leading-snug transition',
-        team === 'B' ? 'text-right' : 'text-left',
+        base,
+        'text-[0.9375rem] leading-snug',
         TEAM_TEXT[team],
-        winner ? 'font-extrabold' : 'font-semibold',
-        !locked && 'active:scale-[0.98]',
-        ring
+        winner ? 'font-bold' : 'font-medium'
       )}
     >
-      {player.name}
+      <span className="truncate">{player.name}</span>
     </button>
   )
 }
 
 /** Optional: a match can be finished with both boxes left empty. */
-function ScoreBox({ value, onChange, disabled, side }) {
+function ScoreBox({ value, onChange, disabled, side, t }) {
   return (
     <input
       type="number"
@@ -74,19 +83,34 @@ function ScoreBox({ value, onChange, disabled, side }) {
         onChange(Number.isNaN(n) ? null : n)
       }}
       placeholder="–"
-      aria-label={`score ${side}`}
+      aria-label={t(side === 'A' ? 'v4ScoreA' : 'v4ScoreB')}
       className={cx(
-        'h-9 w-9 shrink-0 rounded-lg border bg-slate-50 text-center text-base font-bold tabular-nums dark:bg-slate-950',
-        'focus:ring-2 focus:outline-none disabled:opacity-80',
+        'num h-11 w-11 shrink-0 rounded-xl border bg-slate-50 text-center text-lg dark:bg-slate-950',
+        'focus:ring-2 focus:outline-none disabled:opacity-100',
         SCORE_BOX[side]
       )}
     />
   )
 }
 
+const check = (
+  <svg
+    viewBox="0 0 20 20"
+    className="h-5 w-5"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.4"
+    aria-hidden
+  >
+    <path d="m5 10.5 3.5 3.5L15 7" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+
 /**
- * One match on one row: the blue side (players 1, 2), its score, "vs", the
- * red side's score and the red side (players 3, 4), then the finish button.
+ * One match on one row: the court, the blue side (players 1, 2), its score,
+ * the red side's score and the red side (players 3, 4), then the finish
+ * button. `context` ("Round 3 · court 1") describes the finish button, whose
+ * name stays a plain "Finish".
  */
 export default function MatchCard({
   match,
@@ -99,6 +123,7 @@ export default function MatchCard({
   editable,
   readOnly = false,
   courtIndex = 0,
+  context,
 }) {
   const winner =
     typeof match.scoreA === 'number' &&
@@ -108,11 +133,16 @@ export default function MatchCard({
         ? 'A'
         : 'B'
       : null
+  const ctxId = `ctx-${match.id}`
 
   const side = (team) => {
     const ids = team === 'A' ? match.teamA : match.teamB
     return (
-      <div className="min-w-0 flex-1 space-y-0.5">
+      <div
+        role="group"
+        aria-label={t(team === 'A' ? 'v4TeamA' : 'v4TeamB')}
+        className="min-w-0 flex-1"
+      >
         {ids.map((id, idx) => (
           <Slot
             key={`${team}-${idx}`}
@@ -131,38 +161,30 @@ export default function MatchCard({
     )
   }
 
-  const check = (
-    <svg
-      viewBox="0 0 20 20"
-      className="h-4 w-4"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.2"
-    >
-      <path d="m5 10.5 3.5 3.5L15 7" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-
   return (
     <div
       className={cx(
         // min-w-0: a grid item, so a long name truncates instead of
         // stretching the row past the round
-        'flex min-w-0 items-center gap-1.5 rounded-xl border-(length:--line-w) px-1.5 py-1.5 transition',
-        match.done
-          ? 'border-slate-200 bg-slate-50/60 opacity-70 dark:border-slate-800 dark:bg-slate-800/20'
-          : 'border-edge bg-slate-50 dark:bg-slate-900'
+        'flex min-w-0 items-center gap-1 rounded-2xl border-(length:--line-w) py-1 pr-1 pl-1.5 transition-colors',
+        match.done ? 'border-transparent bg-slate-100 dark:bg-slate-800/60' : 'border-edge bg-slate-50 dark:bg-slate-900'
       )}
     >
       <span
         className={cx(
-          'font-display max-w-[3.25rem] shrink-0 truncate rounded-[var(--radius-pill)] border-(length:--line-w) border-btn-edge px-1.5 py-0.5 text-[10px]',
+          'font-display grid h-7 min-w-7 max-w-12 shrink-0 place-items-center truncate rounded-[var(--radius-pill)] border-(length:--line-w) border-btn-edge px-1.5 text-xs',
           courtTone(courtIndex)
         )}
         title={match.courtName}
+        aria-hidden
       >
         {match.courtName}
       </span>
+      {context && (
+        <span id={ctxId} className="sr-only">
+          {context}
+        </span>
+      )}
 
       {side('A')}
 
@@ -171,37 +193,46 @@ export default function MatchCard({
         onChange={(v) => onScore(match.id, { scoreA: v })}
         disabled={readOnly}
         side="A"
+        t={t}
       />
-      <span className="shrink-0 text-[10px] font-bold text-slate-400">vs</span>
+      <span className="w-1.5 shrink-0 text-center text-xs font-bold text-slate-600 dark:text-slate-400" aria-hidden>
+        –
+      </span>
       <ScoreBox
         value={match.scoreB}
         onChange={(v) => onScore(match.id, { scoreB: v })}
         disabled={readOnly}
         side="B"
+        t={t}
       />
 
       {side('B')}
 
       {readOnly ? (
-        <span
-          className={cx(
-            'grid h-10 w-10 shrink-0 place-items-center rounded-lg',
-            match.done ? 'bg-brand-600 text-white' : 'text-transparent'
-          )}
-          aria-label={match.done ? t('finishGame') : undefined}
-        >
-          {match.done && check}
-        </span>
+        match.done ? (
+          <span
+            role="img"
+            aria-label={t('v4MatchFinished')}
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand-600 text-white"
+          >
+            {check}
+          </span>
+        ) : (
+          <span className="h-11 w-11 shrink-0" aria-hidden />
+        )
       ) : (
         <button
+          type="button"
           onClick={() => onToggleDone(match.id)}
           aria-label={t(match.done ? 'reopen' : 'finishGame')}
+          aria-describedby={context ? ctxId : undefined}
           title={t(match.done ? 'reopen' : 'finishGame')}
           className={cx(
-            'grid h-10 w-10 shrink-0 place-items-center rounded-lg text-xs font-bold transition active:scale-95',
+            'grid h-11 w-11 shrink-0 place-items-center rounded-full text-xs font-bold transition active:scale-95',
+            'focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none',
             match.done
               ? 'bg-brand-600 text-white'
-              : 'border border-slate-300 text-slate-600 hover:border-brand-500 hover:text-brand-700 dark:border-slate-700 dark:text-slate-300'
+              : 'border-2 border-slate-300 text-slate-700 hover:border-brand-500 hover:text-brand-700 dark:border-slate-600 dark:text-slate-200'
           )}
         >
           {match.done ? check : t('finishShort')}

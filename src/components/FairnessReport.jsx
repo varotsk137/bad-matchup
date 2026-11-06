@@ -1,14 +1,14 @@
 import { useMemo, useState } from 'react'
 import { rosterChange } from '../lib/roster'
-import { Card, SectionTitle, cx } from './ui'
+import { Card, SectionTitle, Segmented, cx } from './ui'
 
 /**
  * "Is this schedule evened out well?" — every number is set against what the
  * schedule could possibly reach, because "3 pairs never partnered" is a great
- * result with too few rounds and a poor one with plenty.
+ * result with too few rounds and a poor one with plenty. Null with fewer than
+ * three players: there is nothing to even out.
  */
-export default function FairnessReport({ state, playersById, t, goTo }) {
-  const [view, setView] = useState('partners')
+export function useFairness(state, t) {
   const r = useMemo(() => analyse(state), [state])
   if (r.ids.length < 3) return null
 
@@ -59,99 +59,128 @@ export default function FairnessReport({ state, playersById, t, goTo }) {
       note: t('fairSinglesNote'),
       grade: r.singlesMax - r.singlesMin <= 1 ? 0 : r.singlesMax - r.singlesMin === 2 ? 1 : 2,
     })
-  const worst = Math.max(...checks.map((c) => c.grade))
-  // a group change the schedule has not caught up with explains any odd
-  // numbers below — say that instead of grading a plan that is out of date
-  const stale = rosterChange(state)
+  return {
+    r,
+    checks,
+    worst: Math.max(...checks.map((c) => c.grade)),
+    // a group change the schedule has not caught up with explains any odd
+    // numbers — say that instead of grading a plan that is out of date
+    stale: rosterChange(state),
+  }
+}
 
+const GRADES = [
+  {
+    key: 'v4GradeGood',
+    tone: 'bg-brand-50 text-brand-800 dark:bg-brand-950 dark:text-brand-200',
+    // a tick
+    path: 'M5 10.5l3 3 7-7',
+  },
+  {
+    key: 'v4GradeOk',
+    tone: 'bg-accent-100 text-accent-900 dark:bg-accent-950 dark:text-accent-200',
+    // a level line
+    path: 'M5.5 10h9',
+  },
+  {
+    key: 'v4GradeBad',
+    tone: 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-200',
+    // an exclamation mark
+    path: 'M10 5v6M10 14.5v.5',
+  },
+]
+
+/** A check's grade: a shape and a word as well as a colour. */
+export function GradeMark({ grade, t, className = '' }) {
+  const g = GRADES[grade]
+  return (
+    <span
+      className={cx(
+        'inline-flex h-6 items-center gap-1 rounded-full pr-2 pl-1.5 text-xs font-semibold',
+        g.tone,
+        className
+      )}
+    >
+      <svg
+        viewBox="0 0 20 20"
+        className="h-3.5 w-3.5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden
+      >
+        <path d={g.path} />
+      </svg>
+      {t(g.key)}
+    </span>
+  )
+}
+
+/** The checks, one clean row each, then who met whom. The verdict lives in the Stats hero. */
+export default function FairnessReport({ fair, playersById, t }) {
+  const [view, setView] = useState('partners')
+  if (!fair) return null
+  const { r, checks } = fair
   const grid = view === 'partners' ? r.partner : view === 'opponents' ? r.opp : r.together
   const names = r.ids.map((id) => playersById.get(id)?.name || '?')
 
   return (
-    <div>
-      <SectionTitle>{t('fairTitle')}</SectionTitle>
-      <Card className="space-y-3 p-3">
-        {stale ? (
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg bg-accent-100 px-3 py-2 dark:bg-accent-950">
-            <span className="min-w-0 flex-1 text-sm text-accent-900 dark:text-accent-100">
-              {t('fairStale', { n: stale.upcoming })}
-            </span>
-            {goTo && (
-              <button
-                onClick={() => goTo('play')}
-                className="shrink-0 text-sm font-semibold text-accent-800 underline-offset-2 hover:underline dark:text-accent-200"
-              >
-                {t('fairStaleLink')} →
-              </button>
-            )}
-          </div>
-        ) : (
-          <p
-            className={cx(
-              'rounded-lg px-3 py-2 text-sm font-semibold',
-              worst === 0
-                ? 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200'
-                : 'bg-accent-100 text-accent-800 dark:bg-accent-950 dark:text-accent-200'
-            )}
-          >
-            {t(['fairVerdictGood', 'fairVerdictOk', 'fairVerdictBad'][worst])}
-          </p>
-        )}
-
-        <ul className="divide-y divide-slate-100 dark:divide-slate-800">
-          {checks.map((c) => (
-            <li key={c.label} className="flex items-center gap-2 py-1.5">
-              <span
-                aria-hidden
-                className={cx(
-                  'h-2.5 w-2.5 shrink-0 rounded-full',
-                  ['bg-emerald-500', 'bg-accent-500', 'bg-rose-500'][c.grade]
-                )}
-              />
-              <span className="min-w-0 flex-1">
-                <span className="block text-sm">{c.label}</span>
-                <span className="block text-[11px] text-slate-500 dark:text-slate-400">
-                  {c.note}
+    <>
+      <section aria-labelledby="fair-checks">
+        <SectionTitle>
+          <span id="fair-checks">{t('v4Checks')}</span>
+        </SectionTitle>
+        <Card className="px-4">
+          <ul className="divide-y divide-slate-100 dark:divide-slate-800">
+            {checks.map((c) => (
+              <li key={c.label} className="flex items-center gap-4 py-3.5">
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[0.9375rem] font-medium text-slate-900 dark:text-slate-50">
+                    {c.label}
+                  </span>
+                  <span className="mt-0.5 block text-xs text-slate-600 dark:text-slate-400">
+                    {c.note}
+                  </span>
                 </span>
-              </span>
-              <span className="shrink-0 text-sm font-bold tabular-nums">{c.value}</span>
-            </li>
-          ))}
-        </ul>
-
-        <div>
-          <div className="mb-2 grid grid-cols-3 gap-1 rounded-xl border-(length:--line-w) border-edge bg-track p-1">
-            {[
-              ['partners', t('partneredWith')],
-              ['opponents', t('playedAgainst')],
-              ['together', t('fairTogether')],
-            ].map(([k, label]) => (
-              <button
-                key={k}
-                onClick={() => setView(k)}
-                className={cx(
-                  'h-8 rounded-lg text-xs font-semibold transition',
-                  view === k
-                    ? 'bg-pick text-pick-ink shadow-[var(--shadow-pick)]'
-                    : 'text-slate-500 dark:text-slate-400'
-                )}
-              >
-                {label}
-              </button>
+                <span className="flex shrink-0 flex-col items-end gap-1.5">
+                  <span className="num text-2xl text-slate-900 dark:text-slate-50">{c.value}</span>
+                  <GradeMark grade={c.grade} t={t} />
+                </span>
+              </li>
             ))}
-          </div>
+          </ul>
+        </Card>
+      </section>
+
+      <section aria-labelledby="fair-grid">
+        <SectionTitle hint={t('fairGridHint')}>
+          <span id="fair-grid">{t('v4MeetGrid')}</span>
+        </SectionTitle>
+        <Card className="space-y-4 p-4">
+          <Segmented
+            label={t('v4GridView')}
+            value={view}
+            onChange={setView}
+            options={[
+              { value: 'partners', label: t('partneredWith') },
+              { value: 'opponents', label: t('playedAgainst') },
+              { value: 'together', label: t('fairTogether') },
+            ]}
+          />
           <MeetGrid names={names} grid={grid} t={t} />
-          <p className="mt-1.5 text-xs text-slate-600 dark:text-slate-400">{t('fairGridHint')}</p>
-        </div>
-      </Card>
-    </div>
+        </Card>
+      </section>
+    </>
   )
 }
 
 /**
  * Everyone × everyone, with the count in each cell. In a big group most pairs
  * never meet, so a zero stays quiet; the colour only warms up where two people
- * met more than their fair share (the average, rounded up).
+ * met more than their fair share (the average, rounded up), and those cells
+ * get a ring too so the warning is not colour alone.
  */
 function MeetGrid({ names, grid, t }) {
   const cells = grid.flatMap((row, i) => row.filter((_, j) => j !== i))
@@ -160,23 +189,23 @@ function MeetGrid({ names, grid, t }) {
   const max = Math.max(fair + 1, ...cells)
   const tone = (v) =>
     v === 0
-      ? { className: 'bg-slate-100 font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400' }
+      ? { className: 'bg-track font-medium text-slate-600 dark:text-slate-400' }
       : v <= fair
         ? {
-            className: 'text-slate-900 dark:text-white',
+            className: 'font-semibold text-slate-900 dark:text-white',
             style: {
-              backgroundColor: `color-mix(in oklch, var(--color-brand-500) ${20 + (v / fair) * 30}%, transparent)`,
+              backgroundColor: `color-mix(in oklch, var(--color-brand-500) ${18 + (v / fair) * 27}%, transparent)`,
             },
           }
         : {
-            className: 'text-slate-950 ring-1 ring-accent-600 dark:text-white',
+            className: 'font-bold text-slate-950 ring-2 ring-accent-600 ring-inset dark:text-white',
             style: {
               backgroundColor: `color-mix(in oklch, var(--color-accent-500) ${45 + ((v - fair) / (max - fair)) * 45}%, transparent)`,
             },
           }
   return (
-    <div className="overflow-x-auto">
-      <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600 dark:text-slate-400">
+    <div>
+      <ul className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-600 dark:text-slate-400">
         {[
           [0, t('meetNone')],
           [1, t('meetFair', { n: fair })],
@@ -184,60 +213,64 @@ function MeetGrid({ names, grid, t }) {
         ].map(([v, label]) => {
           const c = tone(v)
           return (
-            <span key={label} className="inline-flex items-center gap-1.5">
+            <li key={label} className="inline-flex items-center gap-1.5">
               <span
-                className={cx('grid h-5 w-5 place-items-center rounded text-[11px] font-bold', c.className)}
+                aria-hidden
+                className={cx('grid h-6 w-6 place-items-center rounded-md text-xs tabular-nums', c.className)}
                 style={c.style}
               >
                 {v}
               </span>
               {label}
-            </span>
+            </li>
           )
         })}
-      </div>
-      <table className="border-separate border-spacing-0.5 text-[11px]">
-        <thead>
-          <tr>
-            <th />
-            {names.map((n, j) => (
-              <th
-                key={j}
-                className="h-14 w-6 align-bottom font-medium text-slate-500 dark:text-slate-400"
-              >
-                <span className="mx-auto block max-h-14 truncate [writing-mode:vertical-rl] rotate-180">
-                  {n}
-                </span>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {grid.map((row, i) => (
-            <tr key={i}>
-              <th className="max-w-20 truncate pr-1 text-right font-medium text-slate-500 dark:text-slate-400">
-                {names[i]}
-              </th>
-              {row.map((v, j) =>
-                i === j ? (
-                  <td key={j} className="h-6 w-6 rounded bg-slate-200 dark:bg-slate-800" />
-                ) : (
-                  <td
-                    key={j}
-                    className={cx(
-                      'h-6 w-6 rounded text-center font-bold tabular-nums',
-                      tone(v).className
-                    )}
-                    style={tone(v).style}
-                  >
-                    {v}
-                  </td>
-                )
-              )}
+      </ul>
+      <div className="-mx-4 overflow-x-auto px-4">
+        <table className="border-separate border-spacing-[3px] text-xs">
+          <thead>
+            <tr>
+              <th />
+              {names.map((n, j) => (
+                <th
+                  key={j}
+                  scope="col"
+                  className="h-16 w-7 align-bottom font-medium text-slate-600 dark:text-slate-400"
+                >
+                  <span className="mx-auto block max-h-16 truncate [writing-mode:vertical-rl] rotate-180">
+                    {n}
+                  </span>
+                </th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {grid.map((row, i) => (
+              <tr key={i}>
+                <th
+                  scope="row"
+                  className="max-w-24 truncate pr-1.5 text-right font-medium text-slate-600 dark:text-slate-400"
+                >
+                  {names[i]}
+                </th>
+                {row.map((v, j) =>
+                  i === j ? (
+                    <td key={j} className="h-7 w-7" aria-hidden />
+                  ) : (
+                    <td
+                      key={j}
+                      className={cx('h-7 w-7 rounded-md text-center tabular-nums', tone(v).className)}
+                      style={tone(v).style}
+                    >
+                      {v}
+                    </td>
+                  )
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }

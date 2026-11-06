@@ -118,6 +118,7 @@
     --shadow-btn-down: 1px 1px 0 0 var(--color-slate-900);
     --press-shift: 2px;
     --display-weight: 500;
+    --num-style: normal;
     --title-size: 1rem;
     --title-leading: 1.5rem;
     --title-tracking: normal;
@@ -281,6 +282,123 @@
     --color-court-4: var(--color-slate-700);
     --color-court-5: var(--color-slate-700);
     --shadow-btn-down: var(--shadow-card);
+  }
+
+  /* ------------------------------------------------------- Matchday
+     The v4 default: a sports-broadcast look. Cool white paper, deep court
+     navy for actions and scoreboard blocks, volt lime (a fresh shuttle's
+     yellow-green) for whatever is picked or on court, smash coral for court 2.
+     Kanit, slanted, for the big numbers. Soft layered shadows, roomy corners. */
+  :root[data-skin='matchday'] {
+    --font-display: 'Kanit', 'Noto Sans Thai', ui-sans-serif, system-ui, sans-serif;
+    --num-style: italic;
+    --icon-stroke: 1.9;
+    --live-bg: var(--color-accent-400);
+    --live-ink: var(--color-slate-900);
+    --live-radius: 9999px;
+    --live-dot: inline-block;
+    --live-dot-color: var(--color-slate-900);
+
+    --color-slate-50: oklch(0.995 0.002 260); /* card — white */
+    --color-slate-100: oklch(0.968 0.005 260); /* page */
+    --color-slate-200: oklch(0.925 0.008 260); /* hairlines */
+    --color-slate-300: oklch(0.86 0.012 260);
+    --color-slate-400: oklch(0.72 0.02 260);
+    --color-slate-500: oklch(0.53 0.025 262);
+    --color-slate-600: oklch(0.46 0.028 262);
+    --color-slate-700: oklch(0.37 0.03 264);
+    --color-slate-800: oklch(0.27 0.03 265); /* dark: raised */
+    --color-slate-900: oklch(0.2 0.03 265); /* ink · dark: card */
+    --color-slate-950: oklch(0.145 0.025 268); /* dark: page */
+
+    /* main — court navy */
+    --color-brand-50: oklch(0.965 0.015 264);
+    --color-brand-100: oklch(0.925 0.035 264);
+    --color-brand-200: oklch(0.85 0.065 264);
+    --color-brand-300: oklch(0.74 0.1 263);
+    --color-brand-400: oklch(0.6 0.14 263);
+    --color-brand-500: oklch(0.47 0.14 264);
+    --color-brand-600: oklch(0.36 0.1 264);
+    --color-brand-700: oklch(0.31 0.09 264);
+    --color-brand-800: oklch(0.27 0.075 265);
+    --color-brand-900: oklch(0.23 0.06 265);
+    --color-brand-950: oklch(0.18 0.045 266);
+
+    --color-chrome: oklch(0.995 0.002 260);
+    --color-chrome-edge: oklch(0.925 0.008 260);
+    --color-chrome-dark: oklch(0.2 0.03 265);
+
+    /* volt lime — picks, presets, the round on court, the second action */
+    --color-accent-50: oklch(0.98 0.04 125);
+    --color-accent-100: oklch(0.96 0.08 125);
+    --color-accent-200: oklch(0.94 0.13 125);
+    --color-accent-300: oklch(0.91 0.18 125);
+    --color-accent-400: oklch(0.89 0.2 125);
+    --color-accent-500: oklch(0.85 0.2 127);
+    --color-accent-600: oklch(0.78 0.19 129);
+    --color-accent-700: oklch(0.5 0.13 130);
+    --color-accent-800: oklch(0.42 0.11 130);
+    --color-accent-900: oklch(0.35 0.09 130);
+    --color-accent-950: oklch(0.25 0.06 130);
+    --color-on-accent: var(--color-slate-900);
+
+    --color-shuttle: var(--color-accent-400);
+    --color-shuttle-ink: var(--color-slate-900);
+    --color-edge: var(--color-slate-200);
+    --color-edge-strong: var(--color-slate-300);
+    --color-btn-edge: transparent;
+    --color-track: var(--color-slate-200);
+    --color-pick: var(--color-slate-900);
+    --color-pick-ink: var(--color-accent-300);
+    --color-chip: var(--color-slate-900);
+    --color-chip-ink: var(--color-accent-300);
+    --color-preset: var(--color-accent-400);
+    --color-preset-ink: var(--color-slate-900);
+    --color-title: var(--color-slate-900);
+    --color-badge: transparent;
+    --color-badge-ink: currentColor;
+    --color-court-1: var(--color-brand-600);
+    --color-court-2: oklch(0.58 0.2 30); /* smash coral */
+    --color-court-3: oklch(0.52 0.12 190);
+    --color-court-4: oklch(0.5 0.2 300);
+    --color-court-5: oklch(0.55 0.21 355);
+
+    --line-w: 1px;
+    --radius-pill: 9999px;
+    --shadow-card: 0 1px 2px 0 oklch(0.2 0.03 265 / 0.05), 0 6px 20px -8px oklch(0.2 0.03 265 / 0.12);
+    --shadow-sheet: 0 -8px 40px -12px oklch(0.2 0.03 265 / 0.3);
+    --shadow-pick: 0 2px 6px -2px oklch(0.2 0.03 265 / 0.35);
+    --shadow-btn: 0 1px 2px 0 oklch(0.2 0.03 265 / 0.12);
+    --shadow-btn-down: none;
+    --press-shift: 0px;
+    --display-weight: 600;
+    --title-size: 1.125rem;
+    --title-leading: 1.5rem;
+    --title-tracking: -0.01em;
+    --title-case: none;
+    --badge-px: 0;
+    --badge-py: 0;
+    --badge-size: 1.0625rem;
+    --badge-weight: 600;
+    --mascot: inline;
+  }
+  :root.dark[data-skin='matchday'] {
+    --color-brand-600: oklch(0.52 0.17 262);
+    --color-brand-700: oklch(0.46 0.16 262);
+    --color-brand-500: oklch(0.6 0.16 262);
+    --color-chrome-dark: oklch(0.2 0.03 265);
+    --color-chrome-edge: var(--color-slate-800);
+    --color-edge: var(--color-slate-800);
+    --color-edge-strong: var(--color-slate-700);
+    --color-track: var(--color-slate-800);
+    --color-pick: var(--color-accent-400);
+    --color-pick-ink: var(--color-slate-900);
+    --color-chip: var(--color-accent-400);
+    --color-chip-ink: var(--color-slate-900);
+    --color-title: var(--color-slate-50);
+    --color-court-1: oklch(0.52 0.17 262);
+    --shadow-card: 0 1px 0 0 oklch(1 0 0 / 0.04) inset;
+    --shadow-btn: none;
   }
 
   /* ------------------------------------------------------- Scoreboard
@@ -2086,6 +2204,15 @@
     -moz-appearance: textfield;
   }
 
+  /* one visible focus ring for anything without its own */
+  :focus-visible {
+    outline: 2px solid var(--color-brand-700);
+    outline-offset: 2px;
+  }
+  .dark :focus-visible {
+    outline-color: var(--color-brand-300);
+  }
+
   button {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
@@ -2106,6 +2233,23 @@
   .font-display {
     font-family: var(--font-display);
     font-weight: var(--display-weight);
+  }
+  /* big scoreboard numbers: the skin's display face, slanted where the skin says */
+  .num {
+    font-family: var(--font-display);
+    font-weight: var(--display-weight);
+    font-style: var(--num-style);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  /* a screen's own large title */
+  .screen-title {
+    font-family: var(--font-display);
+    font-weight: var(--display-weight);
+    font-size: 1.875rem;
+    line-height: 2.5rem;
+    letter-spacing: -0.02em;
   }
 }
 
@@ -2284,24 +2428,24 @@
 /* a segmented control's pick slides between segments */
 .seg-pick {
   transition:
-    transform 0.32s var(--ease-drawer),
-    width 0.32s var(--ease-drawer);
+    transform 0.25s var(--ease-drawer),
+    width 0.25s var(--ease-drawer);
 }
 
 /* the bottom nav's pill follows the tab you pick */
 .nav-pill {
-  transition: transform 0.36s var(--ease-drawer);
+  transition: transform 0.28s var(--ease-drawer);
 }
 
 /* a tab's content arrives with a short rise, never blocking a tap */
 @keyframes tab-in {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(4px);
   }
 }
 .animate-tab {
-  animation: tab-in 0.24s var(--ease-out);
+  animation: tab-in 0.18s var(--ease-out);
 }
 
 /* the install invite's thin line, running out while the invite is up */

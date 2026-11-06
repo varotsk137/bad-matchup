@@ -53,8 +53,10 @@ export default function SwapSheet({ round, number, playersById, t, onSwap, onClo
         key={place.bench ? place.playerId : `${place.matchId}-${place.team}-${place.idx}`}
         onClick={() => pick(place)}
         disabled={locked}
+        aria-pressed={isFirst || isSecond}
         className={cx(
-          'h-9 max-w-full truncate rounded-lg border px-3 text-sm font-semibold transition active:scale-95 disabled:opacity-40',
+          'h-11 max-w-full truncate rounded-xl border px-3.5 text-sm font-semibold transition active:scale-95 disabled:opacity-40',
+          'focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:outline-none',
           tone ?? 'text-slate-700 dark:text-slate-200',
           isFirst
             ? 'border-accent-500 bg-accent-100 ring-2 ring-accent-500 dark:bg-accent-900/40'
@@ -95,25 +97,25 @@ export default function SwapSheet({ round, number, playersById, t, onSwap, onClo
       }
     >
       <div className="space-y-4">
-        <div className="flex flex-wrap gap-1.5 text-[11px] font-bold">
+        <div className="flex flex-wrap gap-1.5 text-xs font-bold">
           <span
             className={cx(
-              'rounded-full px-2 py-0.5',
+              'rounded-full px-2.5 py-1',
               first
                 ? 'bg-brand-100 text-brand-800 dark:bg-brand-900/50 dark:text-brand-200'
-                : 'bg-accent-500 text-white'
+                : 'bg-preset text-preset-ink'
             )}
           >
             {first ? `1 ${nameOf(first)} ✓` : t('swapStep1')}
           </span>
           <span
             className={cx(
-              'rounded-full px-2 py-0.5',
+              'rounded-full px-2.5 py-1',
               second
                 ? 'bg-brand-100 text-brand-800 dark:bg-brand-900/50 dark:text-brand-200'
                 : first
                   ? 'bg-brand-600 text-white'
-                  : 'bg-slate-200/70 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+                  : 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
             )}
           >
             {second ? `2 ${nameOf(second)} ✓` : t('swapStep2')}
@@ -122,7 +124,7 @@ export default function SwapSheet({ round, number, playersById, t, onSwap, onClo
 
         {round.matches.map((m) => (
           <div key={m.id}>
-            <p className="mb-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400">
+            <p className="mb-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400">
               {t('swapCourt', { court: m.courtName })}
               {m.done && ` · ${t('swapDone')}`}
             </p>
@@ -142,7 +144,7 @@ export default function SwapSheet({ round, number, playersById, t, onSwap, onClo
 
         {round.benched.length > 0 && (
           <div>
-            <p className="mb-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400">
+            <p className="mb-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400">
               {t('bench')}
             </p>
             <div className="flex flex-wrap gap-1.5">
@@ -159,7 +161,7 @@ export default function SwapSheet({ round, number, playersById, t, onSwap, onClo
             role="status"
           >
             <b>{nameOf(first)}</b> ⇄ <b>{nameOf(second)}</b>
-            <span className="block text-xs text-slate-500 dark:text-slate-400">
+            <span className="block text-xs text-slate-600 dark:text-slate-400">
               {t('swapSummary', {
                 a: nameOf(first),
                 b: nameOf(second),

@@ -241,7 +241,7 @@ function LinkCard({ icon, title, hint, url, t, setToast, toggle = null, offHint,
 
       {on && url && (
         <div className="mt-3 space-y-2">
-          <p className="truncate rounded-lg bg-white/70 px-2 py-1.5 font-mono text-[11px] text-slate-500 dark:bg-slate-950/60 dark:text-slate-400">
+          <p className="truncate rounded-lg bg-white/70 px-2 py-1.5 font-mono text-xs text-slate-600 dark:bg-slate-950/60 dark:text-slate-400">
             {url}
           </p>
           <div className="flex gap-2">
