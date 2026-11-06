@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Icon from './Icon'
 
 export const cx = (...parts) => parts.filter(Boolean).join(' ')
@@ -53,7 +53,7 @@ const VARIANTS = {
   primary: `${SOLID} bg-brand-600 text-white hover:bg-brand-700 disabled:bg-slate-300 dark:disabled:bg-slate-700`,
   secondary: `${SOLID} bg-slate-900 text-slate-50 hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200`,
   outline: `press border-(length:--line-w) border-edge-strong bg-slate-50 text-slate-900 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700`,
-  ghost: 'text-slate-600 hover:bg-slate-200/70 dark:text-slate-300 dark:hover:bg-slate-800',
+  ghost: 'active:scale-[0.97] text-slate-600 hover:bg-slate-200/70 dark:text-slate-300 dark:hover:bg-slate-800',
   accent: `${SOLID} bg-accent-500 text-on-accent hover:bg-accent-600`,
   danger: `${SOLID} bg-rose-100 text-rose-800 hover:bg-rose-200 dark:bg-rose-950 dark:text-rose-200 dark:hover:bg-rose-900`,
   destroy: `${SOLID} bg-rose-600 text-white hover:bg-rose-700`,
@@ -95,14 +95,26 @@ export function Button({
 /* ----------------------------------------------------------- Segmented */
 
 export function Segmented({ options, value, onChange, className = '', size = 'md' }) {
+  const at = options.findIndex((o) => o.value === value)
   return (
     <div
       className={cx(
-        'inline-flex w-full gap-1 rounded-xl border-(length:--line-w) border-edge bg-track p-1',
+        'relative inline-flex w-full gap-1 rounded-xl border-(length:--line-w) border-edge bg-track p-1',
         className
       )}
       role="tablist"
     >
+      {/* one pick that slides to the chosen segment (all segments are equal width) */}
+      {at >= 0 && (
+        <span
+          aria-hidden
+          className="seg-pick absolute inset-y-1 left-1 rounded-lg bg-pick shadow-[var(--shadow-pick)]"
+          style={{
+            width: `calc((100% - 0.5rem - ${options.length - 1} * 0.25rem) / ${options.length})`,
+            transform: `translateX(calc(${at} * (100% + 0.25rem)))`,
+          }}
+        />
+      )}
       {options.map((o) => {
         const active = o.value === value
         return (
@@ -113,10 +125,10 @@ export function Segmented({ options, value, onChange, className = '', size = 'md
             aria-selected={active}
             onClick={() => onChange(o.value)}
             className={cx(
-              'flex-1 rounded-lg font-medium transition',
+              'relative min-w-0 flex-1 basis-0 rounded-lg font-medium transition-colors duration-200',
               size === 'sm' ? 'h-8 px-2 text-xs' : 'h-11 px-3 text-sm',
               active
-                ? 'bg-pick text-pick-ink shadow-[var(--shadow-pick)]'
+                ? 'text-pick-ink'
                 : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'
             )}
           >
@@ -153,14 +165,14 @@ export function Toggle({ checked, onChange, label, hint, disabled }) {
         disabled={disabled}
         onClick={() => onChange(!checked)}
         className={cx(
-          'relative mt-0.5 h-6 w-11 shrink-0 rounded-full transition',
+          'relative mt-0.5 h-6 w-11 shrink-0 rounded-full transition-colors duration-200',
           checked ? 'bg-brand-600' : 'bg-slate-300 dark:bg-slate-700'
         )}
       >
         <span
           className={cx(
-            'absolute top-0.5 h-5 w-5 rounded-full bg-slate-50 shadow transition-all',
-            checked ? 'left-[22px]' : 'left-0.5'
+            'ease-snap absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-slate-50 shadow transition-transform duration-200',
+            checked && 'translate-x-5'
           )}
         />
       </button>
@@ -212,6 +224,52 @@ export function Input({ className = '', ...rest }) {
 /* ---------------------------------------------------------- Bottom sheet */
 
 export function Sheet({ open, onClose, title, children, footer, above = false }) {
+  // stay mounted while the exit plays, showing what was there when it closed
+  const [shown, setShown] = useState(open)
+  if (open && !shown) setShown(true)
+  const closing = shown && !open
+  const last = useRef(null)
+  if (open) last.current = { title, children, footer }
+  const view = last.current || { title, children, footer }
+
+  // unmount even if the exit's animationend never comes (hidden tab, no motion)
+  useEffect(() => {
+    if (!closing) return
+    const id = setTimeout(() => setShown(false), 400)
+    return () => clearTimeout(id)
+  }, [closing])
+
+  // drag the header down to dismiss: far enough, or a quick flick
+  const panel = useRef(null)
+  const drag = useRef(null)
+  const onDown = (e) => {
+    if (drag.current || e.target.closest('button')) return
+    drag.current = { y: e.clientY, t: performance.now(), dy: 0 }
+    e.currentTarget.setPointerCapture(e.pointerId)
+    panel.current.style.transition = 'none'
+  }
+  const onMove = (e) => {
+    const d = drag.current
+    if (!d) return
+    d.dy = e.clientY - d.y
+    // past the top it resists instead of hitting a wall
+    const y = d.dy > 0 ? d.dy : -Math.sqrt(-d.dy) * 2
+    panel.current.style.transform = `translateY(${y}px)`
+  }
+  const onUp = () => {
+    const d = drag.current
+    if (!d) return
+    drag.current = null
+    const el = panel.current
+    const fast = d.dy / (performance.now() - d.t) > 0.11
+    el.style.transition = ''
+    if (d.dy > 120 || (d.dy > 10 && fast)) {
+      el.style.setProperty('--drag', `${Math.max(0, d.dy)}px`)
+      el.style.transform = ''
+      onClose()
+    } else el.style.transform = ''
+  }
+
   useEffect(() => {
     if (!open) return
     const onKey = (e) => e.key === 'Escape' && onClose()
@@ -224,32 +282,51 @@ export function Sheet({ open, onClose, title, children, footer, above = false })
     }
   }, [open, onClose])
 
-  if (!open) return null
+  if (!shown) return null
 
   return (
     <div
+      data-closing={closing || undefined}
       className={cx(
-        'fixed inset-0 flex items-end justify-center sm:items-center',
+        'sheet fixed inset-0 flex items-end justify-center sm:items-center',
+        closing && 'pointer-events-none',
         above ? 'z-[60]' : 'z-50'
       )}
     >
       <div
-        className="absolute inset-0 bg-slate-950/50 backdrop-blur-[2px]"
+        className="sheet-backdrop absolute inset-0 bg-slate-950/50 backdrop-blur-[2px]"
         onClick={onClose}
         aria-hidden
       />
       <div
+        ref={panel}
         role="dialog"
         aria-modal="true"
+        onAnimationEnd={(e) => {
+          if (e.target !== e.currentTarget) return
+          if (closing) setShown(false)
+          else e.currentTarget.style.removeProperty('--drag')
+        }}
         className={cx(
-          'animate-sheet safe-b relative flex max-h-[85vh] w-full flex-col',
+          'sheet-panel safe-b relative flex max-h-[85vh] w-full flex-col',
           'rounded-t-3xl border-(length:--line-w) border-edge border-b-0 bg-slate-50 shadow-[var(--shadow-sheet)]',
           'sm:max-w-lg sm:rounded-3xl sm:border-b-(length:--line-w)',
           'dark:bg-slate-900'
         )}
       >
-        <div className="flex items-center justify-between gap-3 border-b-(length:--line-w) border-edge px-5 py-4">
-          <h3 className="text-lg">{title}</h3>
+        <div
+          onPointerDown={onDown}
+          onPointerMove={onMove}
+          onPointerUp={onUp}
+          onPointerCancel={onUp}
+          className="relative flex touch-none items-center justify-between gap-3 border-b-(length:--line-w) border-edge px-5 pt-5 pb-4 select-none sm:touch-auto sm:pt-4"
+        >
+          {/* grab handle: the header drags the sheet down on phones */}
+          <span
+            aria-hidden
+            className="absolute top-2 left-1/2 h-1 w-9 -translate-x-1/2 rounded-full bg-slate-300 sm:hidden dark:bg-slate-700"
+          />
+          <h3 className="text-lg">{view.title}</h3>
           <button
             type="button"
             onClick={onClose}
@@ -267,10 +344,12 @@ export function Sheet({ open, onClose, title, children, footer, above = false })
             </svg>
           </button>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">{children}</div>
-        {footer && (
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4">
+          {view.children}
+        </div>
+        {view.footer && (
           <div className="border-t border-slate-200 px-5 py-3 dark:border-slate-800">
-            {footer}
+            {view.footer}
           </div>
         )}
       </div>

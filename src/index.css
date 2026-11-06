@@ -2089,6 +2089,12 @@
   button {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  p,
+  li {
+    text-wrap: pretty;
   }
 
   /* the display face: headings, buttons, numbers — each skin picks its own */
@@ -2162,13 +2168,14 @@
   .press {
     box-shadow: var(--shadow-btn);
     transition:
-      transform 0.08s ease,
-      box-shadow 0.08s ease,
+      transform 0.16s var(--ease-out),
+      box-shadow 0.1s ease,
       background-color 0.15s ease;
   }
   .press:active:not(:disabled) {
-    transform: translate(var(--press-shift), var(--press-shift));
+    transform: translate(var(--press-shift), var(--press-shift)) scale(0.97);
     box-shadow: var(--shadow-btn-down);
+    transition-duration: 0.08s;
   }
   .safe-b {
     padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -2185,7 +2192,7 @@
 @keyframes pop-in {
   from {
     opacity: 0;
-    transform: translateY(6px) scale(0.985);
+    transform: translateY(8px) scale(0.97);
   }
   to {
     opacity: 1;
@@ -2193,7 +2200,7 @@
   }
 }
 .animate-pop {
-  animation: pop-in 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: pop-in 0.28s var(--ease-out);
 }
 
 @keyframes live-blink {
@@ -2202,16 +2209,99 @@
   }
 }
 
+/*
+ * Motion. One set of curves for the whole app, whatever the skin: a strong
+ * ease-out for things arriving or answering a press, the iOS drawer curve for
+ * sheets and things sliding on screen. Exits are quicker than entrances.
+ */
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+.ease-snap {
+  transition-timing-function: var(--ease-out);
+}
+
+/* sheets rise from the bottom on phones and settle in the middle on wider
+   screens; they leave the same way, from wherever a drag let go */
 @keyframes sheet-up {
   from {
     transform: translateY(100%);
   }
+}
+@keyframes sheet-down {
+  from {
+    transform: translateY(var(--drag, 0px));
+  }
   to {
-    transform: none;
+    transform: translateY(100%);
   }
 }
-.animate-sheet {
-  animation: sheet-up 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+@keyframes modal-out {
+  to {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+.sheet-panel {
+  animation: sheet-up 0.4s var(--ease-drawer);
+  transition: transform 0.3s var(--ease-drawer);
+}
+.sheet[data-closing] .sheet-panel {
+  animation: sheet-down 0.24s var(--ease-drawer) forwards;
+}
+.sheet-backdrop {
+  animation: fade-in 0.3s ease;
+}
+.sheet[data-closing] .sheet-backdrop {
+  animation: fade-out 0.24s ease forwards;
+}
+@media (min-width: 40rem) {
+  .sheet-panel {
+    animation: modal-in 0.22s var(--ease-out);
+  }
+  .sheet[data-closing] .sheet-panel {
+    animation: modal-out 0.15s ease-out forwards;
+  }
+}
+
+/* a segmented control's pick slides between segments */
+.seg-pick {
+  transition:
+    transform 0.32s var(--ease-drawer),
+    width 0.32s var(--ease-drawer);
+}
+
+/* the bottom nav's pill follows the tab you pick */
+.nav-pill {
+  transition: transform 0.36s var(--ease-drawer);
+}
+
+/* a tab's content arrives with a short rise, never blocking a tap */
+@keyframes tab-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+.animate-tab {
+  animation: tab-in 0.24s var(--ease-out);
 }
 
 /* the install invite's thin line, running out while the invite is up */
@@ -2231,7 +2321,20 @@
   .invite-countdown,
   .live-dot,
   .animate-pop,
-  .animate-sheet {
+  .animate-tab {
     animation: none;
+  }
+  /* sheets still fade, so the exit's animationend still fires and unmounts */
+  .sheet-panel,
+  .sheet-backdrop {
+    animation: fade-in 0.15s ease;
+  }
+  .sheet[data-closing] .sheet-panel,
+  .sheet[data-closing] .sheet-backdrop {
+    animation: fade-out 0.12s ease forwards;
+  }
+  .seg-pick,
+  .nav-pill {
+    transition: none;
   }
 }

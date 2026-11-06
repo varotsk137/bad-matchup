@@ -128,6 +128,10 @@ const TABS = [
 
 /* ----------------------------------------------------------------- header */
 
+// the header's round buttons, grouped in one quiet pill; 40px inside a 44px row
+const HEAD_BTN =
+  'grid h-10 w-10 place-items-center rounded-full text-slate-700 transition-[background-color,transform] duration-150 ease-snap hover:bg-slate-200/70 active:scale-[0.94] dark:text-slate-300 dark:hover:bg-slate-800'
+
 function Header({
   t,
   state,
@@ -151,7 +155,8 @@ function Header({
           <h1 className="app-title truncate">{t('appName')}</h1>
           {!shared && (
             <p className="truncate text-xs leading-tight text-slate-600 dark:text-slate-400">
-              {readyCount} {t('playersUnit')} · {roundCount} {t('roundsUnit')}
+              <span className="tabular-nums">{readyCount}</span> {t('playersUnit')} ·{' '}
+              <span className="tabular-nums">{roundCount}</span> {t('roundsUnit')}
               {roomStatus && (
                 <>
                   {' · '}
@@ -163,41 +168,48 @@ function Header({
             </p>
           )}
         </div>
-        <button
-          onClick={onHistory}
-          className="grid h-11 w-11 place-items-center rounded-lg border border-chrome-edge bg-slate-50/60 text-slate-700 dark:border-slate-700 dark:bg-transparent dark:text-slate-300"
-          aria-label={t('historyTitle')}
-          title={t('historyTitle')}
-        >
-          {/* a clock with an arrow running back round it: rooms opened before */}
-          <svg
-            viewBox="0 0 20 20"
-            className="h-4 w-4"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
+        <div className="flex shrink-0 items-center rounded-full border border-chrome-edge/40 bg-slate-50/60 p-0.5 dark:border-slate-700 dark:bg-slate-900/40">
+          <button
+            onClick={onHistory}
+            className={HEAD_BTN}
+            aria-label={t('historyTitle')}
+            title={t('historyTitle')}
           >
-            <path d="M3.5 10a6.5 6.5 0 1 0 1.9-4.6" strokeLinecap="round" />
-            <path d="M3.5 3.5v2.4h2.4" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M10 6.5V10l2.3 1.6" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
-        <button
-          onClick={() => actions.set({ lang: state.lang === 'th' ? 'en' : 'th' })}
-          className="h-11 min-w-11 rounded-lg border border-chrome-edge bg-slate-50/60 px-2 text-xs font-bold text-slate-700 dark:border-slate-700 dark:bg-transparent dark:text-slate-300"
-          aria-label={t('language')}
-        >
-          {state.lang === 'th' ? 'TH' : 'EN'}
-        </button>
-        <button
-          onClick={() => actions.set({ theme: state.theme === 'dark' ? 'light' : 'dark' })}
-          disabled={darkOnly}
-          className="grid h-11 w-11 place-items-center rounded-lg border border-chrome-edge bg-slate-50/60 text-slate-700 disabled:opacity-50 dark:border-slate-700 dark:bg-transparent dark:text-slate-300"
-          aria-label={t('theme')}
-          title={darkOnly ? t('themeLockedDark') : t(state.theme === 'dark' ? 'themeDark' : 'themeLight')}
-        >
-          <LineIcon name={darkOnly || state.theme === 'dark' ? 'moon' : 'sun'} className="h-5 w-5" />
-        </button>
+            {/* a clock with an arrow running back round it: rooms opened before */}
+            <svg
+              viewBox="0 0 20 20"
+              className="h-[18px] w-[18px]"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+            >
+              <path d="M3.5 10a6.5 6.5 0 1 0 1.9-4.6" strokeLinecap="round" />
+              <path d="M3.5 3.5v2.4h2.4" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M10 6.5V10l2.3 1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+          <button
+            onClick={() => actions.set({ lang: state.lang === 'th' ? 'en' : 'th' })}
+            className={cx(HEAD_BTN, 'text-xs font-bold tracking-wide')}
+            aria-label={t('language')}
+          >
+            {state.lang === 'th' ? 'TH' : 'EN'}
+          </button>
+          <button
+            onClick={() => actions.set({ theme: state.theme === 'dark' ? 'light' : 'dark' })}
+            disabled={darkOnly}
+            className={cx(HEAD_BTN, 'disabled:opacity-50')}
+            aria-label={t('theme')}
+            title={
+              darkOnly ? t('themeLockedDark') : t(state.theme === 'dark' ? 'themeDark' : 'themeLight')
+            }
+          >
+            <LineIcon
+              name={darkOnly || state.theme === 'dark' ? 'moon' : 'sun'}
+              className="h-5 w-5"
+            />
+          </button>
+        </div>
       </div>
     </header>
   )
@@ -1038,7 +1050,15 @@ export default function App() {
           'dark:bg-chrome-dark/95'
         )}
       >
-        <div className="mx-auto flex max-w-3xl">
+        <div className="relative mx-auto flex max-w-3xl">
+          {/* one pill that slides to the open tab */}
+          <span
+            aria-hidden
+            className="nav-pill pointer-events-none absolute inset-y-0 left-0 flex w-1/5 justify-center pt-1.5 md:items-center md:pt-0"
+            style={{ transform: `translateX(${TABS.findIndex((x) => x.key === tab) * 100}%)` }}
+          >
+            <span className="h-8 w-14 rounded-full bg-brand-100 md:h-9 md:w-[88%] dark:bg-brand-900/60" />
+          </span>
           {TABS.map((tb) => {
             const active = tab === tb.key
             return (
@@ -1047,17 +1067,14 @@ export default function App() {
                 onClick={() => goTo(tb.key)}
                 aria-current={active ? 'page' : undefined}
                 className={cx(
-                  'relative flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition md:flex-row md:justify-center md:gap-2 md:py-3 md:text-sm',
-                  active
-                    ? 'text-brand-700 dark:text-brand-300'
-                    : 'text-slate-500 dark:text-slate-400'
+                  'group relative flex flex-1 flex-col items-center gap-1 pt-1.5 pb-2 text-xs font-medium transition-colors duration-200 md:flex-row md:justify-center md:gap-2 md:py-3 md:text-sm',
+                  active ? 'text-brand-800 dark:text-brand-200' : 'text-slate-500 dark:text-slate-400'
                 )}
               >
-                {ICONS[tb.key]}
+                <span className="grid h-8 w-14 place-items-center transition-transform duration-150 ease-snap group-active:scale-90 md:h-auto md:w-auto">
+                  {ICONS[tb.key]}
+                </span>
                 <span>{t(tb.labelKey)}</span>
-                {active && (
-                  <span className="absolute inset-x-4 -top-px hidden h-0.5 rounded-full bg-brand-600 md:block" />
-                )}
               </button>
             )
           })}
@@ -1065,7 +1082,7 @@ export default function App() {
       </nav>
 
       {/* --------------------------------------------------------- body */}
-      <main className="mx-auto max-w-3xl px-3 pt-4 pb-28 md:pb-10">
+      <main key={tab} className="animate-tab mx-auto max-w-3xl px-3 pt-4 pb-28 md:pb-10">
         {tab === 'play' && (
           <PlayTab
             state={state}
