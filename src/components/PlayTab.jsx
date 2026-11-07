@@ -1049,12 +1049,10 @@ export default function PlayTab({
           number={state.rounds.findIndex((r) => r.id === swapRoundId) + 1}
           playersById={playersById}
           t={t}
-          onSwap={(a, b) => doSwap(swapRoundId, a, b)}
-          onResize={(matchId, size) => {
+          onSave={(draft) => {
             const before = state.rounds.find((r) => r.id === swapRoundId)
-            const court = before?.matches.find((m) => m.id === matchId)?.courtName
-            actions.setMatchSize(swapRoundId, matchId, size)
-            setToast(t(size === 2 ? 'v4ToSingles' : 'v4ToDoubles', { court }), 'info', {
+            actions.restoreLineup(swapRoundId, draft)
+            setToast(t('swapSaved', { n: state.rounds.indexOf(before) + 1 }), 'info', {
               label: t('undo'),
               run: () => actions.restoreLineup(swapRoundId, before),
             })

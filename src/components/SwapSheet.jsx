@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { swapSlots } from '../lib/matchmaker'
+import { ops } from '../lib/ops'
 import { TEAM_TEXT } from './MatchCard'
-import { Button, Segmented, Sheet, cx } from './ui'
+import { Button, Segmented, Sheet, askConfirm, cx } from './ui'
 
 const sameSlot = (a, b) =>
   a &&
@@ -10,36 +12,39 @@ const sameSlot = (a, b) =>
     ? a.playerId === b.playerId
     : a.matchId === b.matchId && a.team === b.team && a.idx === b.idx)
 
+// who plays where, and nothing else: what Save would change
+const lineup = (r) =>
+  JSON.stringify([r.matches.map((m) => [m.teamA, m.teamB]), [...r.benched].sort()])
+
 /**
  * "ปรับคนลง": everyone in one round on one sheet, grouped by court and bench.
- * Pick who comes out, then who goes in, read the summary, then swap. Tapping
- * two names on the card still works too; this is the spelled-out way.
+ * Pick who comes out, then who goes in, and swap; switch a court between
+ * singles and doubles. All of it happens on a draft: nothing reaches the
+ * schedule until Save, and closing with changes asks before throwing them
+ * away. Tapping two names on the card still swaps at once; this is the
+ * careful way.
  */
-export default function SwapSheet({
-  round,
-  number,
-  playersById,
-  t,
-  onSwap,
-  onResize,
-  onClose,
-}) {
+export default function SwapSheet({ round, number, playersById, t, onSave, onClose }) {
+  const [draft, setDraft] = useState(round)
   const [first, setFirst] = useState(null)
   const [second, setSecond] = useState(null)
-  if (!round) return null
+  if (!round || !draft) return null
+  const dirty = lineup(draft) !== lineup(round)
 
-  const nameOf = (slot) => {
-    const id = slot.bench
+  const idAt = (r, slot) =>
+    slot.bench
       ? slot.playerId
-      : round.matches.find((m) => m.id === slot.matchId)?.[
-          slot.team === 'A' ? 'teamA' : 'teamB'
-        ][slot.idx]
+      : r.matches.find((m) => m.id === slot.matchId)?.[slot.team === 'A' ? 'teamA' : 'teamB'][
+          slot.idx
+        ]
+  const nameOf = (slot) => {
+    const id = idAt(draft, slot)
     return (id && playersById.get(id)?.name) || t('emptySlot')
   }
   const placeOf = (slot) =>
     slot.bench
       ? t('bench')
-      : t('swapCourt', { court: round.matches.find((m) => m.id === slot.matchId)?.courtName })
+      : t('swapCourt', { court: draft.matches.find((m) => m.id === slot.matchId)?.courtName })
 
   const pick = (slot) => {
     if (sameSlot(slot, first)) {
@@ -50,6 +55,29 @@ export default function SwapSheet({
     // two people on the bench trade nothing: the new tap replaces the first
     else if (first.bench && slot.bench) setFirst(slot)
     else setSecond(slot)
+  }
+
+  const clearPicks = () => {
+    setFirst(null)
+    setSecond(null)
+  }
+  const swap = () => {
+    setDraft((d) => swapSlots(d, first, second))
+    clearPicks()
+  }
+  const resize = (matchId, size) => {
+    clearPicks()
+    setDraft((d) => ops.setMatchSize({ rounds: [d] }, d.id, matchId, size).rounds[0])
+  }
+
+  // a seat whose person differs from the saved schedule gets a mark
+  const changed = (slot) => {
+    const before = slot.bench
+      ? round.benched.includes(slot.playerId)
+        ? slot.playerId
+        : null
+      : idAt(round, slot)
+    return idAt(draft, slot) !== before
   }
 
   const chip = (slot, label, tone) => {
@@ -63,7 +91,7 @@ export default function SwapSheet({
         disabled={locked}
         aria-pressed={isFirst || isSecond}
         className={cx(
-          'h-11 max-w-full truncate rounded-xl border px-3.5 text-sm font-semibold transition active:scale-95 disabled:opacity-40',
+          'inline-flex h-11 max-w-full items-center gap-1.5 truncate rounded-xl border px-3.5 text-sm font-semibold transition active:scale-95 disabled:opacity-40',
           'focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:outline-none',
           tone ?? 'text-slate-700 dark:text-slate-200',
           isFirst
@@ -73,14 +101,22 @@ export default function SwapSheet({
               : 'border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900'
         )}
       >
+        {changed(place) && (
+          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent-500" aria-hidden />
+        )}
         {label}
       </button>
     )
   }
 
-  const close = () => {
-    setFirst(null)
-    setSecond(null)
+  const close = async () => {
+    if (dirty) {
+      const ok = await askConfirm({
+        message: t('swapDiscardConfirm'),
+        confirmLabel: t('swapDiscard'),
+      })
+      if (!ok) return
+    }
     onClose()
   }
 
@@ -90,22 +126,53 @@ export default function SwapSheet({
       onClose={close}
       title={t('swapTitle', { n: number })}
       footer={
-        <Button
-          variant="primary"
-          size="lg"
-          className="w-full"
-          disabled={!first || !second}
-          onClick={() => {
-            onSwap(first, second)
-            close()
-          }}
-        >
-          {t('swapDo')}
-        </Button>
+        // the footer never moves the list: two picked, it offers the swap;
+        // otherwise it is cancel and save
+        first && second ? (
+          <div className="space-y-2" role="status">
+            <p className="px-1 text-sm">
+              <b>{nameOf(first)}</b> ⇄ <b>{nameOf(second)}</b>
+              <span className="block text-xs text-slate-600 dark:text-slate-400">
+                {t('swapSummary', {
+                  a: nameOf(first),
+                  b: nameOf(second),
+                  toA: placeOf(second),
+                  toB: placeOf(first),
+                })}
+              </span>
+            </p>
+            <div className="flex items-center gap-2">
+              <Button size="lg" className="flex-1" onClick={clearPicks}>
+                {t('cancel')}
+              </Button>
+              <Button variant="primary" size="lg" className="flex-[2]" onClick={swap}>
+                {t('swapDo')}
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <Button size="lg" className="flex-1" onClick={close}>
+              {t('cancel')}
+            </Button>
+            <Button
+              variant="primary"
+              size="lg"
+              className="flex-[2]"
+              disabled={!dirty}
+              onClick={() => {
+                onSave(draft)
+                onClose()
+              }}
+            >
+              {t('save')}
+            </Button>
+          </div>
+        )
       }
     >
       <div className="space-y-4">
-        <div className="flex flex-wrap gap-1.5 text-xs font-bold">
+        <div className="flex flex-wrap items-center gap-1.5 text-xs font-bold">
           <span
             className={cx(
               'rounded-full px-2.5 py-1',
@@ -128,9 +195,17 @@ export default function SwapSheet({
           >
             {second ? `2 ${nameOf(second)} ✓` : t('swapStep2')}
           </span>
+          {dirty && (
+            <span
+              className="ml-auto font-semibold text-amber-800 dark:text-amber-300"
+              role="status"
+            >
+              {t('swapUnsaved')}
+            </span>
+          )}
         </div>
 
-        {round.matches.map((m) => (
+        {draft.matches.map((m) => (
           <div key={m.id}>
             <div className="mb-1.5 flex items-center justify-between gap-3">
               <p className="min-w-0 text-xs font-semibold whitespace-nowrap text-slate-600 dark:text-slate-400">
@@ -139,17 +214,13 @@ export default function SwapSheet({
               </p>
               {/* singles or doubles by hand: doubles opens an empty seat a side
                   to fill from the bench below; singles sends the second players there */}
-              {onResize && !m.done && (
+              {!m.done && (
                 <div className="w-40 shrink-0">
                   <Segmented
                     size="sm"
                     label={t('v4MatchSizeFor', { court: m.courtName })}
                     value={m.teamA.length === 1 ? 2 : 4}
-                    onChange={(size) => {
-                      setFirst(null)
-                      setSecond(null)
-                      onResize(m.id, size)
-                    }}
+                    onChange={(size) => resize(m.id, size)}
                     options={[
                       { value: 2, label: t('singles') },
                       { value: 4, label: t('doubles') },
@@ -172,34 +243,17 @@ export default function SwapSheet({
           </div>
         ))}
 
-        {round.benched.length > 0 && (
+        {draft.benched.length > 0 && (
           <div>
             <p className="mb-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400">
               {t('bench')}
             </p>
             <div className="flex flex-wrap gap-1.5">
-              {round.benched
+              {draft.benched
                 .filter((id) => playersById.get(id))
                 .map((id) => chip({ bench: true, playerId: id }, playersById.get(id).name))}
             </div>
           </div>
-        )}
-
-        {first && second && (
-          <p
-            className="rounded-xl bg-slate-100 px-3 py-2 text-sm dark:bg-slate-800"
-            role="status"
-          >
-            <b>{nameOf(first)}</b> ⇄ <b>{nameOf(second)}</b>
-            <span className="block text-xs text-slate-600 dark:text-slate-400">
-              {t('swapSummary', {
-                a: nameOf(first),
-                b: nameOf(second),
-                toA: placeOf(second),
-                toB: placeOf(first),
-              })}
-            </span>
-          </p>
         )}
       </div>
     </Sheet>
