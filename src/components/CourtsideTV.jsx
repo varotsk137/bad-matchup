@@ -180,8 +180,10 @@ export default function CourtsideTV({ state, playersById, t, onClose, onMatchDon
           </div>
           <div className="flex items-center gap-3 landscape:mt-auto landscape:order-last">
             {now && (
-              <span className="live-badge text-[clamp(0.75rem,min(2.6dvh,3.4vw),1.25rem)] font-bold">
-                <span className="live-dot" aria-hidden />
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-500 px-2.5 py-0.5 text-[clamp(0.75rem,min(2.6dvh,3.4vw),1.25rem)] font-bold text-on-accent">
+                {/* the court screen is always dark, so it wears the lime pill in every
+                    skin rather than the skin's own badge, some drawn for a light page */}
+                <span className="h-2 w-2 rounded-full bg-current motion-safe:animate-pulse" aria-hidden />
                 {t('roundNow')}
               </span>
             )}

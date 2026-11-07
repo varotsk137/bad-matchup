@@ -579,7 +579,7 @@ export default function PlayTab({
           </div>
 
           {/* finished rounds out of the session */}
-          <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-slate-50/15" aria-hidden>
+          <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-slate-50/10" aria-hidden>
             <div
               className="ease-snap h-full origin-left rounded-full bg-accent-400 transition-transform duration-300"
               style={{ transform: `scaleX(${total ? archived.length / total : 0})` }}
@@ -692,7 +692,7 @@ export default function PlayTab({
                         <span className="min-w-0 flex-1 truncate font-medium text-sky-200">
                           {names(m.teamA)}
                         </span>
-                        <span className="shrink-0 text-xs text-slate-400">{t('vs')}</span>
+                        <span className="shrink-0 text-xs text-slate-300">{t('vs')}</span>
                         <span className="min-w-0 flex-1 truncate text-right font-medium text-rose-200">
                           {names(m.teamB)}
                         </span>
@@ -1310,7 +1310,7 @@ function CourtSide({
               />
             </span>
           ) : (
-            <span className="shrink-0 text-xs text-slate-400">{t('vs')}</span>
+            <span className="shrink-0 text-xs text-slate-300">{t('vs')}</span>
           )}
           {side(m.teamB, 'B', m.done)}
           {canTick && (

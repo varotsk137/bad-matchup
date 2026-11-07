@@ -1609,7 +1609,18 @@
     --color-slate-700: oklch(0.45 0.035 160);
     --color-slate-600: oklch(0.53 0.03 160);
     --color-slate-500: oklch(0.62 0.02 120);
-    --color-slate-400: oklch(0.76 0.015 95);
+    --color-slate-400: oklch(0.8 0.015 95);
+    /* the board is light for a dark page, so pink chalk writes a step brighter */
+    --color-accent-300: oklch(0.84 0.09 355);
+    --color-accent-400: oklch(0.78 0.11 355);
+    /* yellow chalk's deep end leans gold, not olive, and its deepest steps
+       sink into the board instead of reading as brown holes */
+    --color-brand-500: oklch(0.59 0.13 84);
+    --color-brand-600: oklch(0.5 0.12 80);
+    --color-brand-700: oklch(0.42 0.105 76);
+    --color-brand-800: oklch(0.34 0.085 74);
+    --color-brand-900: oklch(0.25 0.045 135);
+    --color-brand-950: oklch(0.2 0.04 150);
     --color-edge: var(--color-slate-700);
     --color-edge-strong: var(--color-slate-600);
     --color-btn-edge: transparent;
@@ -2836,6 +2847,7 @@
 :root {
   --ink-50: var(--color-slate-50);
   --ink-100: var(--color-slate-100);
+  --ink-200: var(--color-slate-200);
   --ink-300: var(--color-slate-300);
   --ink-600: var(--color-slate-600);
   --ink-700: var(--color-slate-700);
@@ -2851,6 +2863,9 @@
   --color-slate-200: var(--ink-700);
   --color-slate-300: var(--ink-600);
   --color-slate-400: var(--ink-600);
+  /* fills drawn for the ink card (a select, a hover) become light fills */
+  --color-slate-700: var(--ink-200);
+  --color-slate-800: var(--ink-100);
   --color-accent-300: var(--color-accent-800);
   --color-accent-400: var(--color-accent-700);
   --color-sky-200: var(--color-sky-800);
@@ -2859,6 +2874,7 @@
   --color-rose-300: var(--color-rose-800);
   --color-rose-400: var(--color-rose-600);
   --color-amber-300: var(--color-amber-700);
+  --color-rose-950: var(--color-rose-100);
 }
 :root:not(.dark) .ink-scope .ink-keep {
   --color-slate-50: var(--ink-50);

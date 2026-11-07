@@ -406,7 +406,7 @@ export const SKINS = [
       ta: 'oklch(0.86 0.09 230)',
       tb: 'oklch(0.84 0.1 355)',
       radius: '1rem',
-      brand: 'oklch(0.5 0.126 92)',
+      brand: 'oklch(0.5 0.12 80)',
       accent: 'oklch(0.61 0.13 355)',
       live: {
         bg: 'transparent',
