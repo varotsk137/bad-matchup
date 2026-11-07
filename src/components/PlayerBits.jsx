@@ -10,8 +10,7 @@ export function levelLabel(v, lang) {
 
 /**
  * One ramp, light to dark, so a higher rung simply reads as "stronger" — in
- * the skin's own slate and brand, never a hue of its own. Shared by the level
- * badge and the avatar on Players.
+ * the skin's own slate and brand, never a hue of its own.
  */
 const LEVEL_TONE = [
   'bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-100', // NB
@@ -20,7 +19,6 @@ const LEVEL_TONE = [
   'bg-brand-600 text-white dark:bg-brand-500 dark:text-brand-950', // S
   'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900', // P
 ]
-export const levelTone = (level) => LEVEL_TONE[levelMeta(level).value - 1]
 
 export function LevelBadge({ level, className = '' }) {
   const m = levelMeta(level)

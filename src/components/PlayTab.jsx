@@ -463,7 +463,6 @@ export default function PlayTab({
     <div className="space-y-4">
       <ScreenTitle
         title={t('tabPlay')}
-        meta={t('v4PlayMeta', { p: pool.length, r: total })}
         action={
           !readOnly && (
             <button
@@ -614,7 +613,7 @@ export default function PlayTab({
               />
 
               {canTick && (
-                <div className="flex flex-wrap gap-2">
+                <div className="flex gap-2">
                   <button
                     type="button"
                     onClick={() => setScoring((v) => !v)}
@@ -637,9 +636,14 @@ export default function PlayTab({
                     </button>
                   )}
                   {/* opened straight from the tap: fullscreen needs the gesture */}
-                  <button type="button" onClick={() => setTvOpen(true)} className={INK_CHIP}>
-                    <Icon name="screen" className="h-4 w-4" />
-                    {t('v4TvMode')}
+                  <button
+                    type="button"
+                    onClick={() => setTvOpen(true)}
+                    aria-label={t('v4TvMode')}
+                    title={t('v4TvMode')}
+                    className={cx(INK_CHIP, 'ml-auto w-11 justify-center px-0')}
+                  >
+                    <Icon name="screen" className="h-5 w-5" />
                   </button>
                 </div>
               )}

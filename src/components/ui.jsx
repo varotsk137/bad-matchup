@@ -73,25 +73,6 @@ export function StatTile({ value, label, hint, ink = false, className = '' }) {
   )
 }
 
-/** A round initial for a person; pass a tone class (bg + text) to colour it. */
-export function Avatar({ name = '', className = '', tone = 'bg-brand-100 text-brand-800 dark:bg-brand-900 dark:text-brand-100' }) {
-  // skip Thai leading vowels (เ แ โ ใ ไ), which are written before the consonant they follow
-  const parts = [...new Intl.Segmenter().segment(name.trim())].map((p) => p.segment)
-  const first = parts.find((g) => !/^[เแโใไ]$/.test(g)) || parts[0] || '?'
-  return (
-    <span
-      aria-hidden
-      className={cx(
-        'font-display grid h-10 w-10 shrink-0 place-items-center rounded-full text-base',
-        tone,
-        className
-      )}
-    >
-      {first}
-    </span>
-  )
-}
-
 export function SectionTitle({ children, hint, action }) {
   return (
     <div className="mb-2 flex items-end justify-between gap-3 px-1">

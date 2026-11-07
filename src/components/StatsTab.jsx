@@ -1,8 +1,7 @@
 import { useMemo, useState } from 'react'
 import FairnessReport, { useFairness } from './FairnessReport'
-import { LevelBadge, levelTone } from './PlayerBits'
+import { LevelBadge } from './PlayerBits'
 import {
-  Avatar,
   Button,
   Card,
   Empty,
@@ -114,7 +113,6 @@ export default function StatsTab({ state, stats, playersById, t, lang, goTo }) {
                     onClick={() => setOpenId(p.id)}
                     className="flex min-h-16 w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-slate-100/70 focus-visible:bg-slate-100 focus-visible:outline-none dark:hover:bg-slate-800/50 dark:focus-visible:bg-slate-800"
                   >
-                    <Avatar name={p.name} tone={levelTone(p.level)} />
                     <span className="min-w-0 flex-1">
                       <span className="flex items-center gap-2">
                         <span className="truncate text-[0.9375rem] font-medium text-slate-900 dark:text-slate-50">
@@ -298,10 +296,7 @@ function PlayerSheet({ player, players, rounds, formats, onClose, t, lang }) {
               className="border-b border-slate-100 last:border-0 dark:border-slate-800/70"
             >
               <td className="py-2">
-                <span className="flex items-center gap-2.5">
-                  <Avatar name={r.p.name} tone={levelTone(r.p.level)} className="h-8 w-8 text-sm" />
-                  <span className="truncate">{r.p.name}</span>
-                </span>
+                <span className="block truncate">{r.p.name}</span>
               </td>
               <Count n={r.with} />
               <Count n={r.vs} />

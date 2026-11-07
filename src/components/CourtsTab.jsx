@@ -98,7 +98,6 @@ export default function CourtsTab({ state, t, actions }) {
     <div>
       <ScreenTitle
         title={t('tabCourts')}
-        meta={t('v4CourtsMeta', { cap: capacity, rest: bench })}
       />
 
       <Card tone="ink" className="p-4 sm:p-5">

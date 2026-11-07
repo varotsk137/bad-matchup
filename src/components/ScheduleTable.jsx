@@ -302,7 +302,7 @@ export default function ScheduleTable({
                                   'grid h-11 w-11 shrink-0 place-items-center rounded-full font-semibold transition active:scale-90',
                                   'focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none',
                                   m.done
-                                    ? 'bg-brand-600 text-base text-white'
+                                    ? 'bg-brand-100 text-brand-800 dark:bg-brand-900 dark:text-brand-100 text-base'
                                     : 'border-2 border-slate-300 text-xs text-slate-700 hover:border-brand-500 dark:border-slate-600 dark:text-slate-200'
                                 )}
                               >

@@ -709,7 +709,7 @@
     --color-preset: oklch(0.89 0.1 170);
     --color-preset-ink: oklch(0.32 0.07 175);
     --color-title: var(--color-brand-700);
-    --color-badge: linear-gradient(90deg, var(--color-brand-600), var(--color-accent-600));
+    --color-badge: var(--color-brand-600);
     --color-badge-ink: white;
     --color-court-1: var(--color-brand-600);
     --color-court-2: var(--color-accent-600);
@@ -749,7 +749,7 @@
     --color-btn-edge: transparent;
     --color-track: var(--color-slate-800);
     --color-title: var(--color-brand-300);
-    --color-badge: linear-gradient(90deg, var(--color-brand-600), var(--color-accent-600));
+    --color-badge: var(--color-brand-600);
     --color-badge-ink: white;
     --color-chrome-edge: var(--color-slate-800);
     --shadow-card: 0 8px 24px -10px oklch(0 0 0 / 0.6);
@@ -2149,11 +2149,11 @@
     --backdrop: radial-gradient(ellipse 70% 45% at 50% 0%, oklch(0.85 0.1 85 / 0.25), transparent 70%);
     --backdrop-size: 100% 100%;
     --icon-stroke: 1.6;
-    --live-bg: linear-gradient(135deg, oklch(0.9 0.11 92), oklch(0.72 0.13 75));
+    --live-bg: oklch(0.84 0.12 85);
     --live-ink: oklch(0.22 0.04 70);
     --live-border: oklch(0.6 0.11 75);
     --live-radius: 9999px;
-    --live-shadow: 0 0 12px -3px oklch(0.85 0.12 88 / 0.7);
+    --live-shadow: none;
   }
   :root.dark[data-skin='champ'] {
     --color-edge: var(--color-slate-700);

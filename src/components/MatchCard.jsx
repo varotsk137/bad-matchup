@@ -223,7 +223,7 @@ export default function MatchCard({
           <span
             role="img"
             aria-label={t('v4MatchFinished')}
-            className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand-600 text-white"
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand-100 text-brand-800 dark:bg-brand-900 dark:text-brand-100"
           >
             {check}
           </span>
@@ -241,7 +241,7 @@ export default function MatchCard({
             'grid h-11 w-11 shrink-0 place-items-center rounded-full text-xs font-bold transition active:scale-95',
             'focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none',
             match.done
-              ? 'bg-brand-600 text-white'
+              ? 'bg-brand-100 text-brand-800 dark:bg-brand-900 dark:text-brand-100'
               : 'border-2 border-slate-300 text-slate-700 hover:border-brand-500 hover:text-brand-700 dark:border-slate-600 dark:text-slate-200'
           )}
         >

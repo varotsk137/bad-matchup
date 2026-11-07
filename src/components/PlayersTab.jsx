@@ -10,11 +10,10 @@ import {
   nameLength,
   nameProblem,
 } from '../lib/names'
-import { GenderDot, LevelPips, levelLabel, levelTone } from './PlayerBits'
+import { GenderDot, LevelPips, levelLabel } from './PlayerBits'
 import RosterSheet from './RosterSheet'
 import Icon from './Icon'
 import {
-  Avatar,
   Button,
   Card,
   Empty,
@@ -140,7 +139,6 @@ export default function PlayersTab({ state, stats, t, lang, actions, setToast })
     <div>
       <ScreenTitle
         title={t('tabPlayers')}
-        meta={t('v4PlayersMeta', { ready: readyCount, n: visible.length })}
       />
 
       {/* the hero: who is ready, and the bar that adds the next name */}
@@ -286,11 +284,6 @@ export default function PlayersTab({ state, stats, t, lang, actions, setToast })
                       onClick={() => setEditing(p)}
                       className={cx('flex min-h-14 min-w-0 flex-1 items-center gap-3 rounded-xl pr-2 text-left', FOCUS)}
                     >
-                      <Avatar
-                        name={p.name}
-                        tone={levelTone(p.level)}
-                        className={cx('transition-opacity duration-200', st === 'absent' && 'opacity-45')}
-                      />
                       <span className="min-w-0 flex-1">
                         <span className="flex items-center gap-1.5">
                           <GenderDot gender={p.gender} />
