@@ -39,15 +39,27 @@ export default function CourtsideTV({ state, playersById, t, onClose, onMatchDon
     }
   }, [])
 
-  // full screen where the browser allows it (not iPhone Safari), left on close
+  // full screen where the browser allows it (not iPhone Safari), left on close.
+  // Leaving full screen (Esc, the browser's own button, a swipe) closes the
+  // view too, so one Esc gets you straight back to the app.
+  const closeRef = useRef(onClose)
+  closeRef.current = onClose
   useEffect(() => {
+    // tracked from the event, not the request's promise: a dev re-run of this
+    // effect can leave that promise resolving into an effect already cleaned up
     let entered = false
+    const onChange = () => {
+      if (document.fullscreenElement) entered = true
+      else if (entered) {
+        entered = false
+        closeRef.current()
+      }
+    }
+    document.addEventListener('fullscreenchange', onChange)
     if (document.fullscreenEnabled && !document.fullscreenElement)
-      document.documentElement
-        .requestFullscreen?.()
-        .then(() => (entered = true))
-        .catch(() => {})
+      document.documentElement.requestFullscreen?.().catch(() => {})
     return () => {
+      document.removeEventListener('fullscreenchange', onChange)
       if (entered && document.fullscreenElement) document.exitFullscreen?.().catch(() => {})
     }
   }, [])

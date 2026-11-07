@@ -121,3 +121,18 @@ test('switches language and theme, and remembers them', async ({ page }) => {
   await expect(page.locator('html')).toHaveAttribute('lang', 'th')
   await expect(page.locator('html')).toHaveClass(/dark/)
 })
+
+test('the court screen closes as soon as full screen ends', async ({ page }) => {
+  await seed(page, { players: players(EIGHT) })
+  await page.goto('/')
+  await page.getByRole('button', { name: /^Start \d+ rounds$/ }).click()
+
+  await page.getByRole('button', { name: 'Court screen' }).click()
+  const tv = page.getByRole('dialog')
+  await expect(tv).toBeVisible()
+  await expect.poll(() => page.evaluate(() => !!document.fullscreenElement)).toBe(true)
+
+  // what Esc or the browser's own exit does: one step back to the app
+  await page.evaluate(() => document.exitFullscreen())
+  await expect(tv).toHaveCount(0)
+})

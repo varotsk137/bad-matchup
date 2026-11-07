@@ -184,7 +184,7 @@ export default function ScheduleTable({
                   key={c.id}
                   id={`${uid}-c${ci}`}
                   colSpan={onToggleDone ? 2 : 1}
-                  className="px-2 py-3 text-left sm:min-w-40"
+                  className="border-l border-edge px-2 py-3 text-left sm:min-w-40"
                 >
                   <span
                     className={cx(
@@ -197,7 +197,7 @@ export default function ScheduleTable({
                 </th>
               ))}
               {hasBench && (
-                <th className="hidden min-w-28 px-3 py-3 text-xs font-semibold text-slate-600 sm:table-cell dark:text-slate-400">
+                <th className="hidden min-w-28 border-l border-edge px-3 py-3 text-xs font-semibold text-slate-600 sm:table-cell dark:text-slate-400">
                   {t('bench')}
                 </th>
               )}
@@ -260,7 +260,7 @@ export default function ScheduleTable({
                           <td
                             key={c.id}
                             colSpan={onToggleDone ? 2 : 1}
-                            className="px-2 py-3 text-sm text-slate-600 dark:text-slate-400"
+                            className="border-l border-edge px-2 py-3 text-sm text-slate-600 dark:text-slate-400"
                           >
                             —
                           </td>
@@ -269,7 +269,7 @@ export default function ScheduleTable({
                         typeof m.scoreA === 'number' && typeof m.scoreB === 'number'
                       return (
                         <Fragment key={c.id}>
-                          <td className={cx('py-3 pl-2 align-middle', onToggleDone ? 'pr-1' : 'pr-3')}>
+                          <td className={cx('border-l border-edge py-3 pl-2.5 align-middle', onToggleDone ? 'pr-1' : 'pr-3')}>
                             <div className="min-w-0">
                               <Side ids={m.teamA} tone="A" ri={i} />
                               <span className="my-0.5 flex items-center gap-1.5 text-xs leading-4 font-semibold text-slate-600 dark:text-slate-400">
@@ -315,7 +315,7 @@ export default function ScheduleTable({
                     })}
 
                     {hasBench && (
-                      <td className="hidden px-3 py-3 align-middle text-xs leading-5 text-slate-600 sm:table-cell dark:text-slate-400">
+                      <td className="hidden border-l border-edge px-3 py-3 align-middle text-xs leading-5 text-slate-600 sm:table-cell dark:text-slate-400">
                         {benchList(round, i)}
                       </td>
                     )}
@@ -334,10 +334,13 @@ export default function ScheduleTable({
                         colSpan={span}
                         className="pt-0 pr-4 pb-3 pl-4 text-xs leading-5 text-slate-600 dark:text-slate-400"
                       >
-                        <span className="font-semibold text-slate-700 dark:text-slate-300">
-                          {t('bench')}
-                        </span>{' '}
-                        {benchList(round, i)}
+                        {/* a dashed rule: the courts above end here, the bench is not a court */}
+                        <div className="border-t border-dashed border-edge pt-2">
+                          <span className="font-semibold text-slate-700 dark:text-slate-300">
+                            {t('bench')}
+                          </span>{' '}
+                          {benchList(round, i)}
+                        </div>
                       </td>
                     </tr>
                   )}

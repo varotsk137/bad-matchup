@@ -60,9 +60,9 @@
     "semantic_hash": ""
   },
   "src/components/ScheduleTable.jsx": {
-    "mtime": 1794027469.4484508,
-    "seen": 1794029510.9705365,
-    "ast_hash": "5a4b5156212efa9d2867e96046f58701",
+    "mtime": 1794030450.2735384,
+    "seen": 1794030677.8153098,
+    "ast_hash": "dd981cb3596495868cd8de214c2e5531",
     "semantic_hash": ""
   },
   "src/components/SettingsTab.jsx": {
@@ -252,9 +252,9 @@
     "semantic_hash": ""
   },
   "e2e/session.spec.js": {
-    "mtime": 1793992079.8897233,
-    "seen": 1793992540.4937193,
-    "ast_hash": "22b235820ffad1d56ae84ec0f9a6fd2c",
+    "mtime": 1794030554.4773223,
+    "seen": 1794030677.8152757,
+    "ast_hash": "6c12e91af83f7647a98233ec45fd773e",
     "semantic_hash": ""
   },
   "playwright.config.js": {
@@ -534,9 +534,9 @@
     "semantic_hash": ""
   },
   "src/components/CourtsideTV.jsx": {
-    "mtime": 1794028386.2107193,
-    "seen": 1794029510.9705033,
-    "ast_hash": "b17bc925a7661421f2ced90d7361d647",
+    "mtime": 1794030531.943493,
+    "seen": 1794030677.8152905,
+    "ast_hash": "53a6583c4cdadc6c293ea97d40d0c783",
     "semantic_hash": ""
   },
   "src/components/Solar.jsx": {
