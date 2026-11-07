@@ -330,6 +330,8 @@ const dict = {
   v4FinishCourt: { th: 'จบเกม คอร์ท {court}', en: 'Finish court {court}' },
   v4ReopenCourt: { th: 'แก้ผล คอร์ท {court}', en: 'Reopen court {court}' },
   v4Scores: { th: 'ใส่คะแนน', en: 'Scores' },
+  v4UpNext: { th: 'รอบถัดไป', en: 'Next round' },
+  v4BenchNext: { th: 'พักรอบหน้า', en: 'Sitting out next' },
   v4TvMode: { th: 'จอข้างคอร์ท', en: 'Court screen' },
   v4RoundDoneN: { th: 'จบรอบที่ {n} แล้ว', en: 'Round {n} finished' },
   v4NextRoundN: { th: 'ถัดไป · รอบ {n}', en: 'Next · round {n}' },

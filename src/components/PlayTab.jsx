@@ -384,10 +384,8 @@ export default function PlayTab({
   // the ranking only matters once the planned rounds run out
   const showQueue = !readOnly && !nextUp && queue.length > capacity && capacity > 0
   const canTick = !readOnly || canScore
-  const teamLine = (m) =>
-    [m.teamA, m.teamB]
-      .map((ids) => ids.map((id) => playersById.get(id)?.name ?? '—').join(' + '))
-      .join(` ${t('vs')} `)
+  const names = (ids, sep = ' · ') =>
+    ids.map((id) => (id && playersById.get(id)?.name) || '—').join(sep)
 
   // the progress runs inside the button's place, so its label stays readable
   const busyBar = (
@@ -601,7 +599,9 @@ export default function PlayTab({
                 canTick={canTick}
                 onDone={(matchId) => {
                   // the last tick moves the scoreboard on, so offer the way back
-                  const last = nowRound.matches.every((m) => (m.id === matchId ? !m.done : m.done))
+                  const last = nowRound.matches.every((m) =>
+                    m.id === matchId ? !m.done : m.done
+                  )
                   onMatchDone(nowRound, matchId)
                   // a tap you can feel on Android; a longer double pulse closes the round
                   navigator.vibrate?.(last ? [12, 50, 18] : 8)
@@ -660,16 +660,53 @@ export default function PlayTab({
                 </p>
               )}
 
+              {/* the next round in the same columns as the one on court, so a
+                  glance down a column reads "court 1 now, court 1 next";
+                  dashed, since nobody is on it yet */}
               {nextUp && (
-                <div className="border-t border-slate-50/10 pt-3 text-xs">
-                  <p className="font-semibold text-slate-300">
-                    {t('v4NextRoundN', { n: nextUp.number })}
+                <div className="border-t border-slate-50/10 pt-3">
+                  <p className="flex items-baseline gap-2 px-1">
+                    <span className="text-xs font-semibold text-slate-300">
+                      {t('v4UpNext')}
+                    </span>
+                    <span className="num text-xl text-slate-50">{nextUp.number}</span>
                   </p>
-                  {nextUp.round.matches.map((m) => (
-                    <p key={m.id} className="mt-1 truncate text-slate-100">
-                      {teamLine(m)}
+                  <ul className="mt-2 space-y-1.5">
+                    {nextUp.round.matches.map((m) => (
+                      <li
+                        key={m.id}
+                        className="flex min-h-10 items-center gap-2 rounded-xl border border-dashed border-slate-50/20 py-1 pr-1.5 pl-2 text-sm"
+                      >
+                        <span
+                          className={cx(
+                            'font-display grid h-6 max-w-12 min-w-6 shrink-0 place-items-center truncate rounded-[var(--radius-pill)] px-1 text-xs',
+                            courtTone(courtOrder.get(m.courtId) ?? 0)
+                          )}
+                          aria-hidden
+                        >
+                          {m.courtName}
+                        </span>
+                        <span className="sr-only">
+                          {t('v4MatchCtx', { n: nextUp.number, court: m.courtName })}
+                        </span>
+                        <span className="min-w-0 flex-1 truncate font-medium text-sky-200">
+                          {names(m.teamA)}
+                        </span>
+                        <span className="shrink-0 text-xs text-slate-400">{t('vs')}</span>
+                        <span className="min-w-0 flex-1 truncate text-right font-medium text-rose-200">
+                          {names(m.teamB)}
+                        </span>
+                        {/* keeps the vs column under the one above, past the finish buttons */}
+                        {canTick && <span className="w-11 shrink-0" aria-hidden />}
+                      </li>
+                    ))}
+                  </ul>
+                  {nextUp.round.benched.length > 0 && (
+                    <p className="mt-2 px-1 text-xs text-slate-300">
+                      <span className="font-semibold">{t('v4BenchNext')}</span>{' '}
+                      {names(nextUp.round.benched, ', ')}
                     </p>
-                  ))}
+                  )}
                 </div>
               )}
             </div>
@@ -1140,7 +1177,13 @@ export default function PlayTab({
 
 /** A badminton court seen from the stands, drawn faint behind the scoreboard. */
 const CourtLines = () => (
-  <svg viewBox="0 0 400 220" className="court-lines" fill="none" stroke="currentColor" aria-hidden>
+  <svg
+    viewBox="0 0 400 220"
+    className="court-lines"
+    fill="none"
+    stroke="currentColor"
+    aria-hidden
+  >
     {/* to scale: doubles and singles sidelines, net, short and long service lines, centre line */}
     <path d="M70 210 L130 30 H330 L390 210 Z" strokeWidth="3" />
     <path d="M94 210 L145 30 M366 210 L315 30" strokeWidth="2" />

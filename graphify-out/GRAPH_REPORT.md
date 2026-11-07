@@ -1,7 +1,7 @@
 # Graph Report - reload-skills-f78f93  (2026-11-07)
 
 ## Corpus Check
-- 83 files · ~81,333 words
+- 83 files · ~81,494 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 7 file(s) not represented in the graph (top: (none) 4, .example 1, .rules 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `7505ff46`
+- Built from commit: `c210294c`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -163,7 +163,7 @@ _Questions this graph is uniquely positioned to answer:_
 - **Should `matchmaker.js` be split into smaller, more focused modules?**
   _Cohesion score 0.08624708624708624 - nodes in this community are weakly interconnected._
 - **Why does `react` connect `cx` to `App.jsx`, `PlayersTab.jsx`, `exportImage.js`, `HelpSheet.jsx`, `CostSplitSheet.jsx`, `App.jsx`, `package.json`, `App.jsx`?**
-  _High betweenness centrality (0.100) - this node is a cross-community bridge._
+  _High betweenness centrality (0.101) - this node is a cross-community bridge._
 - **Should `App.jsx` be split into smaller, more focused modules?**
   _Cohesion score 0.06428988895382817 - nodes in this community are weakly interconnected._
 - **Why does `vitest` connect `matchmaker.js` to `App.jsx`, `PlayersTab.jsx`, `exportImage.js`, `CostSplitSheet.jsx`, `App.jsx`, `package.json`, `vite.config.js`, `rooms.rules.test.js`, `App.jsx`?**
