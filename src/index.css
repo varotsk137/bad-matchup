@@ -2825,16 +2825,17 @@
 }
 
 /*
- * The hero card mirrors the page in both modes. In dark mode the page is deep
- * and the card a step lighter; in light mode the card is a step darker than
- * the page, a muted light grey, never black. The card's contents are written
- * once, as light-on-ink; in light mode this scope swaps the tokens under them
- * so the same classes read dark-on-grey. `.ink-keep` hands a part (a white
- * input, a lime pill) back its usual colours.
+ * The hero card follows the page in both modes: a step lighter than the page,
+ * a white card in light mode and a raised dark one in dark mode. What makes
+ * it the hero is a lime bar along its top and its big numbers, not an
+ * inverted block. The card's contents are written once, as light-on-ink; in
+ * light mode this scope swaps the tokens under them so the same classes read
+ * dark-on-white. `.ink-keep` hands a part (the name field, a lime pill) back
+ * its usual colours.
  */
 :root {
   --ink-50: var(--color-slate-50);
-  --ink-200: var(--color-slate-200);
+  --ink-100: var(--color-slate-100);
   --ink-300: var(--color-slate-300);
   --ink-600: var(--color-slate-600);
   --ink-700: var(--color-slate-700);
@@ -2844,7 +2845,7 @@
   --ink-accent-400: var(--color-accent-400);
 }
 :root:not(.dark) .ink-scope {
-  --color-slate-900: color-mix(in oklch, var(--ink-200) 55%, var(--ink-300));
+  --color-slate-900: var(--ink-50);
   --color-slate-50: var(--ink-900);
   --color-slate-100: var(--ink-800);
   --color-slate-200: var(--ink-700);
@@ -2866,4 +2867,16 @@
   --color-slate-900: var(--ink-900);
   --color-accent-300: var(--ink-accent-300);
   --color-accent-400: var(--ink-accent-400);
+}
+:root:not(.dark) .ink-scope {
+  border-right-color: var(--color-edge);
+  border-bottom-color: var(--color-edge);
+  border-left-color: var(--color-edge);
+}
+.ink-scope {
+  border-top: 3px solid var(--color-accent-500);
+}
+/* a field on the white card takes the page tone, or it would vanish into it */
+:root:not(.dark) .ink-scope .ink-field {
+  background-color: var(--ink-100);
 }
