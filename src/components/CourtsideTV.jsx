@@ -227,7 +227,7 @@ export default function CourtsideTV({ state, playersById, t, onClose, onMatchDon
                       court: m.courtName,
                     })}
                     className={cx(
-                      'press grid size-[clamp(2.75rem,min(12dvh,12vw),5rem)] shrink-0 place-items-center rounded-full text-[clamp(0.875rem,min(3.4dvh,4vw),1.5rem)] font-bold',
+                      'key grid size-[clamp(2.75rem,min(12dvh,12vw),5rem)] shrink-0 place-items-center rounded-full text-[clamp(0.875rem,min(3.4dvh,4vw),1.5rem)] font-bold',
                       'focus-visible:ring-2 focus-visible:ring-accent-400 focus-visible:outline-none',
                       m.done
                         ? 'bg-accent-500 text-on-accent'

@@ -11,6 +11,7 @@ import {
 import CostSplitSheet from './CostSplitSheet'
 import MatchCard, { ScoreBox } from './MatchCard'
 import CourtsideTV from './CourtsideTV'
+import Solar from './Solar'
 import ScheduleTable from './ScheduleTable'
 import ImageSheet from './ImageSheet'
 import { renderSchedulePng } from '../lib/exportImage'
@@ -539,7 +540,7 @@ export default function PlayTab({
           {busy ? (
             busyBar
           ) : (
-            <Button variant="accent" size="lg" className="w-full text-base" onClick={run}>
+            <Button variant="accent" size="lg" className="key w-full text-base" onClick={run}>
               {buttonLabel}
             </Button>
           )}
@@ -549,12 +550,13 @@ export default function PlayTab({
 
       {/* ------------------------------------------------ the scoreboard */}
       {hasRounds && (
-        <Card tone="ink" className="p-5">
+        <Card tone="ink" className="overflow-hidden p-5">
+          <CourtLines />
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <p className="text-xs font-medium text-slate-300">{t('round')}</p>
               <p className="mt-1 flex items-baseline gap-2">
-                <RollNumber value={nowNumber} className="text-[3.5rem] text-slate-50" />
+                <RollNumber value={nowNumber} className="text-[4.5rem] text-slate-50" />
                 <span className="num text-2xl text-slate-300">/ {total}</span>
               </p>
             </div>
@@ -643,7 +645,7 @@ export default function PlayTab({
                     title={t('v4TvMode')}
                     className={cx(INK_CHIP, 'ml-auto w-11 justify-center px-0')}
                   >
-                    <Icon name="screen" className="h-5 w-5" />
+                    <Solar name="screen" className="h-5 w-5" />
                   </button>
                 </div>
               )}
@@ -724,7 +726,7 @@ export default function PlayTab({
                 busyBar
               ) : mode === 'manual' ? (
                 <div className="grid grid-cols-2 gap-2">
-                  <Button variant="accent" className="h-12 min-w-0" onClick={run}>
+                  <Button variant="accent" className="key h-12 min-w-0" onClick={run}>
                     {buttonLabel}
                   </Button>
                   <button type="button" className={cx(INK_BUTTON, 'h-12')} onClick={reshuffle}>
@@ -746,7 +748,7 @@ export default function PlayTab({
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-2">
-                    <Button variant="accent" className="h-12 min-w-0" onClick={run}>
+                    <Button variant="accent" className="key h-12 min-w-0" onClick={run}>
                       {buttonLabel}
                     </Button>
                     <button
@@ -836,7 +838,7 @@ export default function PlayTab({
               primary
               onClick={onExport}
               disabled={exporting}
-              icon={<DownloadGlyph />}
+              icon={<Solar name="download" />}
               label={exporting ? t('exporting') : t('exportImageShort')}
             />
             {!readOnly && onLive && (
@@ -850,7 +852,7 @@ export default function PlayTab({
                       aria-hidden
                     />
                   ) : (
-                    <UploadGlyph />
+                    <Solar name="share" />
                   )
                 }
                 label={t(liveOn ? 'liveButtonOn' : 'liveButton')}
@@ -859,7 +861,7 @@ export default function PlayTab({
             {!readOnly && (
               <ShareTile
                 onClick={() => setSplitOpen(true)}
-                icon={<Icon name="wallet" className="h-5 w-5" />}
+                icon={<Solar name="wallet" />}
                 label={t('splitButton')}
               />
             )}
@@ -1136,6 +1138,19 @@ export default function PlayTab({
 
 /* ------------------------------------------------------------- sub-views */
 
+/** A badminton court seen from the stands, drawn faint behind the scoreboard. */
+const CourtLines = () => (
+  <svg viewBox="0 0 400 220" className="court-lines" fill="none" stroke="currentColor" aria-hidden>
+    {/* to scale: doubles and singles sidelines, net, short and long service lines, centre line */}
+    <path d="M70 210 L130 30 H330 L390 210 Z" strokeWidth="3" />
+    <path d="M94 210 L145 30 M366 210 L315 30" strokeWidth="2" />
+    <path d="M100 120 H360" strokeWidth="4" />
+    <path d="M91 147 H369 M109 93 H351" strokeWidth="2" />
+    <path d="M73 200 H387 M127 40 H333" strokeWidth="1.5" />
+    <path d="M230 210 V147 M230 93 V30" strokeWidth="2" />
+  </svg>
+)
+
 /**
  * The scoreboard's round number: a new round rolls up into its slot like a
  * flip-board digit, an undo rolls back down. WAAPI, so it is a one-off on the
@@ -1253,7 +1268,7 @@ function CourtSide({
               aria-pressed={m.done}
               aria-label={t(m.done ? 'v4ReopenCourt' : 'v4FinishCourt', { court: m.courtName })}
               className={cx(
-                'press grid h-11 w-11 shrink-0 place-items-center rounded-full text-xs font-bold',
+                'key grid h-11 w-11 shrink-0 place-items-center rounded-full text-xs font-bold',
                 'focus-visible:ring-2 focus-visible:ring-accent-400 focus-visible:outline-none',
                 m.done
                   ? 'bg-accent-500 text-on-accent'
@@ -1301,34 +1316,6 @@ function Chevron({ open, ink = false }) {
   )
 }
 
-const DownloadGlyph = () => (
-  <svg
-    viewBox="0 0 20 20"
-    className="h-5 w-5"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.8"
-    aria-hidden
-  >
-    <path d="M10 3v9m0 0 3.5-3.5M10 12 6.5 8.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M3.5 13.5V15a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-1.5" strokeLinecap="round" />
-  </svg>
-)
-
-const UploadGlyph = () => (
-  <svg
-    viewBox="0 0 20 20"
-    className="h-5 w-5"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.8"
-    aria-hidden
-  >
-    <path d="M10 13V3m0 0L6.5 6.5M10 3l3.5 3.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M4 12v3a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-3" strokeLinecap="round" />
-  </svg>
-)
-
 /** An icon over a label; the name is the label alone, so tests and readers see "Share". */
 function ShareTile({ icon, label, onClick, disabled, primary = false, live = false }) {
   return (
@@ -1347,7 +1334,7 @@ function ShareTile({ icon, label, onClick, disabled, primary = false, live = fal
             : 'flex-1 border-edge-strong bg-slate-50 text-slate-900 hover:bg-slate-100 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800'
       )}
     >
-      <span className="grid h-5 place-items-center">{icon}</span>
+      <span className="grid h-6 place-items-center">{icon}</span>
       <span className="max-w-full truncate">{label}</span>
     </button>
   )

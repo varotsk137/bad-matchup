@@ -14,6 +14,7 @@ import LiveRoomSheet, { RoomStatus } from './components/LiveRoomSheet'
 import RoomHistorySheet from './components/RoomHistorySheet'
 import StatsTab from './components/StatsTab'
 import LineIcon from './components/Icon'
+import Solar from './components/Solar'
 import { Button, ConfirmHost, Toast, askConfirm, cx } from './components/ui'
 import { makeT } from './lib/i18n'
 import {
@@ -45,78 +46,6 @@ import { createLocalStore } from './lib/store'
 
 /** Firebase is only downloaded once someone opens or watches a room. */
 const loadRemote = () => import('./lib/roomRemote')
-
-/* ------------------------------------------------------------------ icons */
-
-const Icon = ({ d, className = '' }) => (
-  <svg
-    viewBox="0 0 24 24"
-    className={cx('h-5 w-5', className)}
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.8"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    {d}
-  </svg>
-)
-
-const ICONS = {
-  play: (
-    <Icon
-      d={
-        <>
-          <path d="M4 7h16M4 12h16M4 17h16" />
-          <circle cx="8" cy="7" r="1.6" />
-          <circle cx="15" cy="12" r="1.6" />
-          <circle cx="10" cy="17" r="1.6" />
-        </>
-      }
-    />
-  ),
-  players: (
-    <Icon
-      d={
-        <>
-          <circle cx="9" cy="8" r="3.2" />
-          <path d="M3 20a6 6 0 0 1 12 0" />
-          <path d="M16.5 11.5a3 3 0 1 0-1.8-5.4" />
-          <path d="M17 20a5.6 5.6 0 0 0-1.6-4" />
-        </>
-      }
-    />
-  ),
-  courts: (
-    <Icon
-      d={
-        <>
-          <rect x="3" y="4" width="18" height="16" rx="2" />
-          <path d="M12 4v16M3 9h18M3 15h18" />
-        </>
-      }
-    />
-  ),
-  stats: (
-    <Icon
-      d={
-        <>
-          <path d="M5 20V10M12 20V4M19 20v-6" />
-        </>
-      }
-    />
-  ),
-  settings: (
-    <Icon
-      d={
-        <>
-          <circle cx="12" cy="12" r="3" />
-          <path d="M12 3v2m0 14v2M3 12h2m14 0h2M5.6 5.6l1.4 1.4m10 10 1.4 1.4m0-12.8-1.4 1.4m-10 10-1.4 1.4" />
-        </>
-      }
-    />
-  ),
-}
 
 const TABS = [
   { key: 'play', labelKey: 'tabPlay' },
@@ -178,18 +107,7 @@ function Header({
             aria-label={t('historyTitle')}
             title={t('historyTitle')}
           >
-            {/* a clock with an arrow running back round it: rooms opened before */}
-            <svg
-              viewBox="0 0 20 20"
-              className="h-[18px] w-[18px]"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-            >
-              <path d="M3.5 10a6.5 6.5 0 1 0 1.9-4.6" strokeLinecap="round" />
-              <path d="M3.5 3.5v2.4h2.4" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M10 6.5V10l2.3 1.6" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <Solar name="history" className="h-5 w-5" />
           </button>
           <button
             onClick={() => actions.set({ lang: state.lang === 'th' ? 'en' : 'th' })}
@@ -208,10 +126,7 @@ function Header({
               darkOnly ? t('themeLockedDark') : t(state.theme === 'dark' ? 'themeDark' : 'themeLight')
             }
           >
-            <LineIcon
-              name={darkOnly || state.theme === 'dark' ? 'moon' : 'sun'}
-              className="h-5 w-5"
-            />
+            <Solar name={darkOnly || state.theme === 'dark' ? 'moon' : 'sun'} className="h-5 w-5" />
           </button>
         </div>
       </div>
@@ -1047,6 +962,12 @@ export default function App() {
       {topBars}
 
       {/* --------------------------------------------------------- tabs */}
+      {/* content melts into a stepped blur as it scrolls under the tab bar */}
+      <div className="bottom-blur" aria-hidden>
+        <span />
+        <span />
+        <span />
+      </div>
       <nav
         aria-label={t('appName')}
         className={cx(
@@ -1078,7 +999,7 @@ export default function App() {
                 )}
               >
                 <span className="transition-transform duration-150 ease-snap group-active:scale-90">
-                  {ICONS[tb.key]}
+                  <Solar name={tb.key} className="h-6 w-6 md:h-5 md:w-5" />
                 </span>
                 <span className="leading-4">{t(tb.labelKey)}</span>
               </button>
