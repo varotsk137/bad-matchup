@@ -2,6 +2,7 @@
   "0": "matchmaker.js",
   "1": "App.jsx",
   "2": "rooms.rules.test.js",
+  "3": "PlayersTab.jsx",
   "4": "exportImage.js",
   "5": "🏸 Bad Matchup",
   "6": "HelpSheet.jsx",
@@ -14,7 +15,10 @@
   "13": "scripts",
   "14": "vite.config.js",
   "15": "rooms.rules.test.js",
+  "16": "RoundAdvisor.jsx",
   "17": "cx",
+  "18": "CourtDiorama",
   "19": "make-icons.mjs",
+  "20": "fonts.js",
   "51": "App.jsx"
 }
