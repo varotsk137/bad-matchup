@@ -33,6 +33,36 @@ function sample() {
 }
 
 describe('ops', () => {
+  it('turns a match into singles and back to doubles by hand', () => {
+    const s = sample()
+    const one = ops.setMatchSize(s, 'r1', 'm1', 2)
+    const m1 = one.rounds[0].matches[0]
+    expect(m1.teamA).toEqual(['a'])
+    expect(m1.teamB).toEqual(['c'])
+    expect(m1.type).toBe('singles')
+    expect(one.rounds[0].benched).toEqual(['e', 'b', 'd'])
+
+    const two = ops.setMatchSize(one, 'r1', 'm1', 4)
+    const m2 = two.rounds[0].matches[0]
+    expect(m2.teamA).toEqual(['a', null])
+    expect(m2.teamB).toEqual(['c', null])
+    expect(m2.type).toBe('doubles')
+    // the empty seats fill like any other swap
+    const filled = ops.swapInRound(
+      two,
+      'r1',
+      { bench: true, playerId: 'b' },
+      { matchId: 'm1', team: 'A', idx: 1 }
+    )
+    expect(filled.rounds[0].matches[0].teamA).toEqual(['a', 'b'])
+    expect(filled.rounds[0].benched).not.toContain('b')
+
+    // already that size, or finished: nothing changes
+    expect(ops.setMatchSize(s, 'r1', 'm1', 4).rounds[0]).toBe(s.rounds[0])
+    const done = ops.toggleMatchDone(s, 'r1', 'm1')
+    expect(ops.setMatchSize(done, 'r1', 'm1', 2).rounds[0]).toBe(done.rounds[0])
+  })
+
   it('never mutates the state it is given', () => {
     const s = sample()
     const frozen = JSON.stringify(s)

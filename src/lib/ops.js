@@ -188,9 +188,49 @@ export const ops = {
       benched: before.benched,
       matches: r.matches.map((m) => {
         const old = before.matches.find((x) => x.id === m.id)
-        return old ? { ...m, teamA: old.teamA, teamB: old.teamB } : m
+        return old
+          ? {
+              ...m,
+              teamA: old.teamA,
+              teamB: old.teamB,
+              type: old.type,
+              downgraded: old.downgraded,
+            }
+          : m
       }),
     })),
+
+  /**
+   * Turns one match into singles (size 2) or doubles (size 4) by hand. Going
+   * to doubles adds an empty seat a side, filled from the bench like any
+   * other swap; going to singles sends each side's second player to the bench.
+   * A finished match is left alone.
+   */
+  setMatchSize: (s, roundId, matchId, size) =>
+    patchRound(s, roundId, (r) => {
+      const m = r.matches.find((x) => x.id === matchId)
+      const per = size === 2 ? 1 : 2
+      if (!m || m.done || m.teamA.length === per) return r
+      const fit = (team) =>
+        per === 1 ? team.slice(0, 1) : [...team, ...Array(per - team.length).fill(null)]
+      const leaving =
+        per === 1 ? [...m.teamA.slice(1), ...m.teamB.slice(1)].filter(Boolean) : []
+      return {
+        ...r,
+        benched: [...r.benched, ...leaving],
+        matches: r.matches.map((x) =>
+          x.id === matchId
+            ? {
+                ...x,
+                teamA: fit(x.teamA),
+                teamB: fit(x.teamB),
+                type: per === 1 ? 'singles' : 'doubles',
+                downgraded: false,
+              }
+            : x
+        ),
+      }
+    }),
 
   updateMatch: (s, roundId, matchId, patch) =>
     patchRound(s, roundId, (r) => ({

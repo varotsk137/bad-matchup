@@ -644,6 +644,7 @@ export default function App() {
 
       swapInRound: run('swapInRound'),
       restoreLineup: run('restoreLineup'),
+      setMatchSize: run('setMatchSize'),
       // in a live room these also go out as results (see the room effect)
       updateMatch: (roundId, matchId, patch) => {
         store.dispatch('updateMatch', roundId, matchId, patch)

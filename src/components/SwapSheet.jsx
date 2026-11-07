@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { TEAM_TEXT } from './MatchCard'
-import { Button, Sheet, cx } from './ui'
+import { Button, Segmented, Sheet, cx } from './ui'
 
 const sameSlot = (a, b) =>
   a &&
@@ -15,7 +15,15 @@ const sameSlot = (a, b) =>
  * Pick who comes out, then who goes in, read the summary, then swap. Tapping
  * two names on the card still works too; this is the spelled-out way.
  */
-export default function SwapSheet({ round, number, playersById, t, onSwap, onClose }) {
+export default function SwapSheet({
+  round,
+  number,
+  playersById,
+  t,
+  onSwap,
+  onResize,
+  onClose,
+}) {
   const [first, setFirst] = useState(null)
   const [second, setSecond] = useState(null)
   if (!round) return null
@@ -124,10 +132,32 @@ export default function SwapSheet({ round, number, playersById, t, onSwap, onClo
 
         {round.matches.map((m) => (
           <div key={m.id}>
-            <p className="mb-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400">
-              {t('swapCourt', { court: m.courtName })}
-              {m.done && ` · ${t('swapDone')}`}
-            </p>
+            <div className="mb-1.5 flex items-center justify-between gap-3">
+              <p className="min-w-0 text-xs font-semibold whitespace-nowrap text-slate-600 dark:text-slate-400">
+                {t('swapCourt', { court: m.courtName })}
+                {m.done && ` · ${t('swapDone')}`}
+              </p>
+              {/* singles or doubles by hand: doubles opens an empty seat a side
+                  to fill from the bench below; singles sends the second players there */}
+              {onResize && !m.done && (
+                <div className="w-40 shrink-0">
+                  <Segmented
+                    size="sm"
+                    label={t('v4MatchSizeFor', { court: m.courtName })}
+                    value={m.teamA.length === 1 ? 2 : 4}
+                    onChange={(size) => {
+                      setFirst(null)
+                      setSecond(null)
+                      onResize(m.id, size)
+                    }}
+                    options={[
+                      { value: 2, label: t('singles') },
+                      { value: 4, label: t('doubles') },
+                    ]}
+                  />
+                </div>
+              )}
+            </div>
             <div className="flex flex-wrap gap-1.5">
               {['A', 'B'].flatMap((team) =>
                 (team === 'A' ? m.teamA : m.teamB).map((id, idx) =>

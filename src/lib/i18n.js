@@ -330,6 +330,12 @@ const dict = {
   v4FinishCourt: { th: 'จบเกม คอร์ท {court}', en: 'Finish court {court}' },
   v4ReopenCourt: { th: 'แก้ผล คอร์ท {court}', en: 'Reopen court {court}' },
   v4Scores: { th: 'ใส่คะแนน', en: 'Scores' },
+  v4MatchSizeFor: { th: 'แบบการเล่น คอร์ท {court}', en: 'Court {court} format' },
+  v4ToSingles: { th: 'คอร์ท {court} เป็นตีเดี่ยวแล้ว', en: 'Court {court} is now singles' },
+  v4ToDoubles: {
+    th: 'คอร์ท {court} เป็นตีคู่แล้ว เลือกคนจากคนพักลงช่องว่างได้เลย',
+    en: 'Court {court} is now doubles: put people from the bench in the empty seats',
+  },
   v4IconCredit: { th: 'ไอคอน Solar โดย 480 Design (CC BY 4.0)', en: 'Solar icons by 480 Design (CC BY 4.0)' },
   v4StreakN: { th: 'ลงติดกัน {n} รอบ (ตั้งไว้ไม่เกิน {max})', en: '{n} rounds in a row (limit {max})' },
   v4StreakAt: { th: 'ลงติดกันครบ {max} รอบแล้ว', en: 'at the limit of {max} in a row' },
