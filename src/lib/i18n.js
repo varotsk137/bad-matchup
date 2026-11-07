@@ -327,6 +327,15 @@ const dict = {
   v4MatchCtx: { th: 'รอบที่ {n} · คอร์ท {court}', en: 'Round {n} · court {court}' },
   v4RestShort: { th: 'พัก', en: 'rest ' },
   v4RestLong: { th: 'พักนานแล้ว', en: 'long rest' },
+  v4FinishCourt: { th: 'จบเกม คอร์ท {court}', en: 'Finish court {court}' },
+  v4ReopenCourt: { th: 'แก้ผล คอร์ท {court}', en: 'Reopen court {court}' },
+  v4Scores: { th: 'ใส่คะแนน', en: 'Scores' },
+  v4RoundDoneN: { th: 'จบรอบที่ {n} แล้ว', en: 'Round {n} finished' },
+  v4NextRoundN: { th: 'ถัดไป · รอบ {n}', en: 'Next · round {n}' },
+  v4ManualReplan: {
+    th: 'เลือกเองไม่มีการจัดใหม่ เปลี่ยนเป็นยุติธรรมหรือสุ่ม แล้วค่อยจัดรอบที่เหลือใหม่',
+    en: 'Manual has nothing to reshuffle. Switch to Balanced or Random to re-plan the rounds left',
+  },
   slowHint: {
     th: 'ใช้เวลานานหน่อย ถ้าอยากให้เร็วขึ้น ลดจำนวนรอบ หรือปรับความละเอียด / ปิด "จัดซ้ำ 3 ครั้ง" ได้',
     en: 'Taking a while — for faster builds, use fewer rounds, a lower search effort or switch off "Build 3 times"',

@@ -9,7 +9,7 @@ import {
   totalCapacity,
 } from '../lib/matchmaker'
 import CostSplitSheet from './CostSplitSheet'
-import MatchCard from './MatchCard'
+import MatchCard, { ScoreBox } from './MatchCard'
 import ScheduleTable from './ScheduleTable'
 import ImageSheet from './ImageSheet'
 import { renderSchedulePng } from '../lib/exportImage'
@@ -28,6 +28,7 @@ import {
   Sheet,
   StatTile,
   askConfirm,
+  courtTone,
   cx,
 } from './ui'
 
@@ -41,6 +42,10 @@ const MODES = [
   ['random', 'modeRandom'],
   ['manual', 'modeManual'],
 ]
+
+// a small round-ended tool on the ink scoreboard
+const INK_CHIP =
+  'press inline-flex h-11 items-center gap-1.5 rounded-full border border-slate-50/25 px-4 text-sm font-medium text-slate-50 hover:bg-slate-50/10 focus-visible:ring-2 focus-visible:ring-accent-400 focus-visible:outline-none'
 
 // a quiet bordered button for the ink cards, beside the lime one
 const INK_BUTTON =
@@ -87,6 +92,8 @@ export default function PlayTab({
   const [queueOpen, setQueueOpen] = useState(false)
   const [archiveOpen, setArchiveOpen] = useState(false)
   const [splitOpen, setSplitOpen] = useState(false)
+  // the scoreboard's score boxes, shown on demand: most nights only "done" is ticked
+  const [scoring, setScoring] = useState(false)
   // the table's checking aids, kept here so they sit in the view row
   const [showLevels, setShowLevels] = useState(false)
   const [showStamina, setShowStamina] = useState(false)
@@ -367,7 +374,14 @@ export default function PlayTab({
   const nowRound = active[0]?.round
   const nowNumber = active[0]?.number ?? total
   const nowDone = nowRound ? nowRound.matches.filter((m) => m.done).length : 0
-  const showQueue = !readOnly && queue.length > capacity && capacity > 0
+  const nextUp = active[1]
+  // the ranking only matters once the planned rounds run out
+  const showQueue = !readOnly && !nextUp && queue.length > capacity && capacity > 0
+  const canTick = !readOnly || canScore
+  const teamLine = (m) =>
+    [m.teamA, m.teamB]
+      .map((ids) => ids.map((id) => playersById.get(id)?.name ?? '—').join(' + '))
+      .join(` ${t('vs')} `)
 
   // the progress runs inside the button's place, so its label stays readable
   const busyBar = (
@@ -537,7 +551,10 @@ export default function PlayTab({
               <p className="text-xs font-medium text-slate-300">{t('round')}</p>
               <p className="mt-1 flex items-baseline gap-2">
                 {/* keyed, so a new round on court rises in */}
-                <span key={nowNumber} className="num animate-pop inline-block text-[3.5rem] text-slate-50">
+                <span
+                  key={nowNumber}
+                  className="num animate-pop inline-block text-[3.5rem] text-slate-50"
+                >
                   {nowNumber}
                 </span>
                 <span className="num text-2xl text-slate-300">/ {total}</span>
@@ -571,6 +588,81 @@ export default function PlayTab({
             />
           </div>
 
+          {/* the round on court: run it from here, no scrolling to the table */}
+          {nowRound && (
+            <div className="mt-4 space-y-3">
+              <CourtSide
+                round={nowRound}
+                number={nowNumber}
+                playersById={playersById}
+                t={t}
+                courtOrder={courtOrder}
+                scoring={scoring}
+                canTick={canTick}
+                onDone={(matchId) => {
+                  // the last tick moves the scoreboard on, so offer the way back
+                  const last = nowRound.matches.every((m) => (m.id === matchId ? !m.done : m.done))
+                  onMatchDone(nowRound, matchId)
+                  if (last)
+                    setToast(t('v4RoundDoneN', { n: nowNumber }), 'info', {
+                      label: t('undo'),
+                      run: () => actions.toggleMatchDone(nowRound.id, matchId),
+                    })
+                }}
+                onScore={(matchId, patch) => actions.updateMatch(nowRound.id, matchId, patch)}
+              />
+
+              {canTick && (
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setScoring((v) => !v)}
+                    aria-pressed={scoring}
+                    className={cx(
+                      INK_CHIP,
+                      scoring && 'bg-slate-50 text-slate-900 hover:bg-slate-50'
+                    )}
+                  >
+                    {t('v4Scores')}
+                  </button>
+                  {!readOnly && (
+                    <button
+                      type="button"
+                      onClick={() => setSwapRoundId(nowRound.id)}
+                      className={INK_CHIP}
+                    >
+                      <span aria-hidden>⇄</span>
+                      {t('swapButton')}
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {nowRound.benched.length > 0 && (
+                <p className="text-xs text-slate-300">
+                  <span className="font-semibold">{t('bench')}</span>{' '}
+                  {nowRound.benched
+                    .map((id) => playersById.get(id)?.name)
+                    .filter(Boolean)
+                    .join(', ')}
+                </p>
+              )}
+
+              {nextUp && (
+                <div className="border-t border-slate-50/10 pt-3 text-xs">
+                  <p className="font-semibold text-slate-300">
+                    {t('v4NextRoundN', { n: nextUp.number })}
+                  </p>
+                  {nextUp.round.matches.map((m) => (
+                    <p key={m.id} className="mt-1 truncate text-slate-100">
+                      {teamLine(m)}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           {showQueue && (
             <div className="mt-3">
               <button
@@ -602,7 +694,9 @@ export default function PlayTab({
                           : 'text-slate-300'
                       )}
                     >
-                      <span className="text-xs font-normal text-slate-300 tabular-nums">{i + 1}</span>
+                      <span className="text-xs font-normal text-slate-300 tabular-nums">
+                        {i + 1}
+                      </span>
                       {q.player.name}
                       <span className="text-xs font-normal text-slate-300 tabular-nums">
                         {q.games}
@@ -619,13 +713,20 @@ export default function PlayTab({
               {busy ? (
                 busyBar
               ) : mode === 'manual' ? (
-                <Button variant="accent" className="h-12 w-full" onClick={run}>
-                  {buttonLabel}
-                </Button>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button variant="accent" className="h-12 min-w-0" onClick={run}>
+                    {buttonLabel}
+                  </Button>
+                  <button type="button" className={cx(INK_BUTTON, 'h-12')} onClick={reshuffle}>
+                    {t('regenerate')}
+                  </button>
+                </div>
               ) : (
                 <>
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-xs font-medium text-slate-300">{t('v4AddHowMany')}</span>
+                    <span className="text-xs font-medium text-slate-300">
+                      {t('v4AddHowMany')}
+                    </span>
                     <Stepper
                       ink
                       value={addCount}
@@ -638,7 +739,11 @@ export default function PlayTab({
                     <Button variant="accent" className="h-12 min-w-0" onClick={run}>
                       {buttonLabel}
                     </Button>
-                    <button type="button" className={cx(INK_BUTTON, 'h-12')} onClick={reshuffle}>
+                    <button
+                      type="button"
+                      className={cx(INK_BUTTON, 'h-12')}
+                      onClick={reshuffle}
+                    >
                       {t(played > 0 ? 'redoRemainingShort' : 'redoAllShort')}
                     </button>
                   </div>
@@ -865,15 +970,7 @@ export default function PlayTab({
             </div>
           )}
 
-          {/* the rare things sit at the end, away from the buttons used every night */}
-          {!readOnly && (
-            <div className="space-y-2 pt-2">
-              <p className="px-1 text-xs font-medium text-slate-600 dark:text-slate-400">
-                {t('mode')}
-              </p>
-              {modePicker(false)}
-            </div>
-          )}
+          {/* the rare thing sits at the end, away from the buttons used every night */}
           {!readOnly && (
             <div className="flex justify-center">
               <button
@@ -908,65 +1005,97 @@ export default function PlayTab({
         />
       )}
       {!readOnly && (
-        <Sheet open={reshuffleOpen} onClose={() => setReshuffleOpen(false)} title={t('regenerate')}>
+        <Sheet
+          open={reshuffleOpen}
+          onClose={() => setReshuffleOpen(false)}
+          title={t('regenerate')}
+        >
           <div className="space-y-3">
-            <p className="text-sm text-slate-600 dark:text-slate-300">
-              {played > 0 ? t('reshuffleIntro', { played }) : t('reshuffleIntroFresh')}
-            </p>
-            <div className="flex items-center justify-between gap-3 rounded-xl bg-slate-100 px-3 py-2 dark:bg-slate-800/60">
-              <span className="text-sm">
-                {played > 0 ? t('reshuffleHowMany', { played }) : t('reshuffleHowManyFresh')}
-              </span>
-              <Stepper
-                value={redoCount}
-                onChange={setRedoCount}
-                max={MAX_AHEAD}
-                label={t('roundsLabel')}
-              />
+            {/* the mode lives with re-planning: it only changes rounds still to be made */}
+            <div className="space-y-2 border-b border-edge pb-4">
+              <p className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                {t('mode')}
+              </p>
+              {modePicker(false)}
+              <p className="text-xs text-slate-600 dark:text-slate-400">
+                {t(
+                  mode === 'random'
+                    ? 'modeRandomDesc'
+                    : mode === 'manual'
+                      ? 'modeManualDesc'
+                      : 'modeBalancedDesc'
+                )}
+              </p>
             </div>
-            <Button
-              variant="primary"
-              className="h-auto w-full flex-col items-start gap-0.5 py-3 text-left"
-              onClick={() => reshuffleRemaining(redoCount)}
-            >
-              <span className="text-sm font-semibold">
-                {played > 0
-                  ? t('reshuffleRemaining', { n: redoCount })
-                  : t('reshuffleAllN', { n: redoCount })}
-              </span>
-              <span className="text-xs font-normal opacity-90">
-                {played > 0 ? t('reshuffleRemainingHint') : t('reshuffleAllHint')}
-              </span>
-            </Button>
-            {played > 0 && (
+            {mode === 'manual' ? (
+              <p className="text-sm text-slate-600 dark:text-slate-300">
+                {t('v4ManualReplan')}
+              </p>
+            ) : (
               <>
-                <div
-                  className="flex items-center gap-3 py-1 text-xs text-slate-600 dark:text-slate-400"
-                  aria-hidden
-                >
-                  <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
-                  {t('or')}
-                  <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
-                </div>
+                <p className="text-sm text-slate-600 dark:text-slate-300">
+                  {played > 0 ? t('reshuffleIntro', { played }) : t('reshuffleIntroFresh')}
+                </p>
                 <div className="flex items-center justify-between gap-3 rounded-xl bg-slate-100 px-3 py-2 dark:bg-slate-800/60">
-                  <span className="text-sm">{t('startOverHowMany')}</span>
+                  <span className="text-sm">
+                    {played > 0
+                      ? t('reshuffleHowMany', { played })
+                      : t('reshuffleHowManyFresh')}
+                  </span>
                   <Stepper
-                    value={startOverCount}
-                    onChange={setStartOverCount}
+                    value={redoCount}
+                    onChange={setRedoCount}
                     max={MAX_AHEAD}
                     label={t('roundsLabel')}
                   />
                 </div>
                 <Button
-                  variant="accent"
+                  variant="primary"
                   className="h-auto w-full flex-col items-start gap-0.5 py-3 text-left"
-                  onClick={startOver}
+                  onClick={() => reshuffleRemaining(redoCount)}
                 >
                   <span className="text-sm font-semibold">
-                    {t('startOver', { n: startOverCount })}
+                    {played > 0
+                      ? t('reshuffleRemaining', { n: redoCount })
+                      : t('reshuffleAllN', { n: redoCount })}
                   </span>
-                  <span className="text-xs font-normal opacity-90">{t('startOverHint')}</span>
+                  <span className="text-xs font-normal whitespace-normal opacity-90">
+                    {played > 0 ? t('reshuffleRemainingHint') : t('reshuffleAllHint')}
+                  </span>
                 </Button>
+                {played > 0 && (
+                  <>
+                    <div
+                      className="flex items-center gap-3 py-1 text-xs text-slate-600 dark:text-slate-400"
+                      aria-hidden
+                    >
+                      <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+                      {t('or')}
+                      <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+                    </div>
+                    <div className="flex items-center justify-between gap-3 rounded-xl bg-slate-100 px-3 py-2 dark:bg-slate-800/60">
+                      <span className="text-sm">{t('startOverHowMany')}</span>
+                      <Stepper
+                        value={startOverCount}
+                        onChange={setStartOverCount}
+                        max={MAX_AHEAD}
+                        label={t('roundsLabel')}
+                      />
+                    </div>
+                    <Button
+                      variant="accent"
+                      className="h-auto w-full flex-col items-start gap-0.5 py-3 text-left"
+                      onClick={startOver}
+                    >
+                      <span className="text-sm font-semibold">
+                        {t('startOver', { n: startOverCount })}
+                      </span>
+                      <span className="text-xs font-normal whitespace-normal opacity-90">
+                        {t('startOverHint')}
+                      </span>
+                    </Button>
+                  </>
+                )}
               </>
             )}
           </div>
@@ -988,6 +1117,121 @@ export default function PlayTab({
 
 /* ------------------------------------------------------------- sub-views */
 
+/**
+ * The round on court, one row per court, drawn on the ink scoreboard: who
+ * plays whom, its finish button and, when asked for, the score boxes. Each
+ * finish button names its court ("Finish court 1"), so it never reads as the
+ * table's plain "Finish". Rows rise in one after another when a new round
+ * takes the courts; the round number pops above them.
+ */
+function CourtSide({
+  round,
+  number,
+  playersById,
+  t,
+  courtOrder,
+  scoring,
+  canTick,
+  onDone,
+  onScore,
+}) {
+  // a finished court dims its names only, so its tick stays bright; the rows'
+  // stagger fills backwards only, since a held end state would pin opacity
+  const side = (ids, team, done) => (
+    <span
+      className={cx(
+        'min-w-0 flex-1 text-sm leading-tight font-semibold transition-opacity duration-200',
+        done && 'opacity-60',
+        team === 'A' ? 'text-sky-200' : 'text-right text-rose-200'
+      )}
+    >
+      {ids.map((id, i) => (
+        <span key={i} className="block truncate">
+          {(id && playersById.get(id)?.name) || '—'}
+        </span>
+      ))}
+    </span>
+  )
+  return (
+    <ul className="space-y-2">
+      {round.matches.map((m, i) => (
+        <li
+          key={m.id}
+          className={cx(
+            'animate-pop flex min-h-14 items-center gap-2 rounded-2xl bg-slate-50/[0.07] py-1.5 pr-1.5 pl-2'
+          )}
+          style={{ animationDelay: `${i * 60}ms`, animationFillMode: 'backwards' }}
+        >
+          <span
+            className={cx(
+              'font-display grid h-7 max-w-12 min-w-7 shrink-0 place-items-center truncate rounded-[var(--radius-pill)] px-1.5 text-xs',
+              courtTone(courtOrder.get(m.courtId) ?? 0)
+            )}
+            aria-hidden
+          >
+            {m.courtName}
+          </span>
+          <span className="sr-only">{t('v4MatchCtx', { n: number, court: m.courtName })}</span>
+          {side(m.teamA, 'A', m.done)}
+          {scoring ? (
+            <span className="flex shrink-0 items-center gap-1">
+              <ScoreBox
+                ink
+                side="A"
+                t={t}
+                value={m.scoreA}
+                disabled={!canTick}
+                onChange={(v) => onScore(m.id, { scoreA: v })}
+              />
+              <ScoreBox
+                ink
+                side="B"
+                t={t}
+                value={m.scoreB}
+                disabled={!canTick}
+                onChange={(v) => onScore(m.id, { scoreB: v })}
+              />
+            </span>
+          ) : (
+            <span className="shrink-0 text-xs text-slate-400">{t('vs')}</span>
+          )}
+          {side(m.teamB, 'B', m.done)}
+          {canTick && (
+            <button
+              type="button"
+              onClick={() => onDone(m.id)}
+              aria-pressed={m.done}
+              aria-label={t(m.done ? 'v4ReopenCourt' : 'v4FinishCourt', { court: m.courtName })}
+              className={cx(
+                'press grid h-11 w-11 shrink-0 place-items-center rounded-full text-xs font-bold',
+                'focus-visible:ring-2 focus-visible:ring-accent-400 focus-visible:outline-none',
+                m.done
+                  ? 'bg-accent-400 text-on-accent'
+                  : 'border-2 border-accent-400 text-accent-300 hover:bg-accent-400/15'
+              )}
+            >
+              {m.done ? (
+                <svg
+                  viewBox="0 0 20 20"
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  aria-hidden
+                >
+                  <path d="m5 10.5 3.5 3.5L15 7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              ) : (
+                t('finishShort')
+              )}
+            </button>
+          )}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 function Chevron({ open, ink = false }) {
   return (
     <svg
@@ -1008,14 +1252,28 @@ function Chevron({ open, ink = false }) {
 }
 
 const DownloadGlyph = () => (
-  <svg viewBox="0 0 20 20" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+  <svg
+    viewBox="0 0 20 20"
+    className="h-5 w-5"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    aria-hidden
+  >
     <path d="M10 3v9m0 0 3.5-3.5M10 12 6.5 8.5" strokeLinecap="round" strokeLinejoin="round" />
     <path d="M3.5 13.5V15a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-1.5" strokeLinecap="round" />
   </svg>
 )
 
 const UploadGlyph = () => (
-  <svg viewBox="0 0 20 20" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+  <svg
+    viewBox="0 0 20 20"
+    className="h-5 w-5"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    aria-hidden
+  >
     <path d="M10 13V3m0 0L6.5 6.5M10 3l3.5 3.5" strokeLinecap="round" strokeLinejoin="round" />
     <path d="M4 12v3a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-3" strokeLinecap="round" />
   </svg>
@@ -1083,7 +1341,13 @@ function Stepper({ value, onChange, max, label, ink = false }) {
           : 'border-slate-300 has-[input:focus]:ring-brand-500 dark:border-slate-700'
       )}
     >
-      <button type="button" onClick={() => step(-1)} disabled={value <= 1} aria-label="-1" className={btn}>
+      <button
+        type="button"
+        onClick={() => step(-1)}
+        disabled={value <= 1}
+        aria-label="-1"
+        className={btn}
+      >
         −
       </button>
       <input
@@ -1104,7 +1368,13 @@ function Stepper({ value, onChange, max, label, ink = false }) {
         onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
         className="num h-full w-12 border-0 bg-transparent text-center text-lg focus:outline-none"
       />
-      <button type="button" onClick={() => step(1)} disabled={value >= max} aria-label="+1" className={btn}>
+      <button
+        type="button"
+        onClick={() => step(1)}
+        disabled={value >= max}
+        aria-label="+1"
+        className={btn}
+      >
         +
       </button>
     </div>
@@ -1198,9 +1468,7 @@ function RoundCard({
           >
             {round.matches
               .map((m) =>
-                [...m.teamA, ...m.teamB]
-                  .map((id) => playersById.get(id)?.name ?? '—')
-                  .join(' ')
+                [...m.teamA, ...m.teamB].map((id) => playersById.get(id)?.name ?? '—').join(' ')
               )
               .join(' · ')}
           </span>
@@ -1238,7 +1506,11 @@ function RoundCard({
           </div>
 
           {hasEmpty && !readOnly && (
-            <Button variant="secondary" className="w-full" onClick={() => actions.fillRound(round.id)}>
+            <Button
+              variant="secondary"
+              className="w-full"
+              onClick={() => actions.fillRound(round.id)}
+            >
               {t('autoFill')}
             </Button>
           )}

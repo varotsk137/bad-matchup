@@ -66,8 +66,8 @@ function Slot({ player, team, idx, matchId, selected, onTap, locked, winner, t }
   )
 }
 
-/** Optional: a match can be finished with both boxes left empty. */
-function ScoreBox({ value, onChange, disabled, side, t }) {
+/** Optional: a match can be finished with both boxes left empty. `ink` draws it on the dark scoreboard. */
+export function ScoreBox({ value, onChange, disabled, side, t, ink = false }) {
   return (
     <input
       type="number"
@@ -85,9 +85,14 @@ function ScoreBox({ value, onChange, disabled, side, t }) {
       placeholder="–"
       aria-label={t(side === 'A' ? 'v4ScoreA' : 'v4ScoreB')}
       className={cx(
-        'num h-11 w-11 shrink-0 rounded-xl border bg-slate-50 text-center text-lg dark:bg-slate-950',
+        'num h-11 w-11 shrink-0 rounded-xl border text-center text-lg',
         'focus:ring-2 focus:outline-none disabled:opacity-100',
-        SCORE_BOX[side]
+        ink
+          ? cx(
+              'border-slate-50/25 bg-slate-50/5 focus:ring-accent-400 placeholder:text-slate-400',
+              side === 'A' ? 'text-sky-200' : 'text-rose-200'
+            )
+          : cx('bg-slate-50 dark:bg-slate-950', SCORE_BOX[side])
       )}
     />
   )
@@ -167,7 +172,9 @@ export default function MatchCard({
         // min-w-0: a grid item, so a long name truncates instead of
         // stretching the row past the round
         'flex min-w-0 items-center gap-1 rounded-2xl border-(length:--line-w) py-1 pr-1 pl-1.5 transition-colors',
-        match.done ? 'border-transparent bg-slate-100 dark:bg-slate-800/60' : 'border-edge bg-slate-50 dark:bg-slate-900'
+        match.done
+          ? 'border-transparent bg-slate-100 dark:bg-slate-800/60'
+          : 'border-edge bg-slate-50 dark:bg-slate-900'
       )}
     >
       <span
@@ -195,7 +202,10 @@ export default function MatchCard({
         side="A"
         t={t}
       />
-      <span className="w-1.5 shrink-0 text-center text-xs font-bold text-slate-600 dark:text-slate-400" aria-hidden>
+      <span
+        className="w-1.5 shrink-0 text-center text-xs font-bold text-slate-600 dark:text-slate-400"
+        aria-hidden
+      >
         –
       </span>
       <ScoreBox

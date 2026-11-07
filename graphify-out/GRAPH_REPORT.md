@@ -1,17 +1,17 @@
 # Graph Report - reload-skills-f78f93  (2026-11-07)
 
 ## Corpus Check
-- 79 files · ~75,804 words
+- 79 files · ~76,605 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 7 file(s) not represented in the graph (top: (none) 4, .example 1, .rules 1)
 
 ## Summary
-- 595 nodes · 1696 edges · 20 communities (18 shown, 2 thin omitted)
+- 596 nodes · 1704 edges · 18 communities (17 shown, 1 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 11 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `0a2835dd`
+- Built from commit: `618ed61d`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -32,15 +32,13 @@
 - vite.config.js
 - rooms.rules.test.js
 - cx
-- share.js
 - make-icons.mjs
-- fonts.js
 - App.jsx
 
 ## God Nodes (most connected - your core abstractions)
-1. `cx()` - 72 edges
+1. `cx()` - 73 edges
 2. `App()` - 49 edges
-3. `PlayTab()` - 35 edges
+3. `PlayTab()` - 37 edges
 4. `Button()` - 35 edges
 5. `Sheet()` - 29 edges
 6. `CostSplitSheet()` - 27 edges
@@ -50,37 +48,37 @@
 10. `Card()` - 24 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `newPlayer()` --calls--> `uid()`  [EXTRACTED]
-  src/lib/ops.js → src/lib/matchmaker.js
 - `Icon()` --calls--> `cx()`  [EXTRACTED]
   src/App.jsx → src/components/ui.jsx
+- `CourtsTab()` --indirect_call--> `isAvailable()`  [INFERRED]
+  src/components/CourtsTab.jsx → src/lib/matchmaker.js
+- `PlayTab()` --indirect_call--> `isAvailable()`  [INFERRED]
+  src/components/PlayTab.jsx → src/lib/matchmaker.js
 - `Header()` --calls--> `RoomStatus()`  [EXTRACTED]
   src/App.jsx → src/components/LiveRoomSheet.jsx
 - `Header()` --calls--> `cx()`  [EXTRACTED]
   src/App.jsx → src/components/ui.jsx
-- `App()` --calls--> `CourtsTab()`  [EXTRACTED]
-  src/App.jsx → src/components/CourtsTab.jsx
 
 ## Import Cycles
 - None detected.
 
-## Communities (20 total, 2 thin omitted)
+## Communities (18 total, 1 thin omitted)
 
 ### Community 0 - "matchmaker.js"
-Cohesion: 0.08
-Nodes (56): vitest, HOURS, MINUTES, Pick(), RoundAdvisor(), Row(), attempts(), buildOnce() (+48 more)
+Cohesion: 0.07
+Nodes (65): vitest, attempts(), buildOnce(), buildOnceAsync(), compareKeys(), cost(), courtSize(), createEmptyRound() (+57 more)
 
 ### Community 1 - "App.jsx"
-Cohesion: 0.06
-Nodes (37): Chevron(), Field(), Group(), pickTuning(), SettingsTab(), SkinSwatch(), SkinTile(), Slider() (+29 more)
+Cohesion: 0.07
+Nodes (34): Chevron(), Field(), Group(), pickTuning(), SettingsTab(), SkinSwatch(), SkinTile(), Slider() (+26 more)
 
 ### Community 2 - "rooms.rules.test.js"
 Cohesion: 0.19
 Nodes (10): players(), PREVIEW_URL, savedState(), seed(), shareHash(), STORAGE_KEY, EIGHT, EIGHT (+2 more)
 
 ### Community 4 - "exportImage.js"
-Cohesion: 0.10
-Nodes (36): uqr, ImageSheet(), QrCode(), asFile(), canSharePng(), downloadPng(), drawSchedule(), ellipsize() (+28 more)
+Cohesion: 0.16
+Nodes (20): uqr, QrCode(), BODY_FONT, CLASSIC, mix(), skinLook(), toHex(), TOKENS (+12 more)
 
 ### Community 5 - "🏸 Bad Matchup"
 Cohesion: 0.09
@@ -88,19 +86,19 @@ Nodes (22): 🏸 Bad Matchup, Data and privacy, Deployment, During the session, 
 
 ### Community 6 - "HelpSheet.jsx"
 Cohesion: 0.11
-Nodes (30): PAIRINGS, REST, Heatmap(), HelpInsight(), LEVEL, OPTIONS, PairArt(), PolishArt() (+22 more)
+Nodes (31): PAIRINGS, REST, Heatmap(), HelpInsight(), LEVEL, OPTIONS, PairArt(), PolishArt() (+23 more)
 
 ### Community 7 - "CostSplitSheet.jsx"
-Cohesion: 0.16
-Nodes (28): CostSplitSheet(), MoneyInput(), ROUNDINGS, sessionPlayers(), Working(), PaymentCard(), loadPaid(), loadPayment() (+20 more)
+Cohesion: 0.10
+Nodes (44): CostSplitSheet(), MoneyInput(), ROUNDINGS, sessionPlayers(), Working(), ImageSheet(), PaymentCard(), asFile() (+36 more)
 
 ### Community 8 - "App.jsx"
-Cohesion: 0.08
-Nodes (45): App(), Header(), ICONS, loadRemote(), TABS, InstallInvite(), InstallRow(), InstallSheet() (+37 more)
+Cohesion: 0.07
+Nodes (48): react-dom, App(), Header(), Icon(), ICONS, TABS, DEFAULT_COUNTS, InstallInvite() (+40 more)
 
 ### Community 9 - "package.json"
-Cohesion: 0.10
-Nodes (20): description, name, private, type, version, firebase-tools, @fontsource/bai-jamjuree, @fontsource/chakra-petch (+12 more)
+Cohesion: 0.09
+Nodes (21): description, name, private, type, version, firebase-tools, @fontsource/bai-jamjuree, @fontsource/chakra-petch (+13 more)
 
 ### Community 10 - "dependencies"
 Cohesion: 0.11
@@ -124,24 +122,20 @@ Nodes (7): @firebase/rules-unit-testing, as(), join(), KEY, room(), seed(), writ
 
 ### Community 17 - "cx"
 Cohesion: 0.07
-Nodes (100): react, Icon(), CourtDrawing(), CourtsTab(), reduceMotion(), SIDE, analyse(), FairnessReport() (+92 more)
-
-### Community 18 - "share.js"
-Cohesion: 0.33
-Nodes (10): buildShareUrl(), canCompress(), decodeShare(), deflate(), encodeShare(), fromB64Url(), inflate(), packSession() (+2 more)
+Nodes (101): react, CourtDrawing(), CourtsTab(), reduceMotion(), SIDE, analyse(), FairnessReport(), GradeMark() (+93 more)
 
 ### Community 19 - "make-icons.mjs"
 Cohesion: 0.40
 Nodes (3): icons, square, svg
 
 ### Community 51 - "App.jsx"
-Cohesion: 0.09
-Nodes (43): firebase, Chip(), HistoryList(), RoomHistorySheet(), app, auth, config, db (+35 more)
+Cohesion: 0.08
+Nodes (44): firebase, loadRemote(), Chip(), HistoryList(), RoomHistorySheet(), app, auth, config (+36 more)
 
 ## Knowledge Gaps
 - **14 isolated node(s):** `@fontsource/bai-jamjuree`, `@fontsource/chakra-petch`, `@fontsource/itim`, `@fontsource/kanit`, `@fontsource/kodchasan` (+9 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 151 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **2 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **1 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
@@ -151,12 +145,12 @@ _Questions this graph is uniquely positioned to answer:_
 - **What connects `@fontsource/bai-jamjuree`, `@fontsource/chakra-petch`, `@fontsource/itim` to the rest of the system?**
   _14 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `matchmaker.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.0764423076923077 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07495495495495495 - nodes in this community are weakly interconnected._
 - **Why does `cx()` connect `cx` to `App.jsx`, `exportImage.js`, `HelpSheet.jsx`, `CostSplitSheet.jsx`, `App.jsx`, `App.jsx`?**
   _High betweenness centrality (0.103) - this node is a cross-community bridge._
 - **Should `App.jsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.06428988895382817 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06918238993710692 - nodes in this community are weakly interconnected._
 - **Why does `vitest` connect `matchmaker.js` to `App.jsx`, `CostSplitSheet.jsx`, `App.jsx`, `package.json`, `vite.config.js`, `rooms.rules.test.js`, `cx`, `App.jsx`?**
   _High betweenness centrality (0.078) - this node is a cross-community bridge._
-- **Should `exportImage.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.09523809523809523 - nodes in this community are weakly interconnected._
+- **Should `🏸 Bad Matchup` be split into smaller, more focused modules?**
+  _Cohesion score 0.08695652173913043 - nodes in this community are weakly interconnected._
