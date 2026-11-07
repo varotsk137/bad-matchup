@@ -344,6 +344,9 @@ const dict = {
   installInvite: { th: 'ติดตั้งเป็นแอปไว้ในเครื่องได้', en: 'Add it to this device as an app' },
   installButton: { th: 'ติดตั้ง', en: 'Install' },
   installTitle: { th: 'ติดตั้งเป็นแอป', en: 'Install as an app' },
+  newLookTitle: { th: 'หน้าตาแบบใหม่ (v4)', en: 'New look (v4)' },
+  newLookHint: { th: 'ข้อมูลชุดเดียวกัน กลับมาแบบเดิมได้จากหน้าตั้งค่า', en: 'Same data. Come back from its Settings' },
+  newLookGo: { th: 'ใช้แบบใหม่', en: 'Use new look' },
   installHint: {
     th: 'เปิดจากไอคอนบนหน้าจอได้ทันที เหมือนแอปทั่วไป',
     en: 'Open it straight from an icon on your home screen',

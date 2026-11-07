@@ -311,6 +311,32 @@ export default function SettingsTab({ state, t, actions, setToast }) {
 
       <InstallRow t={t} state={state} />
 
+      {/* served at /classic/ beside the new version: the way back to it */}
+      {location.pathname.includes('/classic/') && (
+        <Card className="flex items-center gap-3 p-4">
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-semibold">{t('newLookTitle')}</span>
+            <span className="mt-0.5 block text-xs text-slate-500 dark:text-slate-400">
+              {t('newLookHint')}
+            </span>
+          </span>
+          <Button
+            variant="primary"
+            className="shrink-0"
+            onClick={() => {
+              try {
+                localStorage.removeItem('bad-matchup:ui')
+              } catch {
+                // storage blocked: nothing was remembered either
+              }
+              location.assign('../')
+            }}
+          >
+            {t('newLookGo')}
+          </Button>
+        </Card>
+      )}
+
       {/* --------------------------------------------------- data */}
       <div>
         <SectionTitle hint={t('dataHint')}>{t('dataTitle')}</SectionTitle>
