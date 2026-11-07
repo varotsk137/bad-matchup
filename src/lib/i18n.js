@@ -330,6 +330,14 @@ const dict = {
   v4FinishCourt: { th: 'จบเกม คอร์ท {court}', en: 'Finish court {court}' },
   v4ReopenCourt: { th: 'แก้ผล คอร์ท {court}', en: 'Reopen court {court}' },
   v4Scores: { th: 'ใส่คะแนน', en: 'Scores' },
+  v4StreakN: { th: 'ลงติดกัน {n} รอบ (ตั้งไว้ไม่เกิน {max})', en: '{n} rounds in a row (limit {max})' },
+  v4StreakAt: { th: 'ลงติดกันครบ {max} รอบแล้ว', en: 'at the limit of {max} in a row' },
+  v4StreakOver: { th: 'เกินที่ตั้งไว้', en: 'past the limit' },
+  v4StreakSample: { th: 'ชื่อ', en: 'Name' },
+  v4RestNote: {
+    th: 'เลขหลังชื่อคนพัก = พักติดกันกี่รอบ (ขึ้นตั้งแต่ 2)',
+    en: 'a number after a resting name = rounds sat out in a row (from 2)',
+  },
   v4UpNext: { th: 'รอบถัดไป', en: 'Next round' },
   v4BenchNext: { th: 'พักรอบหน้า', en: 'Sitting out next' },
   v4TvMode: { th: 'จอข้างคอร์ท', en: 'Court screen' },
@@ -704,10 +712,6 @@ const dict = {
   meetHint: {
     th: 'จำนวนรอบที่ได้เป็นคู่กัน / อยู่ฝั่งตรงข้ามกัน · สีแดง = ยังไม่เคย',
     en: 'Rounds spent on the same side / opposite sides · red = never',
-  },
-  staminaLegend: {
-    th: '{a} = ลงติดกันมาแล้วกี่รอบ / ลงได้ไม่เกิน · {b} = พักติดกันมาแล้วกี่รอบ (พักแล้วนับใหม่จาก 0)',
-    en: '{a} = rounds played in a row / limit · {b} = rounds sat out in a row (a rest resets the count)',
   },
   clearRoundsConfirm: {
     th: 'ล้างทุกรอบที่จัดไว้? ผู้เล่นและคอร์ทจะยังอยู่',

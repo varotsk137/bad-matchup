@@ -40,7 +40,8 @@ export default function ScheduleTable({
   // rounds that arrive while the table is up (added, reshuffled) rise in;
   // the ones already there when it mounted stay put
   const born = useRef(null)
-  if (!born.current) born.current = { known: new Set(rounds.map((r) => r.id)), fresh: new Map() }
+  if (!born.current)
+    born.current = { known: new Set(rounds.map((r) => r.id)), fresh: new Map() }
   let batch = 0
   for (const r of rounds) {
     if (!born.current.known.has(r.id)) {
@@ -109,37 +110,30 @@ export default function ScheduleTable({
   // the first round that is not fully ticked off is the one on court now
   const currentIdx = rounds.findIndex((r) => !r.matches.every((m) => m.done))
 
-  const PlayBadge = ({ n }) => (
-    <span
-      className={cx(
-        'ml-1 inline-block rounded px-1 text-xs leading-4 font-bold tabular-nums',
-        n > staminaLimit
-          ? 'bg-rose-600 text-white'
-          : n === staminaLimit
-            ? 'bg-accent-100 text-accent-800 dark:bg-accent-950 dark:text-accent-300'
-            : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200'
-      )}
-    >
-      {n}/{staminaLimit}
-    </span>
-  )
+  // Only the exceptions get a mark: most people are inside their limits most
+  // of the time, and a badge on every name buried the few that matter (and
+  // made the lines wrap). Each mark stays glued to its name.
+  // the streak is drawn under the name, not beside it: it takes no width, so
+  // switching stamina on moves nothing in the table
+  const streak = (n) => (n < staminaLimit ? '' : n > staminaLimit ? STREAK_OVER : STREAK_AT)
 
-  // a long rest is said in words too, not only in rose
-  const RestBadge = ({ n }) => (
-    <span
-      className={cx(
-        'ml-1 inline-block rounded px-1 text-xs leading-4 font-bold tabular-nums',
-        n >= 3
-          ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
-          : 'bg-brand-100 text-brand-800 dark:bg-brand-950 dark:text-brand-300'
-      )}
-    >
-      {n >= 3 && <span aria-hidden>! </span>}
-      {t('v4RestShort')}
-      {n}
-      {n >= 3 && <span className="sr-only"> · {t('v4RestLong')}</span>}
-    </span>
-  )
+  // the bench already says "sitting out", so the mark is just how many rounds
+  // in a row, from the second; a long rest is said in words too, not only rose
+  const RestBadge = ({ n }) =>
+    n < 2 ? null : (
+      <span
+        className={cx(
+          'ml-1 inline-block min-w-4 rounded px-1 text-center align-[1px] text-xs leading-4 font-bold tabular-nums',
+          n >= 3
+            ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
+            : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200'
+        )}
+      >
+        <span className="sr-only">{t('v4RestShort')}</span>
+        {n}
+        {n >= 3 && <span className="sr-only"> · {t('v4RestLong')}</span>}
+      </span>
+    )
 
   /** One side of a net on a single line: "สมชาย + หมู" */
   const Side = ({ ids, tone, ri }) => (
@@ -152,16 +146,28 @@ export default function ScheduleTable({
       {ids.map((id, i) => {
         const p = id ? playersById.get(id) : null
         return (
-          <span key={i}>
-            {i > 0 && <span className="font-normal text-slate-600 dark:text-slate-400"> + </span>}
-            {p ? p.name : '—'}
-            {p && showLevels && (
-              <span className="ml-1 text-xs font-medium text-slate-600 dark:text-slate-400">
-                {levelMeta(p.level).code}
-              </span>
+          <Fragment key={i}>
+            {i > 0 && (
+              <span className="font-normal text-slate-600 dark:text-slate-400"> + </span>
             )}
-            {p && showStamina && <PlayBadge n={stamina[ri].get(id)?.play ?? 1} />}
-          </span>
+            {/* a name and its marks never split across lines */}
+            <span className="whitespace-nowrap">
+              <span className={p && showStamina ? streak(stamina[ri].get(id)?.play ?? 1) : ''}>
+                {p ? p.name : '—'}
+              </span>
+              {p && showLevels && (
+                <span className="ml-1 text-xs font-medium text-slate-600 dark:text-slate-400">
+                  {levelMeta(p.level).code}
+                </span>
+              )}
+              {p && showStamina && (stamina[ri].get(id)?.play ?? 1) >= staminaLimit && (
+                <span className="sr-only">
+                  {' '}
+                  {t('v4StreakN', { n: stamina[ri].get(id)?.play, max: staminaLimit })}
+                </span>
+              )}
+            </span>
+          </Fragment>
         )
       })}
     </span>
@@ -209,7 +215,9 @@ export default function ScheduleTable({
               const current = i === currentIdx
               // the round on court: a soft lime wash (ink in dark), opaque so the
               // sticky number column covers what scrolls under it
-              const wash = current ? 'bg-accent-50 dark:bg-slate-800' : 'bg-slate-50 dark:bg-slate-900'
+              const wash = current
+                ? 'bg-accent-50 dark:bg-slate-800'
+                : 'bg-slate-50 dark:bg-slate-900'
               const benchLine = hasBench && round.benched.length > 0
               const rowId = `${uid}-r${i}`
               const anim = enter(round.id)
@@ -269,7 +277,12 @@ export default function ScheduleTable({
                         typeof m.scoreA === 'number' && typeof m.scoreB === 'number'
                       return (
                         <Fragment key={c.id}>
-                          <td className={cx('border-l border-edge py-3 pl-2.5 align-middle', onToggleDone ? 'pr-1' : 'pr-3')}>
+                          <td
+                            className={cx(
+                              'border-l border-edge py-3 pl-2.5 align-middle',
+                              onToggleDone ? 'pr-1' : 'pr-3'
+                            )}
+                          >
                             <div className="min-w-0">
                               <Side ids={m.teamA} tone="A" ri={i} />
                               <span className="my-0.5 flex items-center gap-1.5 text-xs leading-4 font-semibold text-slate-600 dark:text-slate-400">
@@ -352,10 +365,29 @@ export default function ScheduleTable({
       </div>
       {/* under the table, so switching the badges on never pushes the rounds down */}
       {showStamina && (
-        <p className="border-t-(length:--line-w) border-edge px-4 py-3 text-xs text-slate-600 dark:text-slate-400">
-          {t('staminaLegend', { a: `1/${staminaLimit}`, b: `${t('v4RestShort')}1` })}
+        <p className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t-(length:--line-w) border-edge px-4 py-3 text-xs text-slate-600 dark:text-slate-400">
+          <span className="inline-flex items-center gap-1.5">
+            <span className={cx(STREAK_AT, 'font-semibold text-slate-800 dark:text-slate-200')}>
+              {t('v4StreakSample')}
+            </span>
+            {t('v4StreakAt', { max: staminaLimit })}
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span
+              className={cx(STREAK_OVER, 'font-semibold text-slate-800 dark:text-slate-200')}
+            >
+              {t('v4StreakSample')}
+            </span>
+            {t('v4StreakOver')}
+          </span>
+          <span>{t('v4RestNote')}</span>
         </p>
       )}
     </Card>
   )
 }
+
+/** At the limit: a dotted amber underline. Past it: a thick solid rose one. Style and colour both differ. */
+const STREAK_AT =
+  'underline decoration-amber-500 decoration-dotted decoration-2 underline-offset-4'
+const STREAK_OVER = 'underline decoration-rose-600 decoration-[3px] underline-offset-4'
