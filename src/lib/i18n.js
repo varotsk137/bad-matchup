@@ -330,6 +330,12 @@ const dict = {
   v4FinishCourt: { th: 'จบเกม คอร์ท {court}', en: 'Finish court {court}' },
   v4ReopenCourt: { th: 'แก้ผล คอร์ท {court}', en: 'Reopen court {court}' },
   v4Scores: { th: 'ใส่คะแนน', en: 'Scores' },
+  classicTitle: { th: 'หน้าตาแบบเดิม (v3)', en: 'Classic look (v3)' },
+  classicHint: {
+    th: 'ข้อมูลชุดเดียวกัน เปิดครั้งหน้าจะไปหน้าแบบเดิมเลย กลับมาแบบใหม่ได้จากหน้าตั้งค่าของแบบเดิม',
+    en: 'Same data. The app opens there from now on; come back from its Settings',
+  },
+  classicGo: { th: 'ใช้แบบเดิม', en: 'Use classic' },
   v4MatchSizeFor: { th: 'แบบการเล่น คอร์ท {court}', en: 'Court {court} format' },
   v4ToSingles: { th: 'คอร์ท {court} เป็นตีเดี่ยวแล้ว', en: 'Court {court} is now singles' },
   v4ToDoubles: {

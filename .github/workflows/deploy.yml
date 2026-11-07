@@ -43,6 +43,25 @@ jobs:
           VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
 
+      # The previous version (v3) stays reachable at /classic/ for anyone who
+      # prefers it: the `classic` branch is v3.2 plus a way back to this one.
+      # Checked out only now, so the tests and build above never see it.
+      - uses: actions/checkout@v4
+        with:
+          ref: classic
+          path: classic-src
+      - name: Build the classic version into /classic/
+        working-directory: classic-src
+        run: npm ci && npm run build
+        env:
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
+      - run: cp -r classic-src/dist dist/classic
+
       # vite.config.js sets `base: './'`, so the bundle works from any
       # sub-path — no need to hard-code the repository name here.
       - uses: actions/upload-pages-artifact@v3

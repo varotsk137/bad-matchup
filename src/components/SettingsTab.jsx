@@ -417,6 +417,29 @@ export default function SettingsTab({ state, t, actions, setToast }) {
           </Card>
           <HelpSheet open={help} onClose={() => setHelp(false)} t={t} />
           <InstallRow t={t} state={state} />
+          {import.meta.env.PROD && (
+            <Card className="flex items-center gap-3 px-4 py-3">
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-medium">{t('classicTitle')}</span>
+                <span className="mt-0.5 block text-xs text-slate-600 dark:text-slate-400">
+                  {t('classicHint')}
+                </span>
+              </span>
+              <Button
+                className="shrink-0"
+                onClick={() => {
+                  try {
+                    localStorage.setItem('bad-matchup:ui', 'classic')
+                  } catch {
+                    // storage blocked: it still opens, just is not remembered
+                  }
+                  location.assign('./classic/')
+                }}
+              >
+                {t('classicGo')}
+              </Button>
+            </Card>
+          )}
         </div>
         <p className="px-1 pt-5 text-center text-xs text-slate-600 dark:text-slate-400">
           {t('appName')} · v{version}

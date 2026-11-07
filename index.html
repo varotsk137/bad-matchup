@@ -9,6 +9,20 @@
     <link rel="icon" href="./icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
     <script>
+      // went back to the classic (v3) look in Settings? open there again, with
+      // the hash, so share and room links still arrive. Never from inside
+      // /classic/ itself, so a missing classic build cannot loop.
+      try {
+        if (
+          localStorage.getItem('bad-matchup:ui') === 'classic' &&
+          !location.pathname.includes('/classic/')
+        )
+          location.replace('./classic/' + location.hash)
+      } catch {
+        // storage blocked: stay on this version
+      }
+    </script>
+    <script>
       // put the saved skin and theme on <html> before the first paint, so the
       // page never flashes another skin while the app loads
       try {

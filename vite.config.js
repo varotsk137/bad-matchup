@@ -57,6 +57,9 @@ export default defineConfig({
         ],
       },
       workbox: {
+        // /classic/ is the previous version, built on its own (deploy.yml);
+        // without this the new app's offline fallback would answer for it
+        navigateFallbackDenylist: [/\/classic\//],
         // The app shell and the default skin's fonts (Thai and Latin) go in
         // up front. Firebase is fetched only once someone opens or watches a
         // room, and the other skins' fonts only once a skin shows them; both
