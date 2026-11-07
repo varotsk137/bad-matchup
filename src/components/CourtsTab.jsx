@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { courtSize, isAvailable, totalCapacity } from '../lib/matchmaker'
+import { isAvailable, totalCapacity } from '../lib/matchmaker'
 import { MAX_COURT_NAME, cleanName, clipName } from '../lib/names'
 import Icon from './Icon'
 import { Button, Card, Empty, Input, ScreenTitle, Segmented, StatTile, Toggle, courtTone, cx } from './ui'
@@ -108,7 +108,7 @@ export default function CourtsTab({ state, t, actions }) {
           </div>
           {addButton}
         </div>
-        <div className="mt-5 grid grid-cols-2 gap-4 border-t border-slate-700 pt-4 dark:border-slate-600">
+        <div className="mt-5 grid grid-cols-2 gap-4 border-t border-slate-50/15 pt-4">
           <StatTile ink value={ready} label={t('available')} />
           <StatTile
             ink
@@ -169,10 +169,6 @@ export default function CourtsTab({ state, t, actions }) {
                         {t('courtNameEmpty', { n: i + 1 })}
                       </p>
                     )}
-                    <p className="mt-1 px-1 text-xs text-slate-600 dark:text-slate-400">
-                      {t(c.type === 'singles' ? 'singles' : 'doubles')} · {courtSize(c)}{' '}
-                      {t('playersUnit')}
-                    </p>
                   </div>
                   <div className="shrink-0 -mt-1">
                     <Toggle

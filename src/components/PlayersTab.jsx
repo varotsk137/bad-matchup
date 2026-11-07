@@ -43,11 +43,13 @@ function statusOf(p) {
 }
 
 const STATUS_LABEL = { ready: 'playing', resting: 'resting', absent: 'absent' }
+// ready is what nearly everyone is, so it is the quiet one (outline); resting
+// is filled amber and away is dashed, so the few exceptions stand out
 const STATUS_STYLE = {
-  ready: 'bg-brand-100 text-brand-800 dark:bg-brand-900/70 dark:text-brand-100',
+  ready: 'border border-edge text-slate-700 dark:text-slate-300',
   resting: 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200',
   absent:
-    'border border-slate-300 text-slate-600 dark:border-slate-700 dark:text-slate-400',
+    'border border-dashed border-slate-400 text-slate-600 dark:border-slate-600 dark:text-slate-400',
 }
 const STATUS_DOT = {
   ready: 'bg-brand-600 dark:bg-brand-300',

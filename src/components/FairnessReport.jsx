@@ -72,7 +72,7 @@ export function useFairness(state, t) {
 const GRADES = [
   {
     key: 'v4GradeGood',
-    tone: 'bg-brand-50 text-brand-800 dark:bg-brand-950 dark:text-brand-200',
+    tone: 'text-brand-700 dark:text-brand-300',
     // a tick
     path: 'M5 10.5l3 3 7-7',
   },

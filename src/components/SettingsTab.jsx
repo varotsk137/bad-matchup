@@ -420,6 +420,8 @@ export default function SettingsTab({ state, t, actions, setToast }) {
         </div>
         <p className="px-1 pt-5 text-center text-xs text-slate-600 dark:text-slate-400">
           {t('appName')} · v{version}
+          <br />
+          {t('v4IconCredit')}
         </p>
       </Group>
     </div>

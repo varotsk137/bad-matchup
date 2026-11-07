@@ -168,7 +168,8 @@ export function Segmented({ options, value, onChange, className = '', size = 'md
             aria-checked={active}
             onClick={() => onChange(o.value)}
             className={cx(
-              'relative min-w-0 flex-1 basis-0 rounded-lg font-medium transition-colors duration-200',
+              // a long label breaks into two even lines, never one word left alone
+              'relative min-w-0 flex-1 basis-0 rounded-lg leading-tight font-medium text-balance transition-colors duration-200',
               size === 'sm' ? 'h-10 px-2 text-xs' : 'h-11 px-3 text-sm',
               active
                 ? 'text-pick-ink'

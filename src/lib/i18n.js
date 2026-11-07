@@ -330,6 +330,7 @@ const dict = {
   v4FinishCourt: { th: 'จบเกม คอร์ท {court}', en: 'Finish court {court}' },
   v4ReopenCourt: { th: 'แก้ผล คอร์ท {court}', en: 'Reopen court {court}' },
   v4Scores: { th: 'ใส่คะแนน', en: 'Scores' },
+  v4IconCredit: { th: 'ไอคอน Solar โดย 480 Design (CC BY 4.0)', en: 'Solar icons by 480 Design (CC BY 4.0)' },
   v4StreakN: { th: 'ลงติดกัน {n} รอบ (ตั้งไว้ไม่เกิน {max})', en: '{n} rounds in a row (limit {max})' },
   v4StreakAt: { th: 'ลงติดกันครบ {max} รอบแล้ว', en: 'at the limit of {max} in a row' },
   v4StreakOver: { th: 'เกินที่ตั้งไว้', en: 'past the limit' },
@@ -697,7 +698,7 @@ const dict = {
   fairRestNote: { th: 'ไม่เกิน 2 รอบ = ไม่ต้องรอนาน', en: 'up to 2 = nobody waits long' },
   fairSingles: { th: 'ตีเดี่ยวต่อคน', en: 'Singles each' },
   fairSinglesNote: { th: 'ห่างกันไม่เกิน 1 เกม = แฟร์', en: 'within one game = fair' },
-  fairTogether: { th: 'ลงสนามด้วยกัน', en: 'On court together' },
+  fairTogether: { th: 'ร่วมคอร์ท', en: 'Same court' },
   fairGridHint: {
     th: 'ตัวเลข = จำนวนรอบที่เจอกัน เลื่อนซ้าย-ขวาได้ถ้าคนเยอะ',
     en: 'Numbers = rounds together. Scroll sideways for big groups.',
@@ -866,7 +867,7 @@ const dict = {
   restFactLongest: { th: 'ติดกันนานสุด', en: 'longest streak' },
   restFactOver: { th: 'ครั้งที่เกิน', en: 'times over' },
   restFactResting: { th: 'คนพัก/รอบ', en: 'resting per round' },
-  restFill: { th: 'เล่นเต็มคอร์ท', en: 'Fill courts' },
+  restFill: { th: 'เต็มคอร์ท', en: 'Fill courts' },
   restFlex: { th: 'ยืดหยุ่น', en: 'Flexible' },
   restStrict: { th: 'พักตรงเวลา', en: 'Rest on time' },
   restFillHint: {
@@ -889,7 +890,7 @@ const dict = {
   genderMode: { th: 'โหมดเพศ', en: 'Gender mode' },
   genderOff: { th: 'ไม่สนใจ', en: 'Ignore' },
   genderMixed: { th: 'คู่ผสม', en: 'Mixed' },
-  genderSame: { th: 'ชายคู่ / หญิงคู่', en: 'Same gender' },
+  genderSame: { th: 'เพศเดียวกัน', en: 'Same gender' },
   allowDowngrade: { th: 'คนไม่พอ ให้ตีเดี่ยวแทน', en: 'Fall back to singles' },
   allowDowngradeHint: {
     th: 'ถ้าเหลือคนไม่พอตีคู่ จะเปลี่ยนคอร์ทนั้นเป็นตีเดี่ยว (เฉพาะเมื่อไม่ทำให้ใครต้องลงติดกันเกินสตามินา)',
