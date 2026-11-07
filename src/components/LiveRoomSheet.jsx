@@ -211,7 +211,7 @@ function LinkCard({ icon, title, hint, url, t, setToast, toggle = null, offHint,
             {hint}
           </p>
           {!on && offHint && (
-            <p className="mt-1 text-xs font-medium text-slate-400 dark:text-slate-500">
+            <p className="mt-1 text-xs font-medium text-slate-600 dark:text-slate-400">
               {offHint}
             </p>
           )}

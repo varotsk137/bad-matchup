@@ -494,15 +494,59 @@ export function ConfirmHost({ t }) {
 
 /* ---------------------------------------------------------------- Empty */
 
+/**
+ * A small court seen from the stands, a shuttle on its way over the net and
+ * the screen's own icon in a badge. Drawn in the skin's tokens, so every skin
+ * gets its own version; decorative, the title says what the screen needs.
+ */
+function EmptyArt({ icon }) {
+  return (
+    <div className="relative mb-4 w-48" aria-hidden>
+      <svg viewBox="0 0 200 116" className="w-full">
+        <ellipse cx="100" cy="104" rx="88" ry="8" className="fill-slate-200 dark:fill-slate-800" />
+        <path
+          d="M36 98 L64 46 H136 L164 98 Z"
+          className="fill-brand-50 stroke-brand-600 dark:fill-brand-950 dark:stroke-brand-400"
+          strokeWidth="2.5"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M100 46 V98 M50 72 H150"
+          className="stroke-brand-600 dark:stroke-brand-400"
+          strokeWidth="1.5"
+          opacity="0.55"
+        />
+        {/* the net stands across the middle of the court, where its sides are x 50 and 150 */}
+        <path d="M50 74 V46 M150 74 V46" className="stroke-slate-900 dark:stroke-slate-100" strokeWidth="3" strokeLinecap="round" />
+        <path d="M50 49 H150 V62 H50 Z" className="fill-slate-50/70 stroke-slate-900 dark:fill-slate-900/60 dark:stroke-slate-100" strokeWidth="1.5" />
+        <path
+          d="M44 88 Q96 -6 160 30"
+          fill="none"
+          className="stroke-accent-500"
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeDasharray="1 8"
+        />
+        <g transform="translate(164 32) rotate(58)">
+          <path d="M-9 -16 H9 L4 3 H-4 Z" className="fill-slate-50 stroke-slate-900 dark:fill-slate-100" strokeWidth="2" strokeLinejoin="round" />
+          <path d="M-3 -16 L-1.5 3 M3 -16 L1.5 3" className="stroke-slate-900" strokeWidth="1" />
+          <circle cy="8" r="5.5" className="fill-accent-500 stroke-slate-900" strokeWidth="2" />
+        </g>
+      </svg>
+      <span className="absolute right-2 bottom-0 grid h-11 w-11 place-items-center rounded-full border-(length:--line-w) border-btn-edge bg-brand-600 text-white shadow-[var(--shadow-card)]">
+        <Icon name={icon} className="h-5 w-5" />
+      </span>
+    </div>
+  )
+}
+
 export function Empty({ icon = 'shuttle', title, hint, action }) {
   return (
-    <div className="flex flex-col items-center px-6 py-14 text-center">
-      <div className="mb-3 grid h-16 w-16 place-items-center rounded-full bg-brand-50 text-brand-600 dark:bg-brand-950 dark:text-brand-300">
-        <Icon name={icon} className="h-8 w-8" />
-      </div>
-      <p className="font-medium text-slate-700 dark:text-slate-200">{title}</p>
+    <div className="flex flex-col items-center px-6 py-12 text-center">
+      <EmptyArt icon={icon} />
+      <p className="font-display text-lg text-slate-900 dark:text-slate-50">{title}</p>
       {hint && (
-        <p className="mt-1 max-w-xs text-sm text-slate-500 dark:text-slate-400">{hint}</p>
+        <p className="mt-1 max-w-xs text-sm text-slate-600 dark:text-slate-400">{hint}</p>
       )}
       {action && <div className="mt-5">{action}</div>}
     </div>

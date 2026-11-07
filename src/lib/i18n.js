@@ -157,6 +157,7 @@ const dict = {
   courtOff: { th: 'ปิด', en: 'Closed' },
   capacity: { th: 'รองรับ', en: 'Capacity' },
   playersUnit: { th: 'คน', en: 'players' },
+  courtsUnit: { th: 'คอร์ท', en: 'courts' },
   perRound: { th: 'ต่อรอบ', en: 'per round' },
   noCourts: { th: 'ยังไม่มีคอร์ท', en: 'No courts yet' },
 
@@ -330,6 +331,7 @@ const dict = {
   v4FinishCourt: { th: 'จบเกม คอร์ท {court}', en: 'Finish court {court}' },
   v4ReopenCourt: { th: 'แก้ผล คอร์ท {court}', en: 'Reopen court {court}' },
   v4Scores: { th: 'ใส่คะแนน', en: 'Scores' },
+  v4TvMode: { th: 'จอข้างคอร์ท', en: 'Court screen' },
   v4RoundDoneN: { th: 'จบรอบที่ {n} แล้ว', en: 'Round {n} finished' },
   v4NextRoundN: { th: 'ถัดไป · รอบ {n}', en: 'Next · round {n}' },
   v4ManualReplan: {
@@ -769,6 +771,8 @@ const dict = {
   },
   skinLeague: { th: 'ลีก', en: 'League' },
   skinMatchday: { th: 'แมตช์เดย์', en: 'Matchday' },
+  skinClay: { th: 'ดินเผา', en: 'Clay' },
+  skinHall: { th: 'สนามแข่ง', en: 'Tournament hall' },
   skinClassic: { th: 'คลาสสิก', en: 'Classic' },
   skinScoreboard: { th: 'สกอร์บอร์ด', en: 'Scoreboard' },
   skinEditorial: { th: 'หนังสือพิมพ์', en: 'Editorial' },

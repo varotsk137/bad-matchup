@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import {
   isAvailable,
   makeContext,
@@ -10,6 +10,7 @@ import {
 } from '../lib/matchmaker'
 import CostSplitSheet from './CostSplitSheet'
 import MatchCard, { ScoreBox } from './MatchCard'
+import CourtsideTV from './CourtsideTV'
 import ScheduleTable from './ScheduleTable'
 import ImageSheet from './ImageSheet'
 import { renderSchedulePng } from '../lib/exportImage'
@@ -94,6 +95,7 @@ export default function PlayTab({
   const [splitOpen, setSplitOpen] = useState(false)
   // the scoreboard's score boxes, shown on demand: most nights only "done" is ticked
   const [scoring, setScoring] = useState(false)
+  const [tvOpen, setTvOpen] = useState(false)
   // the table's checking aids, kept here so they sit in the view row
   const [showLevels, setShowLevels] = useState(false)
   const [showStamina, setShowStamina] = useState(false)
@@ -116,6 +118,9 @@ export default function PlayTab({
             bench: t('bench'),
             vs: t('vs'),
             footer: t('appName'),
+            playersUnit: t('playersUnit'),
+            courtsUnit: t('courtsUnit'),
+            roundsUnit: t('roundsUnit'),
           },
         })
       )
@@ -550,13 +555,7 @@ export default function PlayTab({
             <div className="min-w-0">
               <p className="text-xs font-medium text-slate-300">{t('round')}</p>
               <p className="mt-1 flex items-baseline gap-2">
-                {/* keyed, so a new round on court rises in */}
-                <span
-                  key={nowNumber}
-                  className="num animate-pop inline-block text-[3.5rem] text-slate-50"
-                >
-                  {nowNumber}
-                </span>
+                <RollNumber value={nowNumber} className="text-[3.5rem] text-slate-50" />
                 <span className="num text-2xl text-slate-300">/ {total}</span>
               </p>
             </div>
@@ -603,6 +602,8 @@ export default function PlayTab({
                   // the last tick moves the scoreboard on, so offer the way back
                   const last = nowRound.matches.every((m) => (m.id === matchId ? !m.done : m.done))
                   onMatchDone(nowRound, matchId)
+                  // a tap you can feel on Android; a longer double pulse closes the round
+                  navigator.vibrate?.(last ? [12, 50, 18] : 8)
                   if (last)
                     setToast(t('v4RoundDoneN', { n: nowNumber }), 'info', {
                       label: t('undo'),
@@ -635,6 +636,11 @@ export default function PlayTab({
                       {t('swapButton')}
                     </button>
                   )}
+                  {/* opened straight from the tap: fullscreen needs the gesture */}
+                  <button type="button" onClick={() => setTvOpen(true)} className={INK_CHIP}>
+                    <Icon name="screen" className="h-4 w-4" />
+                    {t('v4TvMode')}
+                  </button>
                 </div>
               )}
 
@@ -1111,11 +1117,51 @@ export default function PlayTab({
         />
       )}
       <ImageSheet png={png} onClose={() => setPng(null)} t={t} setToast={setToast} />
+      {tvOpen && (
+        <CourtsideTV
+          state={state}
+          playersById={playersById}
+          t={t}
+          onClose={() => setTvOpen(false)}
+          onMatchDone={canTick ? onMatchDone : undefined}
+        />
+      )}
     </div>
   )
 }
 
 /* ------------------------------------------------------------- sub-views */
+
+/**
+ * The scoreboard's round number: a new round rolls up into its slot like a
+ * flip-board digit, an undo rolls back down. WAAPI, so it is a one-off on the
+ * compositor and needs no keyframes; nothing moves under reduced motion.
+ */
+function RollNumber({ value, className }) {
+  const ref = useRef(null)
+  const prev = useRef(value)
+  useLayoutEffect(() => {
+    const from = prev.current
+    prev.current = value
+    if (from === value || !ref.current?.animate) return
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
+    const dir = value > from ? 1 : -1
+    ref.current.animate(
+      [
+        { transform: `translateY(${dir * 70}%)`, opacity: 0 },
+        { transform: 'none', opacity: 1 },
+      ],
+      { duration: 300, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' }
+    )
+  }, [value])
+  return (
+    <span className="inline-block overflow-hidden pr-1">
+      <span ref={ref} className={cx('num inline-block', className)}>
+        {value}
+      </span>
+    </span>
+  )
+}
 
 /**
  * The round on court, one row per court, drawn on the ink scoreboard: who
@@ -1206,7 +1252,7 @@ function CourtSide({
                 'press grid h-11 w-11 shrink-0 place-items-center rounded-full text-xs font-bold',
                 'focus-visible:ring-2 focus-visible:ring-accent-400 focus-visible:outline-none',
                 m.done
-                  ? 'bg-accent-400 text-on-accent'
+                  ? 'bg-accent-500 text-on-accent'
                   : 'border-2 border-accent-400 text-accent-300 hover:bg-accent-400/15'
               )}
             >
