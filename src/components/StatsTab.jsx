@@ -182,7 +182,7 @@ function Hero({ fair, t, goTo, tiles }) {
                   className={cx(
                     'grid h-8 w-8 shrink-0 place-items-center rounded-full',
                     worst === 0
-                      ? 'bg-accent-300 text-slate-900'
+                      ? 'ink-keep bg-accent-300 text-slate-900'
                       : 'border-2 border-slate-400 text-slate-50'
                   )}
                 >

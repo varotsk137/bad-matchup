@@ -160,7 +160,7 @@ export default function PlayersTab({ state, stats, t, lang, actions, setToast })
         <form onSubmit={submitQuick} className="mt-5">
           <div
             className={cx(
-              'flex items-center gap-1.5 rounded-2xl bg-slate-50 p-1.5 ring-2 transition-shadow dark:bg-slate-950',
+              'ink-keep flex items-center gap-1.5 rounded-2xl bg-slate-50 p-1.5 ring-2 transition-shadow dark:bg-slate-950',
               draftProblem ? 'ring-rose-400' : 'ring-transparent focus-within:ring-accent-300'
             )}
           >

@@ -26,7 +26,7 @@ export function Card({ className = '', tone, children, ...rest }) {
         'rounded-2xl border-(length:--line-w) shadow-[var(--shadow-card)]',
         // ink: an inverted scoreboard block for the one thing a screen is about
         tone === 'ink'
-          ? 'ink-edge border-transparent bg-slate-900 text-slate-50 dark:bg-slate-800'
+          ? 'ink-scope ink-edge border-transparent bg-slate-900 text-slate-50 dark:bg-slate-800'
           : 'border-edge bg-slate-50 dark:bg-slate-900',
         className
       )}

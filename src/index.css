@@ -2823,3 +2823,47 @@
     transform: none;
   }
 }
+
+/*
+ * The hero card mirrors the page in both modes. In dark mode the page is deep
+ * and the card a step lighter; in light mode the card is a step darker than
+ * the page, a muted light grey, never black. The card's contents are written
+ * once, as light-on-ink; in light mode this scope swaps the tokens under them
+ * so the same classes read dark-on-grey. `.ink-keep` hands a part (a white
+ * input, a lime pill) back its usual colours.
+ */
+:root {
+  --ink-50: var(--color-slate-50);
+  --ink-200: var(--color-slate-200);
+  --ink-300: var(--color-slate-300);
+  --ink-600: var(--color-slate-600);
+  --ink-700: var(--color-slate-700);
+  --ink-800: var(--color-slate-800);
+  --ink-900: var(--color-slate-900);
+  --ink-accent-300: var(--color-accent-300);
+  --ink-accent-400: var(--color-accent-400);
+}
+:root:not(.dark) .ink-scope {
+  --color-slate-900: color-mix(in oklch, var(--ink-200) 55%, var(--ink-300));
+  --color-slate-50: var(--ink-900);
+  --color-slate-100: var(--ink-800);
+  --color-slate-200: var(--ink-700);
+  --color-slate-300: var(--ink-600);
+  --color-slate-400: var(--ink-600);
+  --color-accent-300: var(--color-accent-800);
+  --color-accent-400: var(--color-accent-700);
+  --color-sky-200: var(--color-sky-800);
+  --color-sky-300: var(--color-sky-800);
+  --color-rose-200: var(--color-rose-800);
+  --color-rose-300: var(--color-rose-800);
+  --color-rose-400: var(--color-rose-600);
+  --color-amber-300: var(--color-amber-700);
+}
+:root:not(.dark) .ink-scope .ink-keep {
+  --color-slate-50: var(--ink-50);
+  --color-slate-300: var(--ink-300);
+  --color-slate-400: var(--color-slate-500);
+  --color-slate-900: var(--ink-900);
+  --color-accent-300: var(--ink-accent-300);
+  --color-accent-400: var(--ink-accent-400);
+}
